@@ -1,0 +1,13 @@
+services:
+  postgres:
+    container_name: bike_theft_tracker_db
+    image: postgis/postgis:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    volumes:
+      - ./db_data:/var/lib/postgresql
