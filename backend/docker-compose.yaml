@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: bike_theft_tracker_db
-    image: postgis/postgis:latest
+    image: postgis/postgis:18-3.6
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
