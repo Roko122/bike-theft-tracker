@@ -1,7 +1,7 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { useCallback, useRef, useState } from "react";
 import L from "leaflet";
-import { mockThefts } from "./mockThefts";
+import { mockThefts } from "./mockThefts.js";
 import MapControls from "./ui/MapControls";
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
