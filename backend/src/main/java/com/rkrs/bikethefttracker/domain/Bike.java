@@ -32,7 +32,7 @@ public class Bike {
     @Column(name = "serial_number", unique = true)
     private String serialNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
