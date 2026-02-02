@@ -1,4 +1,12 @@
 package com.rkrs.bikethefttracker.dto;
 
-public record CreateTheftReportRequest() {
+import java.time.LocalDateTime;
+
+public record CreateTheftReportRequest(
+        String description,
+        LocalDateTime theftTime,
+        String theftAddress,
+        GeoPoint location,
+        BikeInfo bike
+) {
 }
