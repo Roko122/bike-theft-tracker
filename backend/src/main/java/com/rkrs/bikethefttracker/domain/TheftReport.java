@@ -43,6 +43,7 @@ public class TheftReport {
 
     @PrePersist
     private void onCreate() {
+        status = Status.ACTIVE;
         createdAt = LocalDateTime.now();
     }
 
