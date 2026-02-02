@@ -1,7 +1,6 @@
 package com.rkrs.bikethefttracker.mapper;
 
 import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.TheftReport;
 import com.rkrs.bikethefttracker.domain.User;
 import com.rkrs.bikethefttracker.dto.BikeInfo;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
@@ -17,9 +16,8 @@ public class BikeMapper {
         this.userMapper = userMapper;
     }
 
-    public BikeResponse toBikeResponse(TheftReport theftReport) {
-        Bike bike = theftReport.getBike();
-        UserResponse owner = userMapper.toUserResponse(theftReport);
+    public BikeResponse toBikeResponse(Bike bike) {
+        UserResponse owner = userMapper.toUserResponse(bike.getOwner());
 
         return new BikeResponse(
                 bike.getId(),
