@@ -1,5 +1,7 @@
 package com.rkrs.bikethefttracker.dto;
 
+import com.rkrs.bikethefttracker.domain.Status;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -9,7 +11,7 @@ public record TheftReportMapItemResponse(
     String model,
     String type,
     String color,
-    String status,
+    Status status,
     GeoPoint location,
     LocalDateTime theftTime
 ) {
