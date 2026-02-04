@@ -2,10 +2,7 @@ package com.rkrs.bikethefttracker.mapper;
 
 import com.rkrs.bikethefttracker.domain.Bike;
 import com.rkrs.bikethefttracker.domain.TheftReport;
-import com.rkrs.bikethefttracker.dto.BikeResponse;
-import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
-import com.rkrs.bikethefttracker.dto.GeoPoint;
-import com.rkrs.bikethefttracker.dto.TheftReportResponse;
+import com.rkrs.bikethefttracker.dto.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 
@@ -47,5 +44,20 @@ public class TheftReportMapper {
                 .location(location)
                 .bike(bike)
                 .build();
+    }
+
+    public TheftReportMapItemResponse toTheftReportMapItemResponse(TheftReportMapItemData data) {
+        GeoPoint point = geoPointMapper.toGeoPoint(data.location());
+
+        return new TheftReportMapItemResponse(
+                data.id(),
+                data.brand(),
+                data.model(),
+                data.type(),
+                data.color(),
+                data.status(),
+                point,
+                data.theftTime()
+        );
     }
 }
