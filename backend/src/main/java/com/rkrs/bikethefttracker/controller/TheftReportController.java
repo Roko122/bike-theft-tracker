@@ -31,7 +31,6 @@ public class TheftReportController {
     public ResponseEntity<TheftReportResponse> createTheftReport(
             @RequestBody CreateTheftReportRequest createTheftReportRequest) {
 
-        System.out.println(createTheftReportRequest);
         TheftReportResponse createdTheftReport = theftReportService.createTheftReport(createTheftReportRequest);
 
         return new ResponseEntity<>(createdTheftReport, HttpStatus.CREATED);
