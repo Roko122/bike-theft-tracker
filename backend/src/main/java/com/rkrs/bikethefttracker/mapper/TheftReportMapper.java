@@ -34,7 +34,6 @@ public class TheftReportMapper {
     }
 
     public TheftReport toTheftReport(CreateTheftReportRequest request) {
-        Bike bike = bikeMapper.toBike(request.bike());
         Point location = geoPointMapper.toPoint(request.location());
 
         return TheftReport.builder()
@@ -42,7 +41,6 @@ public class TheftReportMapper {
                 .theftTime(request.theftTime())
                 .theftAddress(request.theftAddress())
                 .location(location)
-                .bike(bike)
                 .build();
     }
 

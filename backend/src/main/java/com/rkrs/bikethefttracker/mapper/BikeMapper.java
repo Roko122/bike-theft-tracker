@@ -32,8 +32,6 @@ public class BikeMapper {
     }
 
     public Bike toBike(BikeInfo bikeInfo) {
-        User user = userMapper.toUser(bikeInfo.user());
-
         return Bike.builder()
                 .brand(bikeInfo.brand())
                 .model(bikeInfo.model())
@@ -41,7 +39,6 @@ public class BikeMapper {
                 .color(bikeInfo.color())
                 .serialNumber(bikeInfo.serialNumber())
                 .description(bikeInfo.description())
-                .user(user)
                 .build();
     }
 }
