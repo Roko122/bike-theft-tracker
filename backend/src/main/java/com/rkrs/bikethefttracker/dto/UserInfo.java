@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.dto;
 
-public record OwnerInfo(
+public record UserInfo(
         String username,
         String email
 ) {
