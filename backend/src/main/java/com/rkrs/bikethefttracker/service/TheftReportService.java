@@ -7,12 +7,14 @@ import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemData;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
+import com.rkrs.bikethefttracker.exception.NotFoundException;
 import com.rkrs.bikethefttracker.mapper.TheftReportMapper;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TheftReportService {
@@ -44,6 +46,13 @@ public class TheftReportService {
         TheftReport theftReportToSave = theftReportMapper.toTheftReport(createTheftReportRequest);
         theftReportToSave.setBike(createdBike);
         TheftReport theftReport = theftReportRepository.save(theftReportToSave);
+
+        return theftReportMapper.toTheftReportResponse(theftReport);
+    }
+
+    public TheftReportResponse getTheftReportResponse(UUID id) {
+        TheftReport theftReport = theftReportRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TheftReport with id " + id + "was not found."));
 
         return theftReportMapper.toTheftReportResponse(theftReport);
     }
