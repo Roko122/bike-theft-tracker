@@ -37,7 +37,7 @@ public class Bike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User owner;
+    private User user;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

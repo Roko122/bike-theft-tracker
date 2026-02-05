@@ -17,7 +17,7 @@ public class BikeMapper {
     }
 
     public BikeResponse toBikeResponse(Bike bike) {
-        UserResponse owner = userMapper.toUserResponse(bike.getOwner());
+        UserResponse owner = userMapper.toUserResponse(bike.getUser());
 
         return new BikeResponse(
                 bike.getId(),
@@ -32,7 +32,7 @@ public class BikeMapper {
     }
 
     public Bike toBike(BikeInfo bikeInfo) {
-        User user = userMapper.toUser(bikeInfo.owner());
+        User user = userMapper.toUser(bikeInfo.user());
 
         return Bike.builder()
                 .brand(bikeInfo.brand())
@@ -41,7 +41,7 @@ public class BikeMapper {
                 .color(bikeInfo.color())
                 .serialNumber(bikeInfo.serialNumber())
                 .description(bikeInfo.description())
-                .owner(user)
+                .user(user)
                 .build();
     }
 }

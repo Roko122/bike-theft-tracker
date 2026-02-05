@@ -23,8 +23,8 @@ class TheftReportEntityTest {
     @Test
     void prePersist_setsDefaults() {
         User owner = User.builder()
-                .username("owner")
-                .email("owner@example.com")
+                .username("user")
+                .email("user@example.com")
                 .build();
         entityManager.persist(owner);
 
@@ -35,7 +35,7 @@ class TheftReportEntityTest {
                 .color("Red")
                 .serialNumber("SN-123")
                 .description("Fast bike")
-                .owner(owner)
+                .user(owner)
                 .build();
         entityManager.persist(bike);
 
@@ -72,7 +72,7 @@ class TheftReportEntityTest {
                 .color("Blue")
                 .serialNumber("SN-456")
                 .description("Endurance bike")
-                .owner(owner)
+                .user(owner)
                 .build();
         entityManager.persist(bike);
 

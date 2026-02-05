@@ -1,7 +1,7 @@
 package com.rkrs.bikethefttracker.mapper;
 
 import com.rkrs.bikethefttracker.domain.User;
-import com.rkrs.bikethefttracker.dto.OwnerInfo;
+import com.rkrs.bikethefttracker.dto.UserInfo;
 import com.rkrs.bikethefttracker.dto.UserResponse;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +15,10 @@ public class UserMapper {
         );
     }
 
-    public User toUser(OwnerInfo ownerInfo) {
+    public User toUser(UserInfo userInfo) {
         return User.builder()
-                .email(ownerInfo.email())
-                .username(ownerInfo.username())
+                .email(userInfo.email())
+                .username(userInfo.username())
                 .build();
     }
 }

@@ -27,7 +27,7 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "user")
     private List<Bike> bikes;
 
     @PrePersist

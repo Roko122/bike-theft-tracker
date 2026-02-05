@@ -7,6 +7,6 @@ public record BikeInfo(
         String color,
         String serialNumber,
         String description,
-        OwnerInfo owner
+        UserInfo user
 ) {
 }
