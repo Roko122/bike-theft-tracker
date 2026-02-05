@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/theft-reports")
@@ -25,6 +26,13 @@ public class TheftReportController {
         List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllTheftReportMapItems();
 
         return new ResponseEntity<>(theftReportMapItems, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TheftReportResponse> getTheftReport(@PathVariable UUID id) {
+        TheftReportResponse theftReportResponse = theftReportService.getTheftReportResponse(id);
+
+        return new ResponseEntity<>(theftReportResponse, HttpStatus.OK);
     }
 
     @PostMapping
