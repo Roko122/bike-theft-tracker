@@ -12,7 +12,7 @@ public record TheftReportResponse(
     String theftAddress,
     GeoPoint location,
     Status status,
-    LocalDateTime createAt,
+    LocalDateTime createdAt,
     BikeResponse bike
 ) {
 }
