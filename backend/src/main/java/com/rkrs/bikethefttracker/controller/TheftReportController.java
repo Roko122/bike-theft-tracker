@@ -1,12 +1,12 @@
 package com.rkrs.bikethefttracker.controller;
 
+import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
+import com.rkrs.bikethefttracker.dto.TheftReportResponse;
 import com.rkrs.bikethefttracker.service.TheftReportService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +25,15 @@ public class TheftReportController {
         List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllTheftReportMapItems();
 
         return new ResponseEntity<>(theftReportMapItems, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<TheftReportResponse> createTheftReport(
+            @RequestBody CreateTheftReportRequest createTheftReportRequest) {
+
+        System.out.println(createTheftReportRequest);
+        TheftReportResponse createdTheftReport = theftReportService.createTheftReport(createTheftReportRequest);
+
+        return new ResponseEntity<>(createdTheftReport, HttpStatus.CREATED);
     }
 }
