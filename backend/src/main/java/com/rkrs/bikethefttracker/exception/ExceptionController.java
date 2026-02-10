@@ -20,4 +20,16 @@ public class ExceptionController {
                 "An unexpected error occurred"
         );
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundException(NotFoundException ex) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
 }
