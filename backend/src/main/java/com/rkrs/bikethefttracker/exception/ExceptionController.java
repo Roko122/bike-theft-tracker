@@ -12,9 +12,11 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException() {
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
         return new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
                 "An unexpected error occurred"
         );
     }
