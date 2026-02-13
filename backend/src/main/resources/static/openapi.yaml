@@ -8,6 +8,8 @@ servers:
 paths:
   /theft-reports:
     get:
+      tags:
+        - TheftReports
       summary: "GET /theft-reports"
       operationId: "getTheftReportMapItems"
       responses:
@@ -20,6 +22,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/TheftReportMapItemResponse"
     post:
+      tags:
+        - TheftReports
       summary: "POST /theft-reports"
       operationId: "createTheftReport"
       requestBody:
@@ -37,6 +41,8 @@ paths:
                 $ref: "#/components/schemas/TheftReportResponse"
   /theft-reports/{id}:
     get:
+      tags:
+        - TheftReports
       summary: "GET /theft-reports/{id}"
       operationId: "getTheftReport"
       parameters:
