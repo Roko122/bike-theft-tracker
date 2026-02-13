@@ -10,6 +10,6 @@ public record BikeResponse(
         String color,
         String serialNumber,
         String description,
-        UserResponse owner
+        UserResponse user
 ) {
 }

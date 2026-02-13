@@ -1,0 +1,281 @@
+openapi: "3.1.0"
+info:
+  title: "BikeTheftTracker"
+  description: "BikeTheftTracker API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080/api/v1"
+paths:
+  /theft-reports:
+    get:
+      tags:
+        - TheftReports
+      summary: "GET /theft-reports"
+      operationId: "getTheftReportMapItems"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TheftReportMapItemResponse"
+    post:
+      tags:
+        - TheftReports
+      summary: "POST /theft-reports"
+      operationId: "createTheftReport"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTheftReportRequest"
+        required: true
+      responses:
+        "201":
+          description: "CREATED"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TheftReportResponse"
+  /theft-reports/{id}:
+    get:
+      tags:
+        - TheftReports
+      summary: "GET /theft-reports/{id}"
+      operationId: "getTheftReport"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "TheftReport id"
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TheftReportResponse"
+        "404":
+          description: "NOT FOUND"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    GeoPoint:
+      type: "object"
+      properties:
+        longitude:
+          type: "number"
+          format: "double"
+          nullable: false
+          example: 42.431
+        latitude:
+          type: "number"
+          format: "double"
+          nullable: false
+          example: 53.135
+    TheftReportMapItemResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          nullable: false
+        brand:
+          type: "string"
+          nullable: false
+          example: "Helkama"
+        model:
+          type: "string"
+          nullable: false
+          example: "XS29.3"
+        type:
+          type: "string"
+          nullable: false
+          example: "maastopyörä"
+        color:
+          type: "string"
+          nullable: false
+          example: "sininen"
+        status:
+          type: "string"
+          nullable: false
+          enum:
+            - "ACTIVE"
+            - "SIGHTED"
+            - "RECOVERED"
+            - "CLOSED"
+        location:
+          nullable: false
+          $ref: "#/components/schemas/GeoPoint"
+        theftTime:
+          type: "string"
+          format: "date-time"
+          nullable: false
+    UserResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          nullable: false
+        username:
+          type: "string"
+          nullable: false
+          example: "test_user"
+    BikeResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          nullable: false
+        brand:
+          type: "string"
+          nullable: false
+          example: "Helkama"
+        model:
+          type: "string"
+          nullable: false
+          example: "XS29.3"
+        type:
+          type: "string"
+          nullable: false
+          example: "maastopyörä"
+        color:
+          type: "string"
+          nullable: false
+          example: "sininen"
+        serialNumber:
+          type: "string"
+          nullable: true
+          example: "A12B34C56D78E"
+        description:
+          type: "string"
+          nullable: false
+          example: "punaiset vanteet, jalka rikki"
+        user:
+          nullable: false
+          $ref: "#/components/schemas/UserResponse"
+    TheftReportResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          nullable: false
+        description:
+          type: "string"
+          nullable: false
+          example: "varastettu pyöräkatoksesta"
+        theftTime:
+          type: "string"
+          format: "date-time"
+          nullable: false
+        theftAddress:
+          type: "string"
+          nullable: true
+          example: "Yliopistokatu 1, 80100 Joensuu"
+        location:
+          nullable: false
+          $ref: "#/components/schemas/GeoPoint"
+        status:
+          type: "string"
+          nullable: true
+          enum:
+            - "ACTIVE"
+            - "SIGHTED"
+            - "RECOVERED"
+            - "CLOSED"
+        createdAt:
+          type: "string"
+          format: "date-time"
+          nullable: false
+        bike:
+          nullable: false
+          $ref: "#/components/schemas/BikeResponse"
+    UserInfo:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "test_user"
+        email:
+          type: "string"
+          nullable: false
+          example: "test@email.com"
+    BikeInfo:
+      type: "object"
+      properties:
+        brand:
+          type: "string"
+          nullable: false
+          example: "Helkama"
+        model:
+          type: "string"
+          nullable: false
+          example: "XS29.3"
+        type:
+          type: "string"
+          nullable: false
+          example: "maastopyörä"
+        color:
+          type: "string"
+          nullable: false
+          example: "sininen"
+        serialNumber:
+          type: "string"
+          nullable: true
+          example: "A12B34C56D78E"
+        description:
+          type: "string"
+          nullable: false
+          example: "Punaiset vanteet, jalka rikki"
+        user:
+          nullable: false
+          $ref: "#/components/schemas/UserInfo"
+    CreateTheftReportRequest:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+          nullable: false
+          example: "Varastettu pyöräkatoksesta"
+        theftTime:
+          type: "string"
+          format: "date-time"
+          nullable: false
+        theftAddress:
+          type: "string"
+          nullable: false
+          example: "Yliopistokatu 1, 80100 Joensuu"
+        location:
+          nullable: false
+          $ref: "#/components/schemas/GeoPoint"
+        bike:
+          nullable: false
+          $ref: "#/components/schemas/BikeInfo"
+    ErrorResponse:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+          nullable: false
+          example: "NOT FOUND"
+        statusCode:
+          type: "integer"
+          nullable: false
+          example: 404
+        message:
+          type: "string"
+          nullable: false
+          example: "TheftReport was not found with given id"
