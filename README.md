@@ -35,3 +35,8 @@ To get a local copy of this project up and running, follow these steps.
    ```bash
     mvn spring-boot:run
    ```
+### API Documentation
+The API for this project is documented using **OpenAPI / Swagger**. You can view the documentation as follows:
+
+1. Start the backend application.
+2. Open your browser and navigate to: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
