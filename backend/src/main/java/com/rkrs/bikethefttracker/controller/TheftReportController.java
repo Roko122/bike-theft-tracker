@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/v1/theft-reports")
 public class TheftReportController {
 

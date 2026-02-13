@@ -1,8 +1,11 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { mockThefts } from "./mockThefts.js";
 import MapControls from "./ui/MapControls";
+import { getTheftReports } from "../theftReports/api";
+
+
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -24,7 +27,11 @@ export default function MapPage() {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
   const mapRef = useRef(null);
 
-  const [showThefts, setShowThefts] = useState(false);
+  const [showThefts, setShowThefts] = useState(true);
+
+/* tähän uutta koodia*/
+  const [thefts, setThefts] = useState([]);
+
 
   const center = [62.6010, 29.7636]; // Helsinki
   const initialZoom = 11;
@@ -57,6 +64,19 @@ export default function MapPage() {
     );
   }, []);
 
+  useEffect(() => {
+  getTheftReports()
+    .then((data) => {
+      console.log("theft reports from backend:", data);
+      setThefts(Array.isArray(data) ? data : []);
+    })
+    .catch((err) => {
+      console.error("GET theft reports failed:", err);
+      setThefts([]);
+    });
+}, []);
+
+
   return (
     <div className="map-wrap">
       <MapContainer ref={mapRef} center={center} zoom={initialZoom} scrollWheelZoom>
@@ -65,25 +85,24 @@ export default function MapPage() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {showThefts &&
-          mockThefts.map((t) => (
-            <Marker key={t.id} position={[t.lat, t.lng]}>
-              <Popup>
-                <div style={{ minWidth: 180 }}>
-                  <div>
-                    <strong>{t.title}</strong>
-                  </div>
-                  <div>Päivä: {formatDate(t.date)}</div>
-                  <div style={{ marginTop: 8, fontSize: 12, opacity: 0.8 }}>
-                    id: {t.id}
-                  </div>
-                </div>
-              </Popup>
+{showThefts &&
+  thefts.map((t) => (
+    <Marker
+      key={t.id}
+      position={[t.location?.latitude ?? t.latitude, t.location?.longitude ?? t.longitude]}
+
+    >
+<Popup>
+  <pre style={{ margin: 0, fontSize: 12 }}>
+    {JSON.stringify(t, null, 2)}
+  </pre>
+</Popup>
+
             </Marker>
           ))}
       </MapContainer>
 
-      <MapControls onToggleThefts={onToggleThefts} onCenterToUser={onCenterToUser} />
+{/*      <MapControls onToggleThefts={onToggleThefts} onCenterToUser={onCenterToUser} /> */}
     </div>
   );
 }
