@@ -4,6 +4,7 @@ import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
 import com.rkrs.bikethefttracker.service.TheftReportService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class TheftReportController {
 
     @PostMapping
     public ResponseEntity<TheftReportResponse> createTheftReport(
-            @RequestBody CreateTheftReportRequest createTheftReportRequest) {
+            @Valid @RequestBody CreateTheftReportRequest createTheftReportRequest) {
 
         TheftReportResponse createdTheftReport = theftReportService.createTheftReport(createTheftReportRequest);
 
