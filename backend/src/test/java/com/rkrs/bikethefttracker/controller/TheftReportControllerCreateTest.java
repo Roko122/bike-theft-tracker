@@ -2,12 +2,12 @@ package com.rkrs.bikethefttracker.controller;
 
 import tools.jackson.databind.ObjectMapper;
 import com.rkrs.bikethefttracker.domain.Status;
-import com.rkrs.bikethefttracker.dto.BikeInfo;
+import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.GeoPoint;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
-import com.rkrs.bikethefttracker.dto.UserInfo;
+import com.rkrs.bikethefttracker.dto.CreateUserRequest;
 import com.rkrs.bikethefttracker.dto.UserResponse;
 import com.rkrs.bikethefttracker.service.TheftReportService;
 import org.junit.jupiter.api.DisplayName;
@@ -41,15 +41,11 @@ class TheftReportControllerCreateTest {
     @Test
     @DisplayName("Luo varkausilmoituksen ja palauttaa tallennetun ilmoituksen.")
     void createTheftReport_returnsCreatedReport() throws Exception {
-        String json = """
-                { "description": "Bike stolen near station"
-                }
-                """;
         LocalDateTime theftTime = LocalDateTime.of(2024, 3, 4, 5, 6, 7);
         LocalDateTime createdAt = LocalDateTime.of(2024, 3, 5, 8, 9, 10);
         GeoPoint location = new GeoPoint(24.9384, 60.1699);
-        UserInfo owner = new UserInfo("teemu", "teemu@example.com");
-        BikeInfo bikeInfo = new BikeInfo(
+        CreateUserRequest owner = new CreateUserRequest("teemu", "teemu@example.com");
+        CreateBikeRequest createBikeRequest = new CreateBikeRequest(
                 "Cube",
                 "Nuroad",
                 "Gravel",
@@ -63,7 +59,7 @@ class TheftReportControllerCreateTest {
                 theftTime,
                 "Mannerheimintie 1, Helsinki",
                 location,
-                bikeInfo
+                createBikeRequest
         );
 
         UUID reportId = UUID.fromString("1f1b5b83-1dd6-4788-b7af-dac7a8eaba24");
@@ -79,12 +75,12 @@ class TheftReportControllerCreateTest {
                 createdAt,
                 new BikeResponse(
                         bikeId,
-                        bikeInfo.brand(),
-                        bikeInfo.model(),
-                        bikeInfo.type(),
-                        bikeInfo.color(),
-                        bikeInfo.serialNumber(),
-                        bikeInfo.description(),
+                        createBikeRequest.brand(),
+                        createBikeRequest.model(),
+                        createBikeRequest.type(),
+                        createBikeRequest.color(),
+                        createBikeRequest.serialNumber(),
+                        createBikeRequest.description(),
                         new UserResponse(ownerId, owner.username())
                 )
         );
