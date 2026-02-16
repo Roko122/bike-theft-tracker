@@ -1,8 +1,7 @@
 package com.rkrs.bikethefttracker.mapper;
 
 import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.User;
-import com.rkrs.bikethefttracker.dto.BikeInfo;
+import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
 import com.rkrs.bikethefttracker.dto.UserResponse;
 import org.springframework.stereotype.Component;
@@ -31,14 +30,14 @@ public class BikeMapper {
         );
     }
 
-    public Bike toBike(BikeInfo bikeInfo) {
+    public Bike toBike(CreateBikeRequest createBikeRequest) {
         return Bike.builder()
-                .brand(bikeInfo.brand())
-                .model(bikeInfo.model())
-                .type(bikeInfo.type())
-                .color(bikeInfo.color())
-                .serialNumber(bikeInfo.serialNumber())
-                .description(bikeInfo.description())
+                .brand(createBikeRequest.brand())
+                .model(createBikeRequest.model())
+                .type(createBikeRequest.type())
+                .color(createBikeRequest.color())
+                .serialNumber(createBikeRequest.serialNumber())
+                .description(createBikeRequest.description())
                 .build();
     }
 }

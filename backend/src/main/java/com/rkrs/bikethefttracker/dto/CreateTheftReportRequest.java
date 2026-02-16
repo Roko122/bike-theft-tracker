@@ -25,6 +25,6 @@ public record CreateTheftReportRequest(
         GeoPoint location,
 
         @Valid
-        BikeInfo bike
+        CreateBikeRequest bike
 ) {
 }

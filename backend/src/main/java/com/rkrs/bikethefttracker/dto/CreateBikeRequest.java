@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record BikeInfo(
+public record CreateBikeRequest(
 
         @NotBlank(message = "Brand must not be empty.")
         @Size(max = 30, message = "Brand must not exceed ${max} characters.")
@@ -30,6 +30,6 @@ public record BikeInfo(
         String description,
 
         @Valid
-        UserInfo user
+        CreateUserRequest user
 ) {
 }
