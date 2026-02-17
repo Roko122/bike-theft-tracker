@@ -31,8 +31,19 @@ public class TheftReportService {
         this.userService = userService;
     }
 
-    public List<TheftReportMapItemResponse> getAllTheftReportMapItems() {
+    public List<TheftReportMapItemResponse> getAllVisibleTheftReportMapItems() {
         List<TheftReportMapItemData> mapItemsData = theftReportRepository.findAllTheftReportMapItems();
+
+        return mapItemsData.stream().map(theftReportMapper::toTheftReportMapItemResponse).toList();
+    }
+
+    public List<TheftReportMapItemResponse> getAllVisibleTheftReportMapItems(double minLon,
+                                                                             double minLat,
+                                                                             double maxLon,
+                                                                             double maxLat) {
+
+        List<TheftReportMapItemData> mapItemsData =
+                theftReportRepository.findAllVisibleTheftReportMapItems(minLon, minLat, maxLon, maxLat);
 
         return mapItemsData.stream().map(theftReportMapper::toTheftReportMapItemResponse).toList();
     }
