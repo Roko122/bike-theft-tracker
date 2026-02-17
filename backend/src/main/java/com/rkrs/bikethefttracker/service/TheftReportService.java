@@ -31,7 +31,7 @@ public class TheftReportService {
         this.userService = userService;
     }
 
-    public List<TheftReportMapItemResponse> getAllVisibleTheftReportMapItems() {
+    public List<TheftReportMapItemResponse> getAllTheftReportMapItems() {
         List<TheftReportMapItemData> mapItemsData = theftReportRepository.findAllTheftReportMapItems();
 
         return mapItemsData.stream().map(theftReportMapper::toTheftReportMapItemResponse).toList();
