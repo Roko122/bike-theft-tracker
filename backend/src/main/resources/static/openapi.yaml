@@ -10,8 +10,37 @@ paths:
     get:
       tags:
         - TheftReports
-      summary: "GET /theft-reports"
+      summary: "Returns all TheftReport map items, or only those within the visible map area if parameters are provided."
       operationId: "getTheftReportMapItems"
+      parameters:
+        - name: minLon
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+          description: "Minimum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+        - name: minLat
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+          description: "Maximum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+        - name: maxLon
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+          description: "Maximum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+        - name: maxLat
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+          description: "Minimum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
       responses:
         "200":
           description: "OK"
@@ -24,7 +53,7 @@ paths:
     post:
       tags:
         - TheftReports
-      summary: "POST /theft-reports"
+      summary: "Add a new TheftReport"
       operationId: "createTheftReport"
       requestBody:
         content:
@@ -43,7 +72,7 @@ paths:
     get:
       tags:
         - TheftReports
-      summary: "GET /theft-reports/{id}"
+      summary: "Get full details of specified TheftReport"
       operationId: "getTheftReport"
       parameters:
         - name: "id"
@@ -182,7 +211,7 @@ components:
           format: "date-time"
         bike:
           $ref: "#/components/schemas/BikeResponse"
-    UserInfo:
+    CreateUserRequest:
       type: "object"
       required:
         - username
@@ -199,7 +228,7 @@ components:
           format: "email"
           minLength: 6
           maxLength: 254
-    BikeInfo:
+    CreateBikeRequest:
       type: "object"
       required:
         - brand
@@ -241,7 +270,7 @@ components:
           minLength: 1
           maxLength: 300
         user:
-          $ref: "#/components/schemas/UserInfo"
+          $ref: "#/components/schemas/CreateUserRequest"
     CreateTheftReportRequest:
       type: "object"
       required:
@@ -266,7 +295,7 @@ components:
         location:
           $ref: "#/components/schemas/GeoPoint"
         bike:
-          $ref: "#/components/schemas/BikeInfo"
+          $ref: "#/components/schemas/CreateBikeRequest"
     ErrorResponse:
       type: "object"
       properties:
