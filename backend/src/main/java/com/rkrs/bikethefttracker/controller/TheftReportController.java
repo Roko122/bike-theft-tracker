@@ -24,7 +24,20 @@ public class TheftReportController {
 
     @GetMapping
     public ResponseEntity<List<TheftReportMapItemResponse>> getTheftReportMapItems() {
-        List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllTheftReportMapItems();
+        List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllVisibleTheftReportMapItems();
+
+        return new ResponseEntity<>(theftReportMapItems, HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"minLon", "minLat", "maxLon", "maxLat"})
+    public ResponseEntity<List<TheftReportMapItemResponse>> getVisibleTheftReportMapItems(
+            @RequestParam double minLon,
+            @RequestParam double minLat,
+            @RequestParam double maxLon,
+            @RequestParam double maxLat
+    ) {
+        List<TheftReportMapItemResponse> theftReportMapItems =
+                theftReportService.getAllVisibleTheftReportMapItems(minLon, minLat, maxLon, maxLat);
 
         return new ResponseEntity<>(theftReportMapItems, HttpStatus.OK);
     }
