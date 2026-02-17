@@ -32,4 +32,27 @@ public interface TheftReportRepository extends JpaRepository<TheftReport, UUID> 
 
     @EntityGraph(attributePaths = {"bike", "bike.user"})
     Optional<TheftReport> findById(UUID id);
+
+    @Query("""
+    SELECT new com.rkrs.bikethefttracker.dto.TheftReportMapItemData(
+            tp.id,
+            b.brand,
+            b.model,
+            b.type,
+            b.color,
+            tp.status,
+            tp.location,
+            tp.theftTime
+        )
+        FROM TheftReport tp
+            JOIN tp.bike b
+        WHERE ST_within(tp.location,
+                         ST_MakeEnvelope(:minLon, :minLat, :maxLon, :maxLat, 4326)
+               )
+    """)
+    List<TheftReportMapItemData> findAllVisibleTheftReportMapItems(double minLon,
+                                                                   double minLat,
+                                                                   double maxLon,
+                                                                   double maxLat);
+
 }
