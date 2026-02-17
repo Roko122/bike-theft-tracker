@@ -26,21 +26,21 @@ paths:
           schema:
             type: number
             format: double
-          description: "Maximum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Minimum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
         - name: maxLon
           in: query
           required: false
           schema:
             type: number
             format: double
-          description: "Maximum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Maximum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
         - name: maxLat
           in: query
           required: false
           schema:
             type: number
             format: double
-          description: "Minimum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Maximum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
       responses:
         "200":
           description: "OK"
