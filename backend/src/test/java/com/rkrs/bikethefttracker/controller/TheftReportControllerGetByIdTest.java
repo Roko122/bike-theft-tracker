@@ -91,7 +91,7 @@ class TheftReportControllerGetByIdTest {
     @DisplayName("Palauttaa 404 Not Found, kun varkausilmoitusta ei loydy.")
     void getTheftReport_whenMissing_returnsNotFound() throws Exception {
         UUID missingId = UUID.fromString("b2f0e9d1-0bc9-4c8b-8c1a-6b4c2d246f0c");
-        String message = "TheftReport with id " + missingId + "was not found.";
+        String message = "TheftReport with id " + missingId + " not found";
 
         when(theftReportService.getTheftReportResponse(missingId))
                 .thenThrow(new NotFoundException(message));
