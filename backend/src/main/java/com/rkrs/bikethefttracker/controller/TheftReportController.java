@@ -24,7 +24,7 @@ public class TheftReportController {
 
     @GetMapping
     public ResponseEntity<List<TheftReportMapItemResponse>> getTheftReportMapItems() {
-        List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllVisibleTheftReportMapItems();
+        List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllTheftReportMapItems();
 
         return new ResponseEntity<>(theftReportMapItems, HttpStatus.OK);
     }
