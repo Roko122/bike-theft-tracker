@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,6 +76,31 @@ class TheftReportControllerGetVisibleTest {
 
         verify(theftReportService).getAllVisibleTheftReportMapItems(minLon, minLat, maxLon, maxLat);
         verify(theftReportService, never()).getAllTheftReportMapItems();
+    }
+
+    @Test
+    @DisplayName("Palauttaa 400 Bad Request kun bounding box -parametri ei ole numeerinen.")
+    void getVisibleTheftReportMapItems_whenParamIsNotNumeric_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/v1/theft-reports")
+                        .param("minLon", "invalid")
+                        .param("minLat", "60.10")
+                        .param("maxLon", "25.20")
+                        .param("maxLat", "60.30"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(theftReportService);
+    }
+
+    @Test
+    @DisplayName("Palauttaa 400 Bad Request kun bounding box -parametri on tyhjä.")
+    void getVisibleTheftReportMapItems_whenParamIsBlank_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/v1/theft-reports")
+                        .param("minLat", "60.10")
+                        .param("maxLon", "25.20")
+                        .param("maxLat", "60.30"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(theftReportService);
     }
 
 }
