@@ -23,7 +23,7 @@ public class TheftReportController {
         this.theftReportService = theftReportService;
     }
 
-    @GetMapping
+    @GetMapping(params = {"!minLon", "!minLat", "!maxLon", "!maxLat"})
     public ResponseEntity<List<TheftReportMapItemResponse>> getTheftReportMapItems() {
         List<TheftReportMapItemResponse> theftReportMapItems = theftReportService.getAllTheftReportMapItems();
 
