@@ -34,7 +34,7 @@ export default function App() {
 
       </header>
       <main className="main">
-        <MapPage />
+        <MapPage isMenuOpen={open} />
       </main>
     </div>
   );

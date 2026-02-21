@@ -1,20 +1,31 @@
 import { useState } from "react";
+import { LocateFixed } from "lucide-react";
 
-export default function MapControls({ onCenterToUser, onToggleThefts }) {
-  const [open, setOpen] = useState(false);
+export default function MapControls({ onCenterToUser }) {
 
+  const stop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
   return (
-    <div className="map-controls">
-      <button onClick={() => setOpen((v) => !v)}>
-        {open ? "Sulje" : "Valikko"}
+    <div className="map-controls"onClick={stop} onMouseDown={stop} onDoubleClick={stop}>
+    <button
+    className="map-control-btn"
+        onClick={(e) => {
+           e.preventDefault();
+           e.stopPropagation();
+           onCenterToUser();
+  }}
+        type="button"
+        title="Keskitä sijaintiin"
+        aria-label="Keskitä sijaintiin"
+
+        
+      >
+      <LocateFixed size={22}/> 
       </button>
 
-      {open && (
-        <div className="map-menu">
-          <button onClick={onToggleThefts}>Näytä / piilota varkaudet</button>
-          <button onClick={onCenterToUser}>Keskitä sijaintiin</button>
-        </div>
-      )}
+     
     </div>
   );
 }
