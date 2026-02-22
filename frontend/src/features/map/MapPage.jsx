@@ -47,7 +47,7 @@ export default function MapPage({isMenuOpen}) {
 
   // BTT-27: data + tila
   const [thefts, setThefts] = useState([]);
-  const [showThefts, setShowThefts] = useState(false);
+  const [showThefts, setShowThefts] = useState(true);
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
 
@@ -57,29 +57,29 @@ export default function MapPage({isMenuOpen}) {
 
   // BTT-27: hae data backendistä kerran sivun latauksessa
   useEffect(() => {
-    let alive = true;
+  let alive = true;
 
-    (async () => {
-      try {
-        setLoadingThefts(true);
-        setTheftsError(null);
+  (async () => {
+    try {
+      setLoadingThefts(true);
+      setTheftsError(null);
 
-        // HUOM: käytä samaa nimeä kuin importissa
-        const data = await getTheftReports();
-        if (alive) setThefts(data);
+      const data = await getTheftReports();
+      if (alive) setThefts(data);
 
-        console.log("BTT-27 theft reports:", data);
-      } catch (e) {
-        if (alive) setTheftsError(e?.message ?? "Ilmoitusten haku epäonnistui");
-      } finally {
-        if (alive) setLoadingThefts(false);
-      }
-    })();
+      console.log("BTT-27 theft reports:", data);
+    } catch (e) {
+      if (alive) setTheftsError(e?.message ?? "Ilmoitusten haku epäonnistui");
+    } finally {
+      if (alive) setLoadingThefts(false);
+    }
+  })();
 
-    return () => {
-      alive = false;
-    };
-  }, []);
+  return () => {
+    alive = false;
+  };
+}, []);
+  
 
   // BTT-77: keskitä käyttäjän sijaintiin
   const onCenterToUser = useCallback(() => {
