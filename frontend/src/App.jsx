@@ -6,6 +6,9 @@ export default function App() {
   const [open, setOpen] = useState(false);
   // tämä lisätty Btt-28
   const [showForm, setShowForm] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  //tämä valitse kartalla
+  const [isPickingLocation, setIsPickingLocation] = useState(false);
   return (
     <div className="app-shell">
       <header className="header">
@@ -42,21 +45,24 @@ export default function App() {
         </>
       )}
 
-      {/* Jos lomake on auki → näytä lomake */}
-      {showForm && (
-        <>
-          <button onClick={() => setShowForm(false)}>
-            ← takaisin
-          </button>
+{showForm && (
+  <>
+    <button onClick={() => setShowForm(false)}>
+      ← takaisin
+    </button>
 
-          <TheftReportForm
-            onCreated={() => {
-              setOpen(false);
-              setShowForm(false);
-            }}
-          />
-        </>
-      )}
+    <TheftReportForm
+      defaultLocation={selectedLocation}
+      onStartPickFromMap={() => setIsPickingLocation(true)}
+      onStopPickFromMap={() => setIsPickingLocation(false)}
+      onCreated={() => {
+        setOpen(false);
+        setShowForm(false);
+        setIsPickingLocation(false);
+      }}
+    />
+  </>
+)}
 
     </div>
   </div>
@@ -64,7 +70,14 @@ export default function App() {
 
       </header>
       <main className="main">
-        <MapPage isMenuOpen={open} />
+        <MapPage 
+        isMenuOpen={open}
+        isPickingLocation={isPickingLocation}
+        onLocationSelected={(loc) => {
+        setSelectedLocation(loc);
+        setIsPickingLocation(false); // kun valittu, lopeta valinta
+          }}
+        />
       </main>
     </div>
   );

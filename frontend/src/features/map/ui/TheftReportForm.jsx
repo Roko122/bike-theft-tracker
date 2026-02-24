@@ -18,7 +18,8 @@ import { createTheftReport } from "../theftReportsApi";
  * - onCreated?: (createdReport) => void
  *   -> Callback onnistuneen tallennuksen jälkeen.
  */
-export default function TheftReportForm({ defaultLocation, onCreated }) {
+export default function TheftReportForm({ defaultLocation, onCreated,  onStartPickFromMap,
+  onStopPickFromMap }) {
   // -------------------------
   // 1) Lomakkeen kenttien tilat (state)
   // -------------------------
@@ -270,13 +271,21 @@ export default function TheftReportForm({ defaultLocation, onCreated }) {
               onClick={() => {
                 setLocationError("");
                 setLocationSource("map");
+                onStartPickFromMap?.(); // <-- TÄMÄ käynnistää kartan valintatilaan
               }}
             >
               Valitse kartalta
             </Button>
 
-            <Button type="button" variant="outline-danger" onClick={clearLocation}>
-              Tyhjennä sijainti
+            <Button
+                type="button"
+                variant="outline-danger"
+                onClick={() => {
+                    clearLocation();
+                    onStopPickFromMap?.();
+                }}
+            >
+                Tyhjennä sijainti
             </Button>
           </div>
 
