@@ -1,4 +1,4 @@
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import L from "leaflet";
@@ -34,13 +34,29 @@ function MapRefBinder({ mapRef }) {
 }
 
 
+// tähän koodia BTT28(ehkä jo vähän btt 79)
+
+/**
+ * Kuuntelee kartan klikkauksia ja ilmoittaa parentille valitun sijainnin.
+ * Tämä ei renderöi mitään (return null).
+ */
+function MapClickPicker({ enabled, onPick }) {
+  useMapEvents({
+    click(e) {
+      if (!enabled) return;
+
+      const loc = { latitude: e.latlng.lat, longitude: e.latlng.lng };
+      console.log("Kartalta valittu sijainti:", loc);
+      onPick?.(loc);
+    },
+  });
+
+  return null;
+}
+// BTT 28/79 koodi päättyy tähän
 
 
-//Nappia varten sijainti haku oma
-
-
-
-export default function MapPage({isMenuOpen}) {
+export default function MapPage({isMenuOpen, onLocationSelected, isPickingLocation}) {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
     // react-leaflet v4: käytetään refiä (ei whenCreated)
   const mapRef = useRef(null);
@@ -120,6 +136,10 @@ export default function MapPage({isMenuOpen}) {
       scrollWheelZoom
       >
          <MapRefBinder mapRef={mapRef} />
+
+          {/* UUSI: karttaklikki -> onLocationSelected */}
+  <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
+
       
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
@@ -147,6 +167,12 @@ export default function MapPage({isMenuOpen}) {
             </Marker>
           ))}
       </MapContainer>
+
+          {isPickingLocation && (
+            <div className="map-pick-hint">
+              Klikkaa karttaa valitaksesi sijainti
+            </div>
+          )}
 
       {!isMenuOpen && <MapControls onCenterToUser={onCenterToUser} /> }
     </div>

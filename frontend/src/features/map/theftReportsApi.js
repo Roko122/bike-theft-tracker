@@ -27,3 +27,28 @@ export async function fetchTheftReports() {
   // Palautetaan JSON-data (lista ilmoituksia)
   return res.json();
 }
+
+// Koodia varkausilmoituskomonenttiin BTT-28
+
+export async function createTheftReport(payload) {
+  const url = `${BASE_URL}${API_PREFIX}/theft-reports`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      // charset mukana -> auttaa välttämään outoja UTF-8 parse -virheitä
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const extra = await readErrorBody(res);
+    throw new Error(
+      `POST /theft-reports epäonnistui: ${res.status} ${res.statusText}${extra}`
+    );
+  }
+
+  return res.json();
+}
+// BTT-28 koodi päättyy
