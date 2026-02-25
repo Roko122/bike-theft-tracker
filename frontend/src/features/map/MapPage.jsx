@@ -19,8 +19,45 @@ L.Icon.Default.mergeOptions({
 });
 
 function formatDate(iso) {
-  return iso;
+  if (!iso) return "-";
+
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+
+  // +2 tuntia millisekunteina
+  const adjusted = new Date(d.getTime() + 2 * 60 * 60 * 1000);
+
+  return adjusted.toLocaleString();
 }
+
+const FIELD_LABELS_FI = {
+  id: "id",
+  brand: "Merkki",
+  model: "Malli",
+  type: "Tyyppi",
+  color: "Väri",
+  status: "Tila",
+  theftTime: "Tapahtuma aika",
+  description: "Lisäkuvaus",
+};
+
+function labelFi(key) {
+  return FIELD_LABELS_FI[key] ?? key; // jos ei löydy käännöstä, näytetään alkuperäinen
+}
+
+// uusi funktio btt43
+function renderValue(v) {
+  if (v === null || v === undefined) return "-";
+  if (typeof v === "string") return v;
+  if (typeof v === "number" || typeof v === "boolean") return String(v);
+  // objekti/array
+  try {
+    return JSON.stringify(v, null, 2);
+  } catch {
+    return String(v);
+  }
+}
+//päättyy
 
 function MapRefBinder({ mapRef }) {
   const map = useMap();
@@ -35,7 +72,6 @@ function MapRefBinder({ mapRef }) {
 
 
 // tähän koodia BTT28(ehkä jo vähän btt 79)
-
 /**
  * Kuuntelee kartan klikkauksia ja ilmoittaa parentille valitun sijainnin.
  * Tämä ei renderöi mitään (return null).
@@ -81,7 +117,19 @@ export default function MapPage({isMenuOpen, onLocationSelected, isPickingLocati
       setTheftsError(null);
 
       const data = await getTheftReports();
-      if (alive) setThefts(data);
+      //if (alive) setThefts(data);
+      // uutta btt43
+
+      const valid = (data ?? []).filter(
+        (r) =>
+          r.location &&
+          typeof r.location.latitude === "number" &&
+          typeof r.location.longitude === "number"
+      );
+
+      if (alive) setThefts(valid);
+
+      //päättyy43
 
       console.log("BTT-27 theft reports:", data);
     } catch (e) {
@@ -150,22 +198,44 @@ export default function MapPage({isMenuOpen, onLocationSelected, isPickingLocati
 
 
 
-        {showThefts &&
-          mockThefts.map((t) => (
-            <Marker key={t.id} position={[t.lat, t.lng]}>
-              <Popup>
-                <div style={{ minWidth: 180 }}>
-                  <div>
-                    <strong>{t.title}</strong>
-                  </div>
-                  <div>Päivä: {formatDate(t.date)}</div>
-                  <div style={{ marginTop: 8, fontSize: 12, opacity: 0.8 }}>
-                    id: {t.id}
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+{showThefts &&
+  thefts.map((t) => (
+    <Marker
+      key={t.id}
+      position={[t.location.latitude, t.location.longitude]} // [lat, lng]
+    >
+<Popup>
+  <div style={{ minWidth: 260, maxWidth: 320 }}>
+    <div style={{ fontWeight: 700, marginBottom: 6 }}>
+      {t.brand ?? ""} {t.model ?? ""}
+    </div>
+
+    {/* Näyttää kaikki avain-arvo parit */}
+    <div style={{ display: "grid", gap: 4 }}>
+
+      {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
+      {Object.entries(t)
+  .filter(([key]) => key !== "location") // piilotetaan koordinaatit
+  .map(([key, value]) => (
+
+
+        <div key={key} style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: 8 }}>
+          <div style={{ opacity: 0.7, fontSize: 12 }}>{labelFi(key)}</div>
+
+          {/* location näytetään nätisti, muut perusmuodossa */}
+          <div style={{ whiteSpace: "pre-wrap", fontSize: 13 }}>
+            {key === "theftTime" ? formatDate(value) : renderValue(value)}
+          </div>
+        </div>
+      ))}
+    </div>
+    
+
+
+  </div>
+</Popup>
+    </Marker>
+  ))}
       </MapContainer>
 
           {isPickingLocation && (
