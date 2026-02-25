@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.dto;
 
-import com.rkrs.bikethefttracker.domain.Status;
+import com.rkrs.bikethefttracker.entity.Status;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

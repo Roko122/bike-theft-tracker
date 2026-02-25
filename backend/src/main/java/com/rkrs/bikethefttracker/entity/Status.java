@@ -1,4 +1,4 @@
-package com.rkrs.bikethefttracker.domain;
+package com.rkrs.bikethefttracker.entity;
 
 public enum Status {
     ACTIVE,

@@ -1,4 +1,4 @@
-package com.rkrs.bikethefttracker.domain;
+package com.rkrs.bikethefttracker.entity;
 
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;

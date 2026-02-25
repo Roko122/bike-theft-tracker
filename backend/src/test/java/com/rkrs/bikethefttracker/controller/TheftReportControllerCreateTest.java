@@ -1,7 +1,7 @@
 package com.rkrs.bikethefttracker.controller;
 
 import tools.jackson.databind.ObjectMapper;
-import com.rkrs.bikethefttracker.domain.Status;
+import com.rkrs.bikethefttracker.entity.Status;
 import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;

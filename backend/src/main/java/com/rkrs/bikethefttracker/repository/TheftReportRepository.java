@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.repository;
 
-import com.rkrs.bikethefttracker.domain.TheftReport;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemData;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

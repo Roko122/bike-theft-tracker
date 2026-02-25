@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.domain.User;
+import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.dto.CreateUserRequest;
 import com.rkrs.bikethefttracker.dto.UserResponse;
 import org.springframework.stereotype.Component;
