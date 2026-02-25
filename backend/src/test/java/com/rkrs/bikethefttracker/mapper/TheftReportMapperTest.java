@@ -1,8 +1,8 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.Status;
-import com.rkrs.bikethefttracker.domain.TheftReport;
+import com.rkrs.bikethefttracker.entity.Bike;
+import com.rkrs.bikethefttracker.entity.Status;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.GeoPoint;

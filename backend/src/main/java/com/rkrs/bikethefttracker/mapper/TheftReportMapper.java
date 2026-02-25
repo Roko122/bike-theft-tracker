@@ -1,7 +1,6 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.TheftReport;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;

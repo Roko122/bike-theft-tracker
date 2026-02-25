@@ -1,4 +1,4 @@
-package com.rkrs.bikethefttracker.domain;
+package com.rkrs.bikethefttracker.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +20,9 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(unique = true, nullable = false)
     private String email;

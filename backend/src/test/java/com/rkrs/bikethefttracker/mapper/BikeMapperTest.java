@@ -1,7 +1,7 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.User;
+import com.rkrs.bikethefttracker.entity.Bike;
+import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
 import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.CreateUserRequest;

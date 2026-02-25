@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.repository;
 
-import com.rkrs.bikethefttracker.domain.Bike;
+import com.rkrs.bikethefttracker.entity.Bike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

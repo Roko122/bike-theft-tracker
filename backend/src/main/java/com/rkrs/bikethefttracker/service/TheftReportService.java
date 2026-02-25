@@ -1,8 +1,8 @@
 package com.rkrs.bikethefttracker.service;
 
-import com.rkrs.bikethefttracker.domain.Bike;
-import com.rkrs.bikethefttracker.domain.TheftReport;
-import com.rkrs.bikethefttracker.domain.User;
+import com.rkrs.bikethefttracker.entity.Bike;
+import com.rkrs.bikethefttracker.entity.TheftReport;
+import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemData;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;

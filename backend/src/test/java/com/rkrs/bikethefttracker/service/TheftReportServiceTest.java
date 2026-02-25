@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.service;
 
-import com.rkrs.bikethefttracker.domain.TheftReport;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
 import com.rkrs.bikethefttracker.exception.NotFoundException;
 import com.rkrs.bikethefttracker.mapper.TheftReportMapper;
