@@ -20,7 +20,7 @@
     "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^9.39.3",
     "eslint-plugin-react": "^7.37.5",
