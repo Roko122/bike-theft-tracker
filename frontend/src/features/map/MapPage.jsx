@@ -54,15 +54,8 @@ function labelFi(key) {
 
 // uusi funktio btt43
 function renderValue(v) {
-  if (v === null || v === undefined) return '-';
-  if (typeof v === 'string') return v;
-  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-  // objekti/array
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch {
-    return String(v);
-  }
+  if (v == null) return "-";
+  return typeof v === "object" ? JSON.stringify(v, null, 2) : String(v);
 }
 //päättyy
 
@@ -128,12 +121,8 @@ export default function MapPage({
         //if (alive) setThefts(data);
         // uutta btt43
 
-        const valid = (data ?? []).filter(
-          (r) =>
-            r.location &&
-            typeof r.location.latitude === 'number' &&
-            typeof r.location.longitude === 'number'
-        );
+      const valid = (data ?? []).filter(
+      (r) => r?.location?.latitude != null && r?.location?.longitude != null);
 
         if (alive) setThefts(valid);
 
