@@ -1,7 +1,7 @@
 package com.rkrs.bikethefttracker.service;
 
-import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.dto.CreateUserRequest;
+import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.mapper.UserMapper;
 import com.rkrs.bikethefttracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -19,5 +19,9 @@ public class UserService {
     public User createUser(CreateUserRequest owner) {
         User userToCreate = userMapper.toUser(owner);
         return userRepository.save(userToCreate);
+    }
+
+    public boolean userExistsWithUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }
