@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor @AllArgsConstructor @Builder
 @Getter @Setter
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,4 +16,8 @@ public class Role {
     @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleType name;
+
+    public Role(RoleType name) {
+        this.name = name;
+    }
 }
