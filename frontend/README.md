@@ -15,9 +15,9 @@
 ## eslint käyttöohjeet
 
 1) Tarkista virheet: 
-   - `npm lint`
+   - `npm run lint`
 2) Korjaa virheet automaattisesti
-   - `npm lint:fix`
+   - `npm run lint:fix`
 
 ## Missä muokataan?
 
