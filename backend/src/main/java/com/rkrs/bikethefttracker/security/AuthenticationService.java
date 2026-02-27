@@ -2,18 +2,47 @@ package com.rkrs.bikethefttracker.security;
 
 import com.rkrs.bikethefttracker.dto.LoginRequest;
 import com.rkrs.bikethefttracker.dto.LoginResponse;
+import com.rkrs.bikethefttracker.dto.RegisterUserRequest;
+import com.rkrs.bikethefttracker.entity.Role;
+import com.rkrs.bikethefttracker.entity.RoleType;
+import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.exception.UserAlreadyExistsException;
+import com.rkrs.bikethefttracker.service.RoleService;
+import com.rkrs.bikethefttracker.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationService(AuthenticationManager authenticationManager) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    public LoginResponse register(RegisterUserRequest userInfo) {
+        if (userService.userExistsWithUsername(userInfo.username())) {
+            throw new UserAlreadyExistsException(userInfo.username());
+        }
+
+        Role defaultRole = roleService.getRole(RoleType.ROLE_USER);
+        String passwordHash = passwordEncoder.encode(userInfo.password());
+
+        User createdUser = userService.createUser(userInfo, defaultRole, passwordHash);
+
+        return new LoginResponse(createdUser.getId(), createdUser.getUsername());
     }
 
     public LoginResponse login(LoginRequest loginDetails) {
