@@ -11,6 +11,14 @@
    - `npm run dev`
 4) Avaa Viten URL
 
+---
+## eslint käyttöohjeet
+
+1) Tarkista virheet: 
+   - `npm lint`
+2) Korjaa virheet automaattisesti
+   - `npm lint:fix`
+
 ## Missä muokataan?
 
 - Karttasivu: `src/features/map/MapPage.jsx`

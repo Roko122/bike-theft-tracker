@@ -9,7 +9,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
-import { mockThefts } from './mockThefts.js';
 import MapControls from './ui/MapControls';
 import { getTheftReports } from '../theftReports/api';
 
@@ -54,8 +53,8 @@ function labelFi(key) {
 
 // uusi funktio btt43
 function renderValue(v) {
-  if (v == null) return "-";
-  return typeof v === "object" ? JSON.stringify(v, null, 2) : String(v);
+  if (v == null) return '-';
+  return typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v);
 }
 //päättyy
 
@@ -121,8 +120,9 @@ export default function MapPage({
         //if (alive) setThefts(data);
         // uutta btt43
 
-      const valid = (data ?? []).filter(
-      (r) => r?.location?.latitude != null && r?.location?.longitude != null);
+        const valid = (data ?? []).filter(
+          (r) => r?.location?.latitude != null && r?.location?.longitude != null
+        );
 
         if (alive) setThefts(valid);
 
