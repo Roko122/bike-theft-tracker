@@ -1,25 +1,32 @@
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents
+} from 'react-leaflet';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import L from "leaflet";
-import { mockThefts } from "./mockThefts.js";
-import MapControls from "./ui/MapControls";
-import { getTheftReports } from "../theftReports/api";
+import L from 'leaflet';
+import { mockThefts } from './mockThefts.js';
+import MapControls from './ui/MapControls';
+import { getTheftReports } from '../theftReports/api';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
-import marker2x from "leaflet/dist/images/marker-icon-2x.png";
-import marker1x from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
+import marker1x from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: marker2x,
   iconUrl: marker1x,
-  shadowUrl: markerShadow,
+  shadowUrl: markerShadow
 });
 
 function formatDate(iso) {
-  if (!iso) return "-";
+  if (!iso) return '-';
 
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return String(iso);
@@ -31,14 +38,14 @@ function formatDate(iso) {
 }
 
 const FIELD_LABELS_FI = {
-  id: "id",
-  brand: "Merkki",
-  model: "Malli",
-  type: "Tyyppi",
-  color: "Väri",
-  status: "Tila",
-  theftTime: "Tapahtuma aika",
-  description: "Lisäkuvaus",
+  id: 'id',
+  brand: 'Merkki',
+  model: 'Malli',
+  type: 'Tyyppi',
+  color: 'Väri',
+  status: 'Tila',
+  theftTime: 'Tapahtuma aika',
+  description: 'Lisäkuvaus'
 };
 
 function labelFi(key) {
@@ -47,9 +54,9 @@ function labelFi(key) {
 
 // uusi funktio btt43
 function renderValue(v) {
-  if (v === null || v === undefined) return "-";
-  if (typeof v === "string") return v;
-  if (typeof v === "number" || typeof v === "boolean") return String(v);
+  if (v === null || v === undefined) return '-';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
   // objekti/array
   try {
     return JSON.stringify(v, null, 2);
@@ -64,12 +71,11 @@ function MapRefBinder({ mapRef }) {
 
   useEffect(() => {
     mapRef.current = map;
-    console.log("mapRef asetettu:", map);
+    console.log('mapRef asetettu:', map);
   }, [map, mapRef]);
 
   return null;
 }
-
 
 // tähän koodia BTT28(ehkä jo vähän btt 79)
 /**
@@ -82,19 +88,22 @@ function MapClickPicker({ enabled, onPick }) {
       if (!enabled) return;
 
       const loc = { latitude: e.latlng.lat, longitude: e.latlng.lng };
-      console.log("Kartalta valittu sijainti:", loc);
+      console.log('Kartalta valittu sijainti:', loc);
       onPick?.(loc);
-    },
+    }
   });
 
   return null;
 }
 // BTT 28/79 koodi päättyy tähän
 
-
-export default function MapPage({isMenuOpen, onLocationSelected, isPickingLocation}) {
+export default function MapPage({
+  isMenuOpen,
+  onLocationSelected,
+  isPickingLocation
+}) {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
-    // react-leaflet v4: käytetään refiä (ei whenCreated)
+  // react-leaflet v4: käytetään refiä (ei whenCreated)
   const mapRef = useRef(null);
 
   // BTT-27: data + tila
@@ -103,148 +112,145 @@ export default function MapPage({isMenuOpen, onLocationSelected, isPickingLocati
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
 
-
-  const center = [62.6010, 29.7636]; // Joensuu
+  const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
 
   // BTT-27: hae data backendistä kerran sivun latauksessa
   useEffect(() => {
-  let alive = true;
+    let alive = true;
 
-  (async () => {
-    try {
-      setLoadingThefts(true);
-      setTheftsError(null);
+    (async () => {
+      try {
+        setLoadingThefts(true);
+        setTheftsError(null);
 
-      const data = await getTheftReports();
-      //if (alive) setThefts(data);
-      // uutta btt43
+        const data = await getTheftReports();
+        //if (alive) setThefts(data);
+        // uutta btt43
 
-      const valid = (data ?? []).filter(
-        (r) =>
-          r.location &&
-          typeof r.location.latitude === "number" &&
-          typeof r.location.longitude === "number"
-      );
+        const valid = (data ?? []).filter(
+          (r) =>
+            r.location &&
+            typeof r.location.latitude === 'number' &&
+            typeof r.location.longitude === 'number'
+        );
 
-      if (alive) setThefts(valid);
+        if (alive) setThefts(valid);
 
-      //päättyy43
+        //päättyy43
 
-      console.log("BTT-27 theft reports:", data);
-    } catch (e) {
-      if (alive) setTheftsError(e?.message ?? "Ilmoitusten haku epäonnistui");
-    } finally {
-      if (alive) setLoadingThefts(false);
-    }
-  })();
+        console.log('BTT-27 theft reports:', data);
+      } catch (e) {
+        if (alive) setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
+      } finally {
+        if (alive) setLoadingThefts(false);
+      }
+    })();
 
-  return () => {
-    alive = false;
-  };
-}, []);
-  
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // BTT-77: keskitä käyttäjän sijaintiin
   const onCenterToUser = useCallback(() => {
     const map = mapRef.current;
-    console.log("CENTER CLICKED");
+    console.log('CENTER CLICKED');
 
     if (!map) {
-      console.warn("Kartta ei ole vielä valmis.");
+      console.warn('Kartta ei ole vielä valmis.');
       return;
     }
 
-    if (!("geolocation" in navigator)) {
-      console.warn("Selaimessa ei ole geolocation-tukea.");
+    if (!('geolocation' in navigator)) {
+      console.warn('Selaimessa ei ole geolocation-tukea.');
       return;
     }
 
-    console.log("Pyydetään sijaintia.");
+    console.log('Pyydetään sijaintia.');
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        console.log("SAIN SIJAINNIN:", latitude, longitude);
+        console.log('SAIN SIJAINNIN:', latitude, longitude);
 
         map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.2 });
       },
       (err) => {
-        console.warn("Sijainnin haku epäonnistui:", err.code, err.message);
+        console.warn('Sijainnin haku epäonnistui:', err.code, err.message);
       },
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 0 }
     );
   }, []);
-   
+
   return (
     <div className="map-wrap">
-      <MapContainer
-      center={center}
-      zoom={initialZoom}
-      scrollWheelZoom
-      >
-         <MapRefBinder mapRef={mapRef} />
+      <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
+        <MapRefBinder mapRef={mapRef} />
 
-          {/* UUSI: karttaklikki -> onLocationSelected */}
-  <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
+        {/* UUSI: karttaklikki -> onLocationSelected */}
+        <MapClickPicker
+          enabled={isPickingLocation}
+          onPick={onLocationSelected}
+        />
 
-      
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
 
+        {showThefts &&
+          thefts.map((t) => (
+            <Marker
+              key={t.id}
+              position={[t.location.latitude, t.location.longitude]} // [lat, lng]
+            >
+              <Popup>
+                <div style={{ minWidth: 260, maxWidth: 320 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                    {t.brand ?? ''} {t.model ?? ''}
+                  </div>
 
+                  {/* Näyttää kaikki avain-arvo parit */}
+                  <div style={{ display: 'grid', gap: 4 }}>
+                    {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
+                    {Object.entries(t)
+                      .filter(([key]) => key !== 'location') // piilotetaan koordinaatit
+                      .map(([key, value]) => (
+                        <div
+                          key={key}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '90px 1fr',
+                            gap: 8
+                          }}
+                        >
+                          <div style={{ opacity: 0.7, fontSize: 12 }}>
+                            {labelFi(key)}
+                          </div>
 
-
-{showThefts &&
-  thefts.map((t) => (
-    <Marker
-      key={t.id}
-      position={[t.location.latitude, t.location.longitude]} // [lat, lng]
-    >
-<Popup>
-  <div style={{ minWidth: 260, maxWidth: 320 }}>
-    <div style={{ fontWeight: 700, marginBottom: 6 }}>
-      {t.brand ?? ""} {t.model ?? ""}
-    </div>
-
-    {/* Näyttää kaikki avain-arvo parit */}
-    <div style={{ display: "grid", gap: 4 }}>
-
-      {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
-      {Object.entries(t)
-  .filter(([key]) => key !== "location") // piilotetaan koordinaatit
-  .map(([key, value]) => (
-
-
-        <div key={key} style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: 8 }}>
-          <div style={{ opacity: 0.7, fontSize: 12 }}>{labelFi(key)}</div>
-
-          {/* location näytetään nätisti, muut perusmuodossa */}
-          <div style={{ whiteSpace: "pre-wrap", fontSize: 13 }}>
-            {key === "theftTime" ? formatDate(value) : renderValue(value)}
-          </div>
-        </div>
-      ))}
-    </div>
-    
-
-
-  </div>
-</Popup>
-    </Marker>
-  ))}
+                          {/* location näytetään nätisti, muut perusmuodossa */}
+                          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
+                            {key === 'theftTime'
+                              ? formatDate(value)
+                              : renderValue(value)}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
       </MapContainer>
 
-          {isPickingLocation && (
-            <div className="map-pick-hint">
-              Klikkaa karttaa valitaksesi sijainti
-            </div>
-          )}
+      {isPickingLocation && (
+        <div className="map-pick-hint">
+          Klikkaa karttaa valitaksesi sijainti
+        </div>
+      )}
 
-      {!isMenuOpen && <MapControls onCenterToUser={onCenterToUser} /> }
+      {!isMenuOpen && <MapControls onCenterToUser={onCenterToUser} />}
     </div>
   );
-} 
+}
