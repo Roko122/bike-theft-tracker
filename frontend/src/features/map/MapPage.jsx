@@ -92,7 +92,8 @@ function MapClickPicker({ enabled, onPick }) {
 export default function MapPage({
   isMenuOpen,
   onLocationSelected,
-  isPickingLocation
+  isPickingLocation,
+  onReportSelected //  BTT-26: ilmoitetaan parentille valittu ilmoitus
 }) {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
   // react-leaflet v4: käytetään refiä (ei whenCreated)
@@ -193,12 +194,29 @@ export default function MapPage({
             <Marker
               key={t.id}
               position={[t.location.latitude, t.location.longitude]} // [lat, lng]
+              eventHandlers={{
+                click: () => {
+                  // ✅ BTT-26: valitaan ilmoitus sivupalkkiin
+                  onReportSelected?.(t.id);
+                }
+              }}
             >
               <Popup>
                 <div style={{ minWidth: 260, maxWidth: 320 }}>
                   <div style={{ fontWeight: 700, marginBottom: 6 }}>
                     {t.brand ?? ''} {t.model ?? ''}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // ✅ BTT-26: valitaan ilmoitus sivupalkkiin napista
+                      onReportSelected?.(t.id);
+                    }}
+                    style={{ marginBottom: 8 }}
+                  >
+                    Näytä tiedot
+                  </button>
 
                   {/* Näyttää kaikki avain-arvo parit */}
                   <div style={{ display: 'grid', gap: 4 }}>
