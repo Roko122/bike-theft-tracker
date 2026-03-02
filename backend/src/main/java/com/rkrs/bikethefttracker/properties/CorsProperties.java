@@ -1,4 +1,4 @@
-package com.rkrs.bikethefttracker.config.properties;
+package com.rkrs.bikethefttracker.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
