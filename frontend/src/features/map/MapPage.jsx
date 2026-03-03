@@ -194,29 +194,12 @@ export default function MapPage({
             <Marker
               key={t.id}
               position={[t.location.latitude, t.location.longitude]} // [lat, lng]
-              eventHandlers={{
-                click: () => {
-                  // ✅ BTT-26: valitaan ilmoitus sivupalkkiin
-                  onReportSelected?.(t.id);
-                }
-              }}
             >
               <Popup>
                 <div style={{ minWidth: 260, maxWidth: 320 }}>
                   <div style={{ fontWeight: 700, marginBottom: 6 }}>
                     {t.brand ?? ''} {t.model ?? ''}
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // ✅ BTT-26: valitaan ilmoitus sivupalkkiin napista
-                      onReportSelected?.(t.id);
-                    }}
-                    style={{ marginBottom: 8 }}
-                  >
-                    Näytä tiedot
-                  </button>
 
                   {/* Näyttää kaikki avain-arvo parit */}
                   <div style={{ display: 'grid', gap: 4 }}>
@@ -244,6 +227,23 @@ export default function MapPage({
                           </div>
                         </div>
                       ))}
+                  </div>
+                  {/* Alapainike */}
+                  <div style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onReportSelected?.(t.id);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '6px 8px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Näytä tiedot
+                    </button>
                   </div>
                 </div>
               </Popup>

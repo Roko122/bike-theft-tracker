@@ -1,17 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTheftReportById } from '../../theftReports/api';
 
-/**
- * BTT-26: Varkausilmoituksen detail-näkymä sivupalkkiin.
- *
- * - Hakee ilmoituksen täydet tiedot reportId:llä (api-layerin kautta)
- * - Näyttää lataus-/virhetilat
- * - Renderöi kentät selkeästi label + arvo -pareina
- *
- * Props:
- *  - reportId: string | number (pakollinen)
- *  - onClose: () => void (valinnainen, sulkee näkymän parentissa)
- */
+// Yksittäinen “label + value” rivi sivupalkkiin
+function Row({ label, value }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '110px 1fr',
+        gap: 10,
+        alignItems: 'start'
+      }}
+    >
+      <div style={{ opacity: 0.75, fontSize: 12 }}>{label}</div>
+      <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
+        {value == null || value === '' ? '-' : String(value)}
+      </div>
+    </div>
+  );
+}
+
 export default function TheftReportDetailsSidebar({ reportId, onClose }) {
   // Haettu ilmoitus
   const [report, setReport] = useState(null);
@@ -32,7 +40,7 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
       type: 'Tyyppi',
       color: 'Väri',
       status: 'Tila',
-      theftTime: 'Varkauden aika',
+      theftTime: 'Tapahtuma-aika',
       description: 'Kuvaus',
       serialNumber: 'Sarjanumero',
       address: 'Osoite',
@@ -51,11 +59,16 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
    * Päivämäärän muotoilu:
    * - Jos arvo ei ole validi date, näytetään sellaisenaan.
    */
-  function formatDateTime(value) {
-    if (!value) return '-';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return String(value);
-    return d.toLocaleString();
+  function formatDateTime(iso) {
+    if (!iso) return '-';
+
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return String(iso);
+
+    // Sama logiikka kuin MapPage.jsx popupissa: +2 tuntia
+    const adjusted = new Date(d.getTime() + 2 * 60 * 60 * 1000);
+
+    return adjusted.toLocaleString();
   }
 
   /**
@@ -141,32 +154,50 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
             {report.brand ?? ''} {report.model ?? ''}
           </div>
 
-          {/* Kentät */}
+          {/* Perustiedot */}
           <div style={{ display: 'grid', gap: 6 }}>
-            {Object.entries(report).map(([key, value]) => (
-              <div
-                key={key}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '110px 1fr',
-                  gap: 10,
-                  alignItems: 'start'
-                }}
-              >
-                <div style={{ opacity: 0.75, fontSize: 12 }}>
-                  {labelFi(key)}
-                </div>
+            <h4 style={{ margin: '12px 0 4px' }}>Perustiedot</h4>
 
-                <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
-                  {/* Päivämääräkentät nätisti */}
-                  {key === 'theftTime' ||
-                  key === 'createdAt' ||
-                  key === 'updatedAt'
-                    ? formatDateTime(value)
-                    : renderValue(value)}
-                </div>
-              </div>
-            ))}
+            <Row label="ID" value={report.id} />
+            <Row label="Kuvaus" value={report.description} />
+            <Row
+              label="Tapahtuma-aika"
+              value={report.theftTime ? formatDateTime(report.theftTime) : '-'}
+            />
+            <Row label="Tila" value={report.status} />
+
+            {/* Sijainti */}
+            <h4 style={{ margin: '12px 0 4px' }}>Sijainti</h4>
+
+            <Row label="Osoite" value={report.theftAddress ?? report.address} />
+
+            {/* Pyörän tiedot (bike voi olla objekti) */}
+            <h4 style={{ margin: '12px 0 4px' }}>Pyörän tiedot</h4>
+
+            <Row label="Merkki" value={report.bike?.brand ?? report.brand} />
+            <Row label="Malli" value={report.bike?.model ?? report.model} />
+            <Row label="Tyyppi" value={report.bike?.type ?? report.type} />
+            <Row label="Väri" value={report.bike?.color ?? report.color} />
+            <Row
+              label="Sarjanumero"
+              value={report.bike?.serialNumber ?? report.serialNumber}
+            />
+            <Row label="Lisäkuvaus" value={report.bike?.description} />
+
+            {/* Ilmoittaja */}
+            <h4 style={{ margin: '12px 0 4px' }}>Ilmoittaja</h4>
+
+            <Row
+              label="Käyttäjänimi"
+              value={report.bike?.user?.username ?? report.reporterName}
+            />
+
+            <Row
+              label="Sähköposti"
+              value={
+                report.email ?? report.user?.email ?? report.bike?.user?.email
+              }
+            />
           </div>
         </div>
       )}
