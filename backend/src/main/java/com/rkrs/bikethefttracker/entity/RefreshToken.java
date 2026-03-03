@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "refresh_token", indexes = {
-        @Index(name = "idx_token", columnList = "token")
+        @Index(name = "idx_jwt_id", columnList = "jwt_id")
 })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
@@ -18,7 +18,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "jwt_id", nullable = false, unique = true)
     private UUID jwtId;
 
     @Column(name = "expiry_time", nullable = false)
