@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "refresh_token", indexes = {
@@ -17,13 +18,13 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String token;
+    @Column(nullable = false, unique = true)
+    private UUID jwtId;
 
-    @Column(name = "expiry_time")
+    @Column(name = "expiry_time", nullable = false)
     private Instant expiryTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }
