@@ -92,7 +92,8 @@ function MapClickPicker({ enabled, onPick }) {
 export default function MapPage({
   isMenuOpen,
   onLocationSelected,
-  isPickingLocation
+  isPickingLocation,
+  onReportSelected //  BTT-26: ilmoitetaan parentille valittu ilmoitus
 }) {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
   // react-leaflet v4: käytetään refiä (ei whenCreated)
@@ -226,6 +227,23 @@ export default function MapPage({
                           </div>
                         </div>
                       ))}
+                  </div>
+                  {/* Alapainike */}
+                  <div style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onReportSelected?.(t.id);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '6px 8px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Näytä tiedot
+                    </button>
                   </div>
                 </div>
               </Popup>
