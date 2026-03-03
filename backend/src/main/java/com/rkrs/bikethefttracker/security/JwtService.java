@@ -1,7 +1,9 @@
 package com.rkrs.bikethefttracker.security;
 
+import com.rkrs.bikethefttracker.dto.JwtToken;
 import com.rkrs.bikethefttracker.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @EnableConfigurationProperties(JwtProperties.class)
@@ -22,12 +25,12 @@ public class JwtService {
         this.jwtProperties = jwtProperties;
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return buildToken(userDetails, jwtProperties.accessTokenExpirationTime());
+    public JwtToken generateAccessToken(UserDetails userDetails) {
+        return buildJwtToken(userDetails, jwtProperties.accessTokenExpirationTime(), null);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(userDetails, jwtProperties.refreshTokenExpirationTime());
+    public JwtToken generateRefreshToken(UserDetails userDetails) {
+        return buildJwtToken(userDetails, jwtProperties.refreshTokenExpirationTime(), UUID.randomUUID());
     }
 
     public boolean isTokenValid(String token) {
@@ -37,11 +40,26 @@ public class JwtService {
         return expiryTime.after(new Date());
     }
 
-    private String buildToken(UserDetails userDetails, Long expirationTime) {
-        return Jwts.builder()
+    private JwtToken buildJwtToken(UserDetails userDetails, Long expirationTime, UUID jwtId) {
+        Date now = new Date();
+        Date expiryTime = new Date(System.currentTimeMillis() + expirationTime);
+
+        String token = buildToken(userDetails, now, expiryTime, jwtId);
+
+        return new JwtToken(token, expiryTime, jwtId);
+    }
+
+    private String buildToken(UserDetails userDetails, Date now, Date expiryTime, UUID jwtId) {
+        JwtBuilder jwtBuilder = Jwts.builder()
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .issuedAt(now)
+                .expiration(expiryTime);
+
+        if (jwtId != null) {
+            jwtBuilder.id(jwtId.toString());
+        }
+
+        return jwtBuilder
                 .signWith(getSigningKey())
                 .compact();
     }
