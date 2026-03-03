@@ -1,5 +1,6 @@
 package com.rkrs.bikethefttracker.security;
 
+import com.rkrs.bikethefttracker.dto.JwtToken;
 import com.rkrs.bikethefttracker.dto.LoginRequest;
 import com.rkrs.bikethefttracker.dto.LoginResponse;
 import com.rkrs.bikethefttracker.dto.RegisterUserRequest;
@@ -12,6 +13,7 @@ import com.rkrs.bikethefttracker.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +25,16 @@ public class AuthenticationService {
     private final UserService userService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Transactional
@@ -49,8 +55,22 @@ public class AuthenticationService {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDetails.username(), loginDetails.password())
         );
-        CustomUserDetails loggedUser = (CustomUserDetails) auth.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 
-        return new LoginResponse(loggedUser.getId(), loggedUser.getUsername());
+        JwtToken accessToken = this.createAccessToken(userDetails);
+        JwtToken refreshToken = this.createRefreshToken(userDetails);
+
+        return new LoginResponse(userDetails.getUserEntity().getId(), userDetails.getUsername());
+    }
+
+    private JwtToken createAccessToken(UserDetails userDetails) {
+        return jwtService.generateAccessToken(userDetails);
+    }
+
+    private JwtToken createRefreshToken(CustomUserDetails userDetails) {
+        JwtToken refreshToken = jwtService.generateRefreshToken(userDetails);
+        refreshTokenService.saveRefreshToken(refreshToken, userDetails.getUserEntity());
+
+        return refreshToken;
     }
 }
