@@ -20,9 +20,11 @@ import java.util.UUID;
 public class JwtService {
 
     private final JwtProperties jwtProperties;
+    private final JwtContext jwtContext;
 
-    public JwtService(JwtProperties jwtProperties) {
+    public JwtService(JwtProperties jwtProperties, JwtContext jwtContext) {
         this.jwtProperties = jwtProperties;
+        this.jwtContext = jwtContext;
     }
 
     public JwtToken generateAccessToken(UserDetails userDetails) {
@@ -34,10 +36,22 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token) {
-        Claims claims = this.extractAllClaims(token); //checks signature
-        Date expiryTime = claims.getExpiration();
+        Date expiryTime = jwtContext.getClaims().getExpiration();
 
         return expiryTime.after(new Date());
+    }
+
+    public Claims parseToken(String token) {
+        return extractAllClaims(token);
+    }
+
+    public UUID getJwtId() {
+        String jti = jwtContext.getClaims().getId();
+        if (jti == null) {
+            return null;
+        }
+
+        return UUID.fromString(jti);
     }
 
     private JwtToken buildJwtToken(UserDetails userDetails, Long expirationTime, UUID jwtId) {
@@ -65,6 +79,7 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
+        //Checks signature
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
