@@ -65,6 +65,16 @@ body {
   height: 100%;
   width: 100%;
 }
+/* Leaflet-kursorin override */
+.leaflet-grab {
+  cursor: default !important; /* tai pointer */
+}
+
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive {
+  cursor: default !important; /* tai pointer */
+}
+
 /* Leafletin zoom-napeista saman tyyliset kuin menu-btn */
 .leaflet-control-zoom a {
   width: 46px !important;
