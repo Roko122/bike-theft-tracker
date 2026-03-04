@@ -37,7 +37,7 @@ body {
   border: 1px solid #ddd;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 
-  cursor: pointer;
+  cursor: default !important; ;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,8 +65,19 @@ body {
   height: 100%;
   width: 100%;
 }
+/* Leaflet-kursorin override */
+.leaflet-grab {
+  cursor: default !important; /* tai pointer */
+}
+
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive {
+  cursor: default !important; /* tai pointer */
+}
+
 /* Leafletin zoom-napeista saman tyyliset kuin menu-btn */
 .leaflet-control-zoom a {
+  cursor: default !important;
   width: 46px !important;
   height: 46px !important;
 
@@ -137,9 +148,9 @@ body {
 
   color: #111 !important;
   line-height: 1 !important;
- 
 
-  cursor: pointer !important;
+
+  cursor: default !important;;
   
   padding: 0 !important;
   margin: 0 !important;
@@ -188,6 +199,14 @@ body {
   gap: 10px;
 }
 
+/* Varmista pointer sivupalkin interaktiivisille elementeille */
+.map-menu button,
+.map-menu .btn,
+.map-menu a,
+.map-menu [role='button'] {
+  cursor: default !important;
+}
+
 .map-wrap {
   position: relative; /* jos puuttuu, overlay ei asetu kartan päälle */
 }
@@ -207,6 +226,5 @@ body {
 
   pointer-events: none;
 }
-
 
 

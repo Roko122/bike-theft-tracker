@@ -239,7 +239,7 @@ export default function MapPage({
                         width: '100%',
                         padding: '6px 8px',
                         fontWeight: 600,
-                        cursor: 'pointer'
+                        cursor: 'default',
                       }}
                     >
                       Näytä tiedot
