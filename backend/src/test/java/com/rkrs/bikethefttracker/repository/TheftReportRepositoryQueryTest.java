@@ -79,7 +79,41 @@ class TheftReportRepositoryQueryTest {
         }
     }
 
+    @Test
+    @DisplayName("findAllVisibleTheftReportMapItems palauttaa vain näkyvissä olevat varkausilmoitukset")
+    void findAllVisibleTheftReportMapItems_returnsOnlyItemsInsideBoundingBox() {
+        PersistedReport inside = persistReport(
+                "inside-user",
+                "inside@example.com",
+                "Specialized",
+                "Allez",
+                "Road",
+                "Black",
+                "SN-303",
+                Status.ACTIVE,
+                point(25.0, 60.2),
+                LocalDateTime.of(2026, 2, 3, 9, 15)
+        );
+        persistReport(
+                "outside-user",
+                "outside@example.com",
+                "Giant",
+                "Escape",
+                "Hybrid",
+                "Green",
+                "SN-404",
+                Status.ACTIVE,
+                point(30.0, 65.0),
+                LocalDateTime.of(2026, 2, 4, 11, 45)
+        );
 
+        List<TheftReportMapItemData> visibleItems = theftReportRepository.findAllVisibleTheftReportMapItems(
+                24.9, 60.1, 25.1, 60.3
+        );
+
+        assertEquals(1, visibleItems.size());
+        assertProjectionEquals(visibleItems.get(0), inside);
+    }
 
     private PersistedReport persistReport(String username,
                                           String email,
