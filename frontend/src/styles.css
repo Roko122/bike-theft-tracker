@@ -54,6 +54,26 @@ body {
   padding: 0;
 }
 
+.main {
+  padding: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 5500;
+  transition: background 160ms ease;
+}
+
+.main.main--dimmed::after {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .map-wrap {
   /* TÄRKEÄ: Leaflet tarvitsee korkeuden */
   height: calc(100vh - 75px); /* headerin arvioitu korkeus */
@@ -181,8 +201,8 @@ body {
   left: 0;
   height: calc(100vh - 75px);
 
-  width: 33.333vw;   /* 1/3 näytöstä */
-  max-width: 520px;
+  width: 480px;   /* desktop leveys */
+  max-width: 600px;
   min-width: 320px;
 
   background: white;
@@ -226,5 +246,17 @@ body {
 
   pointer-events: none;
 }
+@media (max-width: 900px) {
+  .map-menu {
+    width: 60vw;
+    max-width: none;
+  }
+}
 
+@media (max-width: 600px) {
+  .map-menu {
+    width: 100vw;
+    min-width: 0;
+  }
+}
 

@@ -103,7 +103,7 @@ export default function App() {
         )}
       </header>
 
-      <main className="main">
+        <main className={open ? 'main main--dimmed' : 'main'}>
         <MapPage
           isMenuOpen={open}
           isPickingLocation={isPickingLocation}
