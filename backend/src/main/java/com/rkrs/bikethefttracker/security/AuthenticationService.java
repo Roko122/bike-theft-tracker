@@ -5,9 +5,11 @@ import com.rkrs.bikethefttracker.entity.RefreshToken;
 import com.rkrs.bikethefttracker.entity.Role;
 import com.rkrs.bikethefttracker.entity.RoleType;
 import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.exception.InvalidRefreshTokenException;
 import com.rkrs.bikethefttracker.exception.UserAlreadyExistsException;
 import com.rkrs.bikethefttracker.service.RoleService;
 import com.rkrs.bikethefttracker.service.UserService;
+import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,7 +52,7 @@ public class AuthenticationService {
         User createdUser = userService.createUser(userInfo, defaultRole, passwordHash);
 
         return new RegisterUserResponse(createdUser.getUsername(),
-                "Registration successfully. You can now login.");
+                "Registration successfully. You can now log in.");
     }
 
     @Transactional
@@ -68,7 +70,20 @@ public class AuthenticationService {
     }
 
     public void logout() {
-        refreshTokenService.deleteByJwtId(this.getJti());
+        String jtiString = jwtContext.getClaims().getId();
+        if (jtiString == null) {
+            throw new InvalidRefreshTokenException("Invalid refresh token.");
+        }
+
+        refreshTokenService.deleteByJwtId(getJti(jtiString));
+    }
+
+    public JwtToken renewAccessToken() {
+        Claims claims = jwtContext.getClaims();
+        RefreshToken refreshToken = this.getValidRefreshToken(claims);
+
+        User user = refreshToken.getUser();
+        return createAccessToken(user);
     }
 
     private JwtToken createAccessToken(User user) {
@@ -82,11 +97,16 @@ public class AuthenticationService {
         return refreshToken;
     }
 
-    private UUID getJti() {
-        return UUID.fromString(jwtContext.getClaims().getId());
+    private UUID getJti(String jti) {
+        return UUID.fromString(jti);
     }
 
-    private RefreshToken getValidRefreshToken() {
-        return null;
+    private RefreshToken getValidRefreshToken(Claims refreshTokenClaims) {
+        if (!jwtService.isTokenValid(refreshTokenClaims)) {
+            throw new InvalidRefreshTokenException("Invalid refresh token. Please log in again.");
+        }
+        UUID jti = this.getJti(refreshTokenClaims.getId());
+
+        return refreshTokenService.getToken(jti);
     }
 }
