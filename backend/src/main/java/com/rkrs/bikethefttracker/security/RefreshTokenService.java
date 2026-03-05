@@ -3,6 +3,7 @@ package com.rkrs.bikethefttracker.security;
 import com.rkrs.bikethefttracker.dto.JwtToken;
 import com.rkrs.bikethefttracker.entity.RefreshToken;
 import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.exception.InvalidRefreshTokenException;
 import com.rkrs.bikethefttracker.repository.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,9 @@ public class RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public boolean isTokenValid(UUID jwtId) {
-        return refreshTokenRepository.findByJwtId(jwtId).isPresent();
+    public RefreshToken getToken(UUID jwtId) {
+        return refreshTokenRepository.findByJwtId(jwtId)
+                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token. Please log in again."));
     }
 
     public void deleteByJwtId(UUID jwtId) {
