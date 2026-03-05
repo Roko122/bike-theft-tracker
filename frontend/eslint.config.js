@@ -25,5 +25,14 @@ export default defineConfig([
     settings: {
       react: { version: 'detect' }
     }
+  },
+
+  // Vitest-globaalit testitiedostoille
+  {
+    files: ['**/*.test.{js,jsx}'],
+    plugins: { vitest },
+    languageOptions: {
+      globals: vitest.environments.env.globals
+    }
   }
 ]);
