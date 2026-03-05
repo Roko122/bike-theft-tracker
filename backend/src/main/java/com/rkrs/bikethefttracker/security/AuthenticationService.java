@@ -35,7 +35,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public LoginResponse register(RegisterUserRequest userInfo) {
+    public RegisterUserResponse register(RegisterUserRequest userInfo) {
         if (userService.userExistsWithUsername(userInfo.username())) {
             throw new UserAlreadyExistsException(userInfo.username());
         }
@@ -45,7 +45,8 @@ public class AuthenticationService {
 
         User createdUser = userService.createUser(userInfo, defaultRole, passwordHash);
 
-        return new LoginResponse(createdUser.getId(), createdUser.getUsername());
+        return new RegisterUserResponse(createdUser.getUsername(),
+                "Registration successfully. You can now login.");
     }
 
     @Transactional
