@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class AuthenticationService {
 
@@ -24,14 +26,16 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final JwtContext jwtContext;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenService refreshTokenService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenService refreshTokenService, JwtContext jwtContext) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.jwtContext = jwtContext;
     }
 
     @Transactional
@@ -64,7 +68,7 @@ public class AuthenticationService {
     }
 
     public void logout() {
-
+        refreshTokenService.deleteByJwtId(this.getJti());
     }
 
     private JwtToken createAccessToken(UserDetails userDetails) {
@@ -76,5 +80,9 @@ public class AuthenticationService {
         refreshTokenService.saveRefreshToken(refreshToken, userDetails.getUserEntity());
 
         return refreshToken;
+    }
+
+    private UUID getJti() {
+        return UUID.fromString(jwtContext.getClaims().getId());
     }
 }
