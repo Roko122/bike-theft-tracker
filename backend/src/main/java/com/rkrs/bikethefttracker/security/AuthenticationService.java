@@ -1,6 +1,7 @@
 package com.rkrs.bikethefttracker.security;
 
 import com.rkrs.bikethefttracker.dto.*;
+import com.rkrs.bikethefttracker.entity.RefreshToken;
 import com.rkrs.bikethefttracker.entity.Role;
 import com.rkrs.bikethefttracker.entity.RoleType;
 import com.rkrs.bikethefttracker.entity.User;
@@ -10,7 +11,6 @@ import com.rkrs.bikethefttracker.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,11 +58,11 @@ public class AuthenticationService {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDetails.username(), loginDetails.password())
         );
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = ((CustomUserDetails) auth.getPrincipal()).getUserEntity();
 
-        JwtToken accessToken = this.createAccessToken(userDetails);
-        JwtToken refreshToken = this.createRefreshToken(userDetails);
-        LoginResponse loginResponse = new LoginResponse(userDetails.getUserEntity().getId(), userDetails.getUsername());
+        JwtToken accessToken = this.createAccessToken(user);
+        JwtToken refreshToken = this.createRefreshToken(user);
+        LoginResponse loginResponse = new LoginResponse(user.getId(), user.getUsername());
 
         return new LoginResult(loginResponse, accessToken, refreshToken);
     }
@@ -71,18 +71,22 @@ public class AuthenticationService {
         refreshTokenService.deleteByJwtId(this.getJti());
     }
 
-    private JwtToken createAccessToken(UserDetails userDetails) {
-        return jwtService.generateAccessToken(userDetails);
+    private JwtToken createAccessToken(User user) {
+        return jwtService.generateAccessToken(user);
     }
 
-    private JwtToken createRefreshToken(CustomUserDetails userDetails) {
-        JwtToken refreshToken = jwtService.generateRefreshToken(userDetails);
-        refreshTokenService.saveRefreshToken(refreshToken, userDetails.getUserEntity());
+    private JwtToken createRefreshToken(User user) {
+        JwtToken refreshToken = jwtService.generateRefreshToken(user);
+        refreshTokenService.saveRefreshToken(refreshToken, user);
 
         return refreshToken;
     }
 
     private UUID getJti() {
         return UUID.fromString(jwtContext.getClaims().getId());
+    }
+
+    private RefreshToken getValidRefreshToken() {
+        return null;
     }
 }
