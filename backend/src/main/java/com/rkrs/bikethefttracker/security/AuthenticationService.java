@@ -1,9 +1,6 @@
 package com.rkrs.bikethefttracker.security;
 
-import com.rkrs.bikethefttracker.dto.JwtToken;
-import com.rkrs.bikethefttracker.dto.LoginRequest;
-import com.rkrs.bikethefttracker.dto.LoginResponse;
-import com.rkrs.bikethefttracker.dto.RegisterUserRequest;
+import com.rkrs.bikethefttracker.dto.*;
 import com.rkrs.bikethefttracker.entity.Role;
 import com.rkrs.bikethefttracker.entity.RoleType;
 import com.rkrs.bikethefttracker.entity.User;
@@ -51,7 +48,8 @@ public class AuthenticationService {
         return new LoginResponse(createdUser.getId(), createdUser.getUsername());
     }
 
-    public LoginResponse login(LoginRequest loginDetails) {
+    @Transactional
+    public LoginResult login(LoginRequest loginDetails) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDetails.username(), loginDetails.password())
         );
@@ -59,8 +57,13 @@ public class AuthenticationService {
 
         JwtToken accessToken = this.createAccessToken(userDetails);
         JwtToken refreshToken = this.createRefreshToken(userDetails);
+        LoginResponse loginResponse = new LoginResponse(userDetails.getUserEntity().getId(), userDetails.getUsername());
 
-        return new LoginResponse(userDetails.getUserEntity().getId(), userDetails.getUsername());
+        return new LoginResult(loginResponse, accessToken, refreshToken);
+    }
+
+    public void logout() {
+
     }
 
     private JwtToken createAccessToken(UserDetails userDetails) {
