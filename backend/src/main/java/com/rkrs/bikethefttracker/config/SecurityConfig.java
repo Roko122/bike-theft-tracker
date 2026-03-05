@@ -1,6 +1,6 @@
 package com.rkrs.bikethefttracker.config;
 
-import com.rkrs.bikethefttracker.config.properties.CorsProperties;
+import com.rkrs.bikethefttracker.properties.CorsProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -16,8 +15,8 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-    public UUID getId() {
-        return user.getId();
+    public User getUserEntity() {
+        return user;
     }
 
     @Override
