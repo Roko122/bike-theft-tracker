@@ -35,23 +35,18 @@ public class JwtService {
         return buildJwtToken(user, jwtProperties.refreshTokenExpirationTime(), UUID.randomUUID());
     }
 
-    public boolean isTokenValid(String token) {
-        Date expiryTime = jwtContext.getClaims().getExpiration();
+    public boolean isTokenValid(Claims claims) {
+        Date expiryTime = claims.getExpiration();
 
         return expiryTime.after(new Date());
     }
 
     public Claims parseToken(String token) {
-        return extractAllClaims(token);
-    }
+        Claims claims = extractAllClaims(token);
+        jwtContext.setToken(token);
+        jwtContext.setClaims(claims);
 
-    public UUID getJwtId() {
-        String jti = jwtContext.getClaims().getId();
-        if (jti == null) {
-            return null;
-        }
-
-        return UUID.fromString(jti);
+        return claims;
     }
 
     private JwtToken buildJwtToken(User user, Long expirationTime, UUID jwtId) {
