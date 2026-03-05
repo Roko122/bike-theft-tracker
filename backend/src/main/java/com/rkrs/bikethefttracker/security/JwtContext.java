@@ -10,5 +10,6 @@ import org.springframework.web.context.annotation.RequestScope;
 @Getter @Setter
 @RequestScope
 public class JwtContext {
+    private String token;
     private Claims claims;
 }
