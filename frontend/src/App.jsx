@@ -2,6 +2,7 @@ import MapPage from './features/map/MapPage.jsx';
 import { useState } from 'react';
 import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
+import LoginPage from './features/map/ui/loginPage.jsx';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -12,6 +13,7 @@ export default function App() {
   const [isPickingLocation, setIsPickingLocation] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
 
+  const [showLogin, setShowLogin] = useState(false);
   return (
     <div className="app-shell">
       <header className="header">
@@ -30,6 +32,8 @@ export default function App() {
             onClick={() => {
               setOpen(false);
               setShowForm(false);
+              //log in
+              setShowLogin(false);
               // BTT26
               setIsPickingLocation(false);
               setSelectedReportId(null); // ✅ BTT-26: poistetaan detail-valinta
@@ -37,7 +41,7 @@ export default function App() {
           >
             <div onClick={(e) => e.stopPropagation()} className="d-grid gap-2">
               {/* ✅ 1) BTT-26: Detail-näkymä */}
-              {selectedReportId && !showForm && (
+              {selectedReportId && !showForm && !showLogin && (
                 <>
                   <button
                     onClick={() => {
@@ -58,7 +62,7 @@ export default function App() {
               )}
 
               {/* 2) BTT-28: Lomake */}
-              {showForm && !selectedReportId && (
+              {showForm && !selectedReportId && !showLogin && (
                 <>
                   <button
                     onClick={() => {
@@ -83,8 +87,15 @@ export default function App() {
                 </>
               )}
 
+              {showLogin && !showForm && !selectedReportId && (
+                  <>
+                    <button onClick={() => setShowLogin(false)}>← takaisin</button>
+                    <LoginPage onLoginSuccess={() => setShowLogin(false)} />
+                  </>
+              )}
+
               {/* 3) Perusvalikko */}
-              {!showForm && !selectedReportId && (
+              {!showForm && !selectedReportId && !showLogin && (
                 <>
                   <button>heloo world</button>
 
@@ -96,6 +107,16 @@ export default function App() {
                   >
                     varkausilmoitus
                   </button>
+                  <button
+                      onClick={() => {
+                        setShowLogin(true);
+                        setShowForm(false);
+                        setSelectedReportId(null);
+                      }}
+                  >
+                    Kirjaudu
+                  </button>
+
                 </>
               )}
             </div>
@@ -113,7 +134,7 @@ export default function App() {
             setIsPickingLocation(false);
           }}
           /**
-           * ✅ BTT-26: MapPage ilmoittaa, että käyttäjä valitsi ilmoituksen (marker/lista/popup)
+           *BTT-26: MapPage ilmoittaa, että käyttäjä valitsi ilmoituksen (marker/lista/popup)
            * - Avataan menu automaattisesti ja näytetään detailit.
            * - Suljetaan lomake, jos se oli auki (ettei tule päällekkäisyyksiä).
            */
