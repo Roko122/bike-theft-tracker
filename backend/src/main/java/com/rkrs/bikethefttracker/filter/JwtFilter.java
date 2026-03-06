@@ -37,21 +37,24 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getServletPath().equals("/api/v1/auth/refresh")) {
+        String path = request.getServletPath();
+        if (path.equals("/api/v1/auth/refresh") || path.equals("/api/v1/auth/logout")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        try {
-            String accessToken = getAccessTokenFromCookies(request);
-            Claims accessTokenClaims = jwtService.parseToken(accessToken);
-            if (accessTokenClaims != null && jwtService.isTokenValid(accessTokenClaims)) {
-                setAuthentication(accessTokenClaims);
+        String accessToken = getAccessTokenFromCookies(request);
+        if (accessToken != null) {
+            try {
+                Claims accessTokenClaims = jwtService.parseToken(accessToken);
+                if (jwtService.isTokenValid(accessTokenClaims)) {
+                    setAuthentication(accessTokenClaims);
+                }
+            } catch (Exception e) {
+                log.warn("Received invalid auth token from IP {} on {}",
+                        request.getRemoteAddr(),
+                        request.getRequestURI());
             }
-        } catch (Exception e) {
-            log.warn("Received invalid auth token from IP {} on {}",
-                    request.getRemoteAddr(),
-                    request.getRequestURI());
         }
 
         filterChain.doFilter(request, response);
