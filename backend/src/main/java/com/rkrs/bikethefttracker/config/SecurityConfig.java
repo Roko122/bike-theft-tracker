@@ -1,6 +1,8 @@
 package com.rkrs.bikethefttracker.config;
 
+import com.rkrs.bikethefttracker.filter.JwtFilter;
 import com.rkrs.bikethefttracker.properties.CorsProperties;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csfr -> csfr.disable())
@@ -32,8 +35,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((_, res, _)
+                                -> res.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+                        .accessDeniedHandler((_, res, _)
+                                -> res.setStatus(HttpServletResponse.SC_FORBIDDEN))
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
