@@ -1,6 +1,7 @@
 package com.rkrs.bikethefttracker.config;
 
 import com.rkrs.bikethefttracker.filter.JwtFilter;
+import com.rkrs.bikethefttracker.filter.RequestLoggingFilter;
 import com.rkrs.bikethefttracker.properties.CorsProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,7 +28,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, RequestLoggingFilter requestLoggingFilter) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csfr -> csfr.disable())
@@ -42,7 +43,8 @@ public class SecurityConfig {
                         .accessDeniedHandler((_, res, _)
                                 -> res.setStatus(HttpServletResponse.SC_FORBIDDEN))
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
