@@ -83,8 +83,12 @@ public class AuthenticationService {
         refreshTokenService.deleteByJwtId(getJti(jtiString));
     }
 
-    public JwtToken renewAccessToken() {
-        Claims claims = jwtContext.getClaims();
+    public JwtToken renewAccessToken(String refreshTokenCookie) {
+        if (refreshTokenCookie == null) {
+            throw new InvalidRefreshTokenException("Invalid refresh token. Please log in again.");
+        }
+
+        Claims claims = jwtService.parseToken(refreshTokenCookie);
         RefreshToken refreshToken = this.getValidRefreshToken(claims);
 
         User user = refreshToken.getUser();
