@@ -6,6 +6,7 @@ import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.exception.InvalidRefreshTokenException;
 import com.rkrs.bikethefttracker.repository.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,10 +24,12 @@ public class RefreshTokenService {
                 .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token. Please log in again."));
     }
 
+    @Transactional
     public void deleteByJwtId(UUID jwtId) {
         refreshTokenRepository.deleteAllByJwtId(jwtId);
     }
 
+    @Transactional
     public void deleteAllByUser(User user) {
         refreshTokenRepository.deleteAllByUser(user);
     }
