@@ -70,10 +70,14 @@ public class AuthenticationService {
     }
 
     public void logout(String refreshToken) {
+        if (refreshToken == null) {
+            return;
+        }
+
         Claims claims = jwtService.parseToken(refreshToken);
         String jtiString = claims.getId();
         if (jtiString == null) {
-            throw new InvalidRefreshTokenException("Invalid refresh token.");
+            return;
         }
 
         refreshTokenService.deleteByJwtId(getJti(jtiString));
