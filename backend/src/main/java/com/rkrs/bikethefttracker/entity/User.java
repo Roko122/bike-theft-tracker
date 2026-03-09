@@ -37,7 +37,7 @@ public class User {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user")
-    private List<Bike> bikes;
+    private List<Bike> bikes = new ArrayList<>();
 
     @PrePersist
     private void onCreate() {
