@@ -52,12 +52,16 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String refreshToken = this.getRefreshToken(request);
-
         authenticationService.logout(refreshToken);
-        return ResponseEntity.noContent().build();
+
+        ResponseCookie removeAccessTokenCookie = cookiesUtil.removeHttpOnlyCookie(jwtProperties.accessTokenCookieName());
+        ResponseCookie removeRefreshTokenCookie = cookiesUtil.removeHttpOnlyCookie(jwtProperties.refreshTokenCookieName());
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, removeRefreshTokenCookie.toString(), removeAccessTokenCookie.toString())
+                .build();
     }
 
-    @PostMapping()
 
     private ResponseCookie getRefreshTokenCookie(JwtToken refreshToken) {
         return cookiesUtil.createHttpOnlyCookie(
