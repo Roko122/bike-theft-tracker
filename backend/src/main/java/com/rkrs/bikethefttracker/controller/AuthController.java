@@ -4,7 +4,6 @@ import com.rkrs.bikethefttracker.dto.*;
 import com.rkrs.bikethefttracker.properties.JwtProperties;
 import com.rkrs.bikethefttracker.security.AuthenticationService;
 import com.rkrs.bikethefttracker.util.CookiesUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,22 +34,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
-                                               HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResult loginResult = authenticationService.login(loginRequest);
 
-        ResponseCookie refreshTokenCookie = cookiesUtil.createHttpOnlyCookie(
-                loginResult.refreshToken(),
-                jwtProperties.refreshTokenCookieName(),
-                jwtProperties.refreshTokenExpirationTime());
-        ResponseCookie accessTokenCookie = cookiesUtil.createHttpOnlyCookie(
-                loginResult.accessToken(),
-                jwtProperties.accessTokenCookieName(),
-                jwtProperties.accessTokenExpirationTime()
-        );
+        ResponseCookie refreshTokenCookie = this.getRefreshTokenCookie(loginResult.refreshToken());
+        ResponseCookie accessTokenCookie = this.getAccessTokenCookie(loginResult.accessToken());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), accessTokenCookie.toString())
                 .body(loginResult.loginResponse());
+    }
+
+    private ResponseCookie getRefreshTokenCookie(JwtToken refreshToken) {
+        return cookiesUtil.createHttpOnlyCookie(
+                refreshToken,
+                jwtProperties.refreshTokenCookieName(),
+                jwtProperties.refreshTokenExpirationTime());
+    }
+
+    private ResponseCookie getAccessTokenCookie(JwtToken accessToken) {
+        return cookiesUtil.createHttpOnlyCookie(
+                accessToken,
+                jwtProperties.accessTokenCookieName(),
+                jwtProperties.accessTokenExpirationTime()
+        );
     }
 }
