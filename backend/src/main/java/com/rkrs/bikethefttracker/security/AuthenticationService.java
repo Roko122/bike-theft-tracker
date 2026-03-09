@@ -69,8 +69,9 @@ public class AuthenticationService {
         return new LoginResult(loginResponse, accessToken, refreshToken);
     }
 
-    public void logout() {
-        String jtiString = jwtContext.getClaims().getId();
+    public void logout(String refreshToken) {
+        Claims claims = jwtService.parseToken(refreshToken);
+        String jtiString = claims.getId();
         if (jtiString == null) {
             throw new InvalidRefreshTokenException("Invalid refresh token.");
         }
