@@ -82,4 +82,30 @@ public class ExceptionController {
                 )
         );
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse invalidRefreshTokenException(InvalidRefreshTokenException ex) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
 }
