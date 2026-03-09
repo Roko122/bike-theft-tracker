@@ -4,12 +4,19 @@ import com.rkrs.bikethefttracker.dto.*;
 import com.rkrs.bikethefttracker.properties.JwtProperties;
 import com.rkrs.bikethefttracker.security.AuthenticationService;
 import com.rkrs.bikethefttracker.util.CookiesUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -43,8 +50,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @CookieValue(name = "#{jwtProperties.refreshTokenCookieName()}", required = false) String refreshToken) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String refreshToken = this.getRefreshToken(request);
+
         authenticationService.logout(refreshToken);
         return ResponseEntity.noContent().build();
     }
@@ -62,5 +70,14 @@ public class AuthController {
                 jwtProperties.accessTokenCookieName(),
                 jwtProperties.accessTokenExpirationTime()
         );
+    }
+
+    private String getRefreshToken(HttpServletRequest request) {
+        String refreshTokenCookieName = jwtProperties.refreshTokenCookieName();
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(refreshTokenCookieName))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
     }
 }
