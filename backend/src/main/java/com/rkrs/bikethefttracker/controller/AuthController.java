@@ -57,6 +57,8 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping()
+
     private ResponseCookie getRefreshTokenCookie(JwtToken refreshToken) {
         return cookiesUtil.createHttpOnlyCookie(
                 refreshToken,
@@ -74,7 +76,13 @@ public class AuthController {
 
     private String getRefreshToken(HttpServletRequest request) {
         String refreshTokenCookieName = jwtProperties.refreshTokenCookieName();
-        return Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return null;
+        }
+
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(refreshTokenCookieName))
                 .findFirst()
                 .map(Cookie::getValue)
