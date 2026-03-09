@@ -1,5 +1,6 @@
 package com.rkrs.bikethefttracker.config;
 
+import com.rkrs.bikethefttracker.entity.RoleType;
 import com.rkrs.bikethefttracker.filter.JwtFilter;
 import com.rkrs.bikethefttracker.filter.RequestLoggingFilter;
 import com.rkrs.bikethefttracker.properties.CorsProperties;
@@ -33,8 +34,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csfr -> csfr.disable())
                 .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports").permitAll()
+                        .anyRequest().hasAuthority(RoleType.ROLE_ADMIN.name()))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception
