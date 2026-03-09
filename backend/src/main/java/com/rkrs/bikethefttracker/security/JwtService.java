@@ -55,7 +55,7 @@ public class JwtService {
 
         String token = buildToken(user, now, expiryTime, jwtId);
 
-        return new JwtToken(token, expiryTime, jwtId);
+        return new JwtToken(token, jwtId);
     }
 
     private String buildToken(User user, Date now, Date expiryTime, UUID jwtId) {
