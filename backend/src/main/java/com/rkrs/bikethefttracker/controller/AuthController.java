@@ -62,6 +62,16 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request) {
+        String refreshToken = this.getRefreshToken(request);
+        JwtToken newAccessToken = authenticationService.renewAccessToken(refreshToken);
+        ResponseCookie accessTokenCookie = getAccessTokenCookie(newAccessToken);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .build();
+    }
 
     private ResponseCookie getRefreshTokenCookie(JwtToken refreshToken) {
         return cookiesUtil.createHttpOnlyCookie(
