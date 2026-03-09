@@ -1,0 +1,56 @@
+package com.rkrs.bikethefttracker.controller;
+
+import com.rkrs.bikethefttracker.dto.*;
+import com.rkrs.bikethefttracker.properties.JwtProperties;
+import com.rkrs.bikethefttracker.security.AuthenticationService;
+import com.rkrs.bikethefttracker.util.CookiesUtil;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+public class AuthController {
+
+    private final AuthenticationService authenticationService;
+    private final CookiesUtil cookiesUtil;
+    private final JwtProperties jwtProperties;
+
+    public AuthController(AuthenticationService authenticationService, CookiesUtil cookiesUtil, JwtProperties jwtProperties) {
+        this.authenticationService = authenticationService;
+        this.cookiesUtil = cookiesUtil;
+        this.jwtProperties = jwtProperties;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterUserResponse> registerUser(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
+        return new ResponseEntity<>(authenticationService.register(registerUserRequest), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest,
+                                               HttpServletResponse response) {
+        LoginResult loginResult = authenticationService.login(loginRequest);
+
+        ResponseCookie refreshTokenCookie = cookiesUtil.createHttpOnlyCookie(
+                loginResult.refreshToken(),
+                jwtProperties.refreshTokenCookieName(),
+                jwtProperties.refreshTokenExpirationTime());
+        ResponseCookie accessTokenCookie = cookiesUtil.createHttpOnlyCookie(
+                loginResult.accessToken(),
+                jwtProperties.accessTokenCookieName(),
+                jwtProperties.accessTokenExpirationTime()
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), accessTokenCookie.toString())
+                .body(loginResult.loginResponse());
+    }
+}
