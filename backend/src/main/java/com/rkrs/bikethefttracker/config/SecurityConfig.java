@@ -34,7 +34,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csfr -> csfr.disable())
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports").authenticated()
                         .requestMatchers(HttpMethod.GET,"/swagger-ui.html").permitAll()
