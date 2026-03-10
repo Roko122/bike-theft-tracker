@@ -1,8 +1,10 @@
 package com.rkrs.bikethefttracker.controller;
 
 import com.rkrs.bikethefttracker.dto.*;
+import com.rkrs.bikethefttracker.mapper.UserMapper;
 import com.rkrs.bikethefttracker.properties.JwtProperties;
 import com.rkrs.bikethefttracker.security.AuthenticationService;
+import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import com.rkrs.bikethefttracker.util.CookiesUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -25,11 +25,13 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final CookiesUtil cookiesUtil;
     private final JwtProperties jwtProperties;
+    private final UserMapper userMapper;
 
-    public AuthController(AuthenticationService authenticationService, CookiesUtil cookiesUtil, JwtProperties jwtProperties) {
+    public AuthController(AuthenticationService authenticationService, CookiesUtil cookiesUtil, JwtProperties jwtProperties, UserMapper userMapper) {
         this.authenticationService = authenticationService;
         this.cookiesUtil = cookiesUtil;
         this.jwtProperties = jwtProperties;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
@@ -71,6 +73,12 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDetailsResponse> getCurrentUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserDetailsResponse userDetailsResponse = userMapper.toUserDetailsResponse(customUserDetails);
+        return new ResponseEntity<>(userDetailsResponse, HttpStatus.OK);
     }
 
     private ResponseCookie getRefreshTokenCookie(JwtToken refreshToken) {
