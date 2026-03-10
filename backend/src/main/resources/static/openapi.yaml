@@ -45,6 +45,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
+  /api/v1/auth/me:
+    get:
+      security:
+        - access-token: [ ]
+      tags:
+        - Auth
+      summary: "Get logged-in user's id, username, and roles."
+      operationId: "getCurrentUser"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailsResponse"
   /auth/logout:
     post:
       security:
@@ -423,3 +438,17 @@ components:
         username:
           type: "string"
           example: "test_user"
+    UserDetailsResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        username:
+          type: "string"
+          example: "test_user"
+        roles:
+          type: "array"
+          items:
+            type: "string"
+          example: ["ROLE_USER"]
