@@ -49,9 +49,8 @@ public class TheftReportService {
     }
 
     @Transactional
-    public TheftReportResponse createTheftReport(CreateTheftReportRequest createTheftReportRequest) {
-        User createdUser = userService.createUser(createTheftReportRequest.bike().user());
-        Bike createdBike = bikeService.createBike(createTheftReportRequest.bike(), createdUser);
+    public TheftReportResponse createTheftReport(CreateTheftReportRequest createTheftReportRequest, User user) {
+        Bike createdBike = bikeService.createBike(createTheftReportRequest.bike(), user);
 
         //Create TheftReport
         TheftReport theftReportToSave = theftReportMapper.toTheftReport(createTheftReportRequest);
