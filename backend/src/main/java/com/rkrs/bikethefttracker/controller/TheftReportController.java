@@ -3,10 +3,13 @@ package com.rkrs.bikethefttracker.controller;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
+import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import com.rkrs.bikethefttracker.service.TheftReportService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,9 +54,11 @@ public class TheftReportController {
 
     @PostMapping
     public ResponseEntity<TheftReportResponse> createTheftReport(
-            @Valid @RequestBody CreateTheftReportRequest createTheftReportRequest) {
+            @Valid @RequestBody CreateTheftReportRequest createTheftReportRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        TheftReportResponse createdTheftReport = theftReportService.createTheftReport(createTheftReportRequest);
+        User user = customUserDetails.getUserEntity();
+        TheftReportResponse createdTheftReport = theftReportService.createTheftReport(createTheftReportRequest, user);
 
         return new ResponseEntity<>(createdTheftReport, HttpStatus.CREATED);
     }
