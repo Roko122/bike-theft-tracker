@@ -3,6 +3,7 @@ import { useState } from 'react';
 import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
+import RegisterPage from './features/map/ui/RegisterPage.jsx';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -14,6 +15,7 @@ export default function App() {
   const [selectedReportId, setSelectedReportId] = useState(null);
 
   const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   return (
     <div className="app-shell">
       <header className="header">
@@ -34,6 +36,7 @@ export default function App() {
               setShowForm(false);
               //log in
               setShowLogin(false);
+              setShowRegister(false);
               // BTT26
               setIsPickingLocation(false);
               setSelectedReportId(null); // ✅ BTT-26: poistetaan detail-valinta
@@ -41,7 +44,7 @@ export default function App() {
           >
             <div onClick={(e) => e.stopPropagation()} className="d-grid gap-2">
               {/* ✅ 1) BTT-26: Detail-näkymä */}
-              {selectedReportId && !showForm && !showLogin && (
+              {selectedReportId && !showForm && !showLogin && !showRegister && (
                 <>
                   <button
                     onClick={() => {
@@ -62,7 +65,7 @@ export default function App() {
               )}
 
               {/* 2) BTT-28: Lomake */}
-              {showForm && !selectedReportId && !showLogin && (
+              {showForm && !selectedReportId && !showLogin && !showRegister && (
                 <>
                   <button
                     onClick={() => {
@@ -87,21 +90,43 @@ export default function App() {
                 </>
               )}
 
-              {showLogin && !showForm && !selectedReportId && (
+              {showLogin && !showForm && !selectedReportId && !showRegister && (
                   <>
                     <button onClick={() => setShowLogin(false)}>← takaisin</button>
-                    <LoginPage onLoginSuccess={() => setShowLogin(false)} />
+                    <LoginPage
+                      onLoginSuccess={() => setShowLogin(false)}
+                      onFirstTime={() => {
+                        setShowLogin(false);
+                        setShowRegister(true);
+                      }}
+                    />
+                  </>
+              )}
+
+              {showRegister && !showForm && !selectedReportId && !showLogin && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowRegister(false);
+                        setShowLogin(true);
+                      }}
+                    >
+                      ← takaisin
+                    </button>
+                    <RegisterPage onRegistered={() => setShowRegister(false)} />
                   </>
               )}
 
               {/* 3) Perusvalikko */}
-              {!showForm && !selectedReportId && !showLogin && (
+              {!showForm && !selectedReportId && !showLogin && !showRegister && (
                 <>
                   <button>heloo world</button>
 
                   <button
                     onClick={() => {
                       setShowForm(true);
+                      setShowLogin(false);
+                      setShowRegister(false);
                       setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
                     }}
                   >
@@ -110,6 +135,7 @@ export default function App() {
                   <button
                       onClick={() => {
                         setShowLogin(true);
+                        setShowRegister(false);
                         setShowForm(false);
                         setSelectedReportId(null);
                       }}
@@ -142,6 +168,8 @@ export default function App() {
             setSelectedReportId(reportId);
             setOpen(true); // avaa sivupalkki automaattisesti
             setShowForm(false);
+            setShowLogin(false);
+            setShowRegister(false);
             setIsPickingLocation(false);
           }}
         />
