@@ -4,6 +4,7 @@ import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
+
 export default function App() {
   const [open, setOpen] = useState(false);
   // tämä lisätty Btt-28
@@ -14,7 +15,7 @@ export default function App() {
   const [selectedReportId, setSelectedReportId] = useState(null);
 
   const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false); // login page
+  const [showRegister, setShowRegister] = useState(false);
   return (
     <div className="app-shell">
       <header className="header">
@@ -34,8 +35,8 @@ export default function App() {
               setOpen(false);
               setShowForm(false);
               //log in
-              setShowRegister(false);
               setShowLogin(false);
+              setShowRegister(false);
               // BTT26
               setIsPickingLocation(false);
               setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
@@ -91,7 +92,6 @@ export default function App() {
                 </>
               )}
 
-
               {showLogin && !showForm && !selectedReportId && !showRegister && (
                   <>
                     <button onClick={() => setShowLogin(false)}>← takaisin</button>
@@ -102,6 +102,20 @@ export default function App() {
                         setShowRegister(true);
                       }}
                     />
+                  </>
+              )}
+
+              {showRegister && !showForm && !selectedReportId && !showLogin && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowRegister(false);
+                        setShowLogin(true);
+                      }}
+                    >
+                      ← takaisin
+                    </button>
+                    <RegisterPage onRegistered={() => setShowRegister(false)} />
                   </>
               )}
 
