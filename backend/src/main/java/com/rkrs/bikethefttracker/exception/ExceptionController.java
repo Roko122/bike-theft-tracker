@@ -98,8 +98,21 @@ public class ExceptionController {
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse invalidRefreshTokenException(InvalidRefreshTokenException ex) {
+    public ErrorResponse handleInvalidRefreshTokenException(InvalidRefreshTokenException ex) {
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         log.warn(ex.getMessage());
 
         return new ErrorResponse(
