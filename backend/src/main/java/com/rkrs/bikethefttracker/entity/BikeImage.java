@@ -13,7 +13,7 @@ public class BikeImage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "bike_id")
+    @JoinColumn(name = "bike_id")
     private Bike bike;
 
     @Column
