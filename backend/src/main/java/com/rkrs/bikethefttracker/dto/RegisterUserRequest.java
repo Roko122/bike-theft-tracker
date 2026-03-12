@@ -9,6 +9,8 @@ public record RegisterUserRequest(
 
         @NotBlank(message = "Username must not be empty.")
         @Size(min = 3, max = 20, message = "Username must be between {min}-{max} characters.")
+        @Pattern(regexp = "^[a-zA-Z0-9äöåÄÖÅ](?:[a-zA-Z0-9._\\-äöåÄÖÅ]*[a-zA-Z0-9äöåÄÖÅ])?$",
+                message = "Username must start and end with a letter or number and may contain letters, numbers, ., _, or -.")
         String username,
 
         @NotBlank(message = "Password must not be empty.")
