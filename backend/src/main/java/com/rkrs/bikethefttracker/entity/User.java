@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +19,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String password;
 
     @Column(unique = true, nullable = false)
@@ -34,13 +31,13 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user")
-    private List<Bike> bikes;
+    private List<Bike> bikes = new ArrayList<>();
 
     @PrePersist
     private void onCreate() {

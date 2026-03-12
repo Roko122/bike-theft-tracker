@@ -5,7 +5,85 @@ info:
   version: "1.0.0"
 servers:
   - url: "http://localhost:8080/api/v1"
+
 paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: "Register a new user"
+      operationId: "registerUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterUserResponse"
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: "Login with an existing user"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+  /api/v1/auth/me:
+    get:
+      security:
+        - access-token: [ ]
+      tags:
+        - Auth
+      summary: "Get logged-in user's id, username, and roles."
+      operationId: "getCurrentUser"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailsResponse"
+  /auth/logout:
+    post:
+      security:
+        - access-token: [ ]
+      tags:
+        - Auth
+      summary: "Log out user"
+      operationId: "logout"
+      responses:
+        "200":
+          description: "OK"
+          content: {}
+  /auth/refresh:
+    post:
+      security:
+        - access-token: [ ]
+      tags:
+        - Auth
+      summary: "Get a new access token if refresh token is still valid"
+      operationId: "refreshAccessToken"
+      responses:
+        "200":
+          description: "OK"
+          content: {}
   /theft-reports:
     get:
       tags:
@@ -51,6 +129,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/TheftReportMapItemResponse"
     post:
+      security:
+        - access-token: []
       tags:
         - TheftReports
       summary: "Add a new TheftReport"
@@ -97,6 +177,16 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
 components:
+  securitySchemes:
+    accessToken:
+      type: apiKey
+      in: cookie
+      name: access-token
+    refreshToken:
+      type: apiKey
+      in: cookie
+      name: refresh-token
+
   schemas:
     GeoPoint:
       type: "object"
@@ -143,7 +233,6 @@ components:
         theftTime:
           type: "string"
           format: "date-time"
-          
     UserResponse:
       type: "object"
       properties:
@@ -211,23 +300,6 @@ components:
           format: "date-time"
         bike:
           $ref: "#/components/schemas/BikeResponse"
-    CreateUserRequest:
-      type: "object"
-      required:
-        - username
-        - email
-      properties:
-        username:
-          type: "string"
-          example: "test_user"
-          minLength: 3
-          maxLength: 20
-        email:
-          type: "string"
-          example: "test@email.com"
-          format: "email"
-          minLength: 6
-          maxLength: 254
     CreateBikeRequest:
       type: "object"
       required:
@@ -236,7 +308,6 @@ components:
         - type
         - color
         - description
-        - user
       properties:
         brand:
           type: "string"
@@ -269,8 +340,6 @@ components:
           example: "Punaiset vanteet, jalka rikki"
           minLength: 1
           maxLength: 300
-        user:
-          $ref: "#/components/schemas/CreateUserRequest"
     CreateTheftReportRequest:
       type: "object"
       required:
@@ -308,3 +377,78 @@ components:
         message:
           type: "string"
           example: "TheftReport was not found with given id"
+    RegisterUserRequest:
+      type: "object"
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: "string"
+          example: "test_user"
+          minLength: 3
+          maxLength: 20
+          pattern: "^[a-zA-Z0-9äöåÄÖÅ](?:[a-zA-Z0-9._-äöåÄÖÅ]*[a-zA-Z0-9äöåÄÖÅ])?$"
+          description: "Username must start and end with a letter or number and may contain letters, numbers, ., _, or -."
+        password:
+          type: "string"
+          example: "VerySecurePassword123!"
+          minLength: 8
+          maxLength: 64
+          pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&^#()-_+=[]{}|:;,.<>]).*$"
+          description: "Password must contain uppercase, lowercase, number and special character."
+        email:
+          type: "string"
+          example: "test@email.com"
+          minLength: 6
+          maxLength: 254
+          description: "Email must be valid."
+    RegisterUserResponse:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "test_user"
+        message:
+          type: "string"
+          example: "User created successfully. Please log in."
+    LoginRequest:
+      type: "object"
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: "string"
+          example: "test_user"
+          minLength: 3
+          maxLength: 20
+        password:
+          type: "string"
+          example: "VerySecurePassword123!"
+          minLength: 8
+          maxLength: 64
+    LoginResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        username:
+          type: "string"
+          example: "test_user"
+    UserDetailsResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        username:
+          type: "string"
+          example: "test_user"
+        roles:
+          type: "array"
+          items:
+            type: "string"
+          example: ["ROLE_USER"]

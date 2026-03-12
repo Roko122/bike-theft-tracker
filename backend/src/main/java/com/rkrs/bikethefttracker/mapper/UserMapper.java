@@ -1,8 +1,10 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.entity.User;
-import com.rkrs.bikethefttracker.dto.CreateUserRequest;
+import com.rkrs.bikethefttracker.dto.UserDetailsResponse;
 import com.rkrs.bikethefttracker.dto.UserResponse;
+import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.security.CustomUserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,10 +17,11 @@ public class UserMapper {
         );
     }
 
-    public User toUser(CreateUserRequest createUserRequest) {
-        return User.builder()
-                .email(createUserRequest.email())
-                .username(createUserRequest.username())
-                .build();
+    public UserDetailsResponse toUserDetailsResponse(CustomUserDetails user) {
+        return new UserDetailsResponse(
+                user.getUserEntity().getId(),
+                user.getUsername(),
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+        );
     }
 }
