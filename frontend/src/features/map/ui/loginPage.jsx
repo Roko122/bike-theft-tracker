@@ -17,7 +17,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Sähköposti</Form.Label>
+            <Form.Label>Käyttäjänimi</Form.Label>
             <Form.Control
               type="email"
               value={email}
@@ -46,7 +46,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
             className="w-100 mt-2"
             onClick={() => onFirstTime?.()}
           >
-            Luo käyttäjä ensimmäistä kertaa
+            Luo tunnus
           </Button>
         </Form>
       </Card.Body>
