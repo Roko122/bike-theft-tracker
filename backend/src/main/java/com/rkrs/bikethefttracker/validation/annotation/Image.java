@@ -20,9 +20,7 @@ public @interface Image {
 
     String[] allowedTypes() default {
         "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/heic"
+        "image/png"
     };
 
     long maxSize() default 5 * 1024 * 1024; // 5MB
