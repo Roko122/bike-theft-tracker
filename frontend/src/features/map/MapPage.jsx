@@ -134,6 +134,30 @@ export default function MapPage({
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
+  //BTT 95
+  const loadVisibleThefts = useCallback(async (map) => {
+    if (!map) return;
+
+    try {
+      setLoadingThefts(true);
+      setTheftsError(null);
+
+      const boundsParams = getBoundsParams(map);
+      const data = await fetchTheftReportMapItemsByBounds(boundsParams);
+
+      const valid = (data ?? []).filter(
+        (r) => r?.location?.latitude != null && r?.location?.longitude != null
+      );
+
+      setThefts(valid);
+
+      console.log('BTT-95 näkyvän alueen ilmoitukset:', valid);
+    } catch (e) {
+      setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
+    } finally {
+      setLoadingThefts(false);
+    }
+  }, []);
 
   // BTT-77: keskitä käyttäjän sijaintiin
   const onCenterToUser = useCallback(() => {
@@ -170,6 +194,7 @@ export default function MapPage({
     <div className="map-wrap">
       <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
         <MapRefBinder mapRef={mapRef} />
+        <VisibleTheftsLoader onLoad={loadVisibleThefts} />
 
         {/* UUSI: karttaklikki -> onLocationSelected */}
         <MapClickPicker

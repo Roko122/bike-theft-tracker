@@ -1,7 +1,7 @@
 // frontend/src/features/theftReports/api.js
 
-const DEFAULT_BASE_URL = "http://localhost:8080";
-const DEFAULT_API_PREFIX = "/api/v1/theft-reports";
+const DEFAULT_BASE_URL = 'http://localhost:8080';
+const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
 
 /**
  * Rakentaa backendin base URLin.
@@ -12,7 +12,7 @@ function getBaseUrl() {
   return import.meta?.env?.VITE_API_BASE_URL || DEFAULT_BASE_URL;
 }
 
-function buildUrl(path = "") {
+function buildUrl(path = '') {
   return `${getBaseUrl()}${DEFAULT_API_PREFIX}${path}`;
 }
 
@@ -45,10 +45,10 @@ async function parseJsonOrThrow(res) {
  * GET http://localhost:8080/api/v1/theft-reports
  */
 export async function getTheftReports({ signal } = {}) {
-  const res = await fetch(buildUrl(""), {
-    method: "GET",
-    headers: { Accept: "application/json" },
-    signal,
+  const res = await fetch(buildUrl(''), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    signal
   });
   return parseJsonOrThrow(res);
 }
@@ -58,11 +58,11 @@ export async function getTheftReports({ signal } = {}) {
  * GET http://localhost:8080/api/v1/theft-reports/{id}
  */
 export async function getTheftReportById(id, { signal } = {}) {
-  if (!id) throw new Error("id is required");
+  if (!id) throw new Error('id is required');
   const res = await fetch(buildUrl(`/${encodeURIComponent(id)}`), {
-    method: "GET",
-    headers: { Accept: "application/json" },
-    signal,
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    signal
   });
   return parseJsonOrThrow(res);
 }
@@ -79,16 +79,51 @@ export async function getTheftReportById(id, { signal } = {}) {
  * }
  */
 export async function createTheftReport(payload, { signal } = {}) {
-  if (!payload) throw new Error("payload is required");
+  if (!payload) throw new Error('payload is required');
 
-  const res = await fetch(buildUrl(""), {
-    method: "POST",
+  const res = await fetch(buildUrl(''), {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
     },
     body: JSON.stringify(payload),
-    signal,
+    signal
+  });
+
+  return parseJsonOrThrow(res);
+}
+
+//BTT 95 uusi funktio
+/**
+ * Hakee kartalla näkyvän alueen varkausilmoitukset bounding boxin perusteella.
+ *
+ * GET /api/v1/theft-reports?minLon=&minLat=&maxLon=&maxLat=
+ *
+ * @param {object} bounds
+ * @param {number} bounds.minLon
+ * @param {number} bounds.minLat
+ * @param {number} bounds.maxLon
+ * @param {number} bounds.maxLat
+ * @param {object} options
+ * @param {AbortSignal} options.signal
+ * @returns {Promise<any>}
+ */
+export async function fetchTheftReportMapItemsByBounds(
+  { minLon, minLat, maxLon, maxLat },
+  { signal } = {}
+) {
+  const params = new URLSearchParams({
+    minLon: String(minLon),
+    minLat: String(minLat),
+    maxLon: String(maxLon),
+    maxLat: String(maxLat)
+  });
+
+  const res = await fetch(buildUrl(`?${params.toString()}`), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    signal
   });
 
   return parseJsonOrThrow(res);
