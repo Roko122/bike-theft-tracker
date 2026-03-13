@@ -284,7 +284,7 @@ export default function TheftReportForm({
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.05"
+              placeholder="Simon pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.30"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -490,7 +490,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Väri</Form.Label>
             <Form.Control
-              placeholder="sininen"
+              placeholder="Sininen"
               value={color}
               onChange={(e) => setColor(e.target.value)}
             />
@@ -530,7 +530,7 @@ export default function TheftReportForm({
               </OverlayTrigger>
             </Form.Label>
             <Form.Control
-              placeholder="Ruosteinen mutta hyvä, etukori ja tarakka."
+              placeholder="Ruosteinen mutta hyvässä kunnossa. Etukori,tarakka ja harmaat renkaat."
               as="textarea"
               rows={2}
               value={bikeDescription}
@@ -546,6 +546,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Käyttäjänimi</Form.Label>
             <Form.Control
+              placeholder="tämä kenttä tullaan poistamaan kirjautumisen myötä"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -554,6 +555,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Sähköposti</Form.Label>
             <Form.Control
+              placeholder="tämä kenttä tullaan poistamaan kirjautumisen myötä"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
