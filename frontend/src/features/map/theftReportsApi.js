@@ -1,5 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
-const API_PREFIX = "/api/v1";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
+const API_PREFIX = '/api/v1';
 
 function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
@@ -9,14 +9,14 @@ async function request(method, path, body) {
   const res = await fetch(url(path), {
     method,
     headers: {
-      Accept: "application/json",
-      ...(body ? { "Content-Type": "application/json" } : {}),
+      Accept: 'application/json',
+      ...(body ? { 'Content-Type': 'application/json' } : {})
     },
-    ...(body ? { body: JSON.stringify(body) } : {}),
+    ...(body ? { body: JSON.stringify(body) } : {})
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
+    const text = await res.text().catch(() => '');
     throw new Error(`${method} ${path} failed: ${res.status} ${text}`);
   }
 
@@ -25,15 +25,32 @@ async function request(method, path, body) {
 
 // Hae kaikki ilmoitukset
 export function fetchTheftReports() {
-  return request("GET", "/theft-reports");
+  return request('GET', '/theft-reports');
 }
 
 // Karttaa varten (sama endpoint nyt)
 export function fetchTheftReportMapItems() {
-  return request("GET", "/theft-reports");
+  return request('GET', '/theft-reports');
 }
 
 // Luo uusi ilmoitus
 export function createTheftReport(payload) {
-  return request("POST", "/theft-reports", payload);
+  return request('POST', '/theft-reports', payload);
+}
+
+// BTT95 uusi funktio
+export function fetchTheftReportMapItemsByBounds({
+  minLon,
+  minLat,
+  maxLon,
+  maxLat
+}) {
+  const params = new URLSearchParams({
+    minLon: String(minLon),
+    minLat: String(minLat),
+    maxLon: String(maxLon),
+    maxLat: String(maxLat)
+  });
+
+  return request('GET', `/theft-reports?${params.toString()}`);
 }
