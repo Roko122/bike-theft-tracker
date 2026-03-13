@@ -104,6 +104,26 @@ function MapRefBinder({ mapRef }) {
   return null;
 }
 
+//BTT96 Uusi funktio
+function BlinkingDotStyle() {
+  useEffect(() => {
+    const styleId = 'blinking-location-dot-style';
+
+    if (document.getElementById(styleId)) return;
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = blinkingDotStyle;
+    document.head.appendChild(style);
+
+    return () => {
+      style.remove();
+    };
+  }, []);
+
+  return null;
+}
+
 // tähän koodia BTT28(ehkä jo vähän btt 79)
 /**
  * Kuuntelee kartan klikkauksia ja ilmoittaa parentille valitun sijainnin.
