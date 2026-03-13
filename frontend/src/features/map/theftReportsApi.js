@@ -37,20 +37,3 @@ export function fetchTheftReportMapItems() {
 export function createTheftReport(payload) {
   return request('POST', '/theft-reports', payload);
 }
-
-// BTT95 uusi funktio
-export function fetchTheftReportMapItemsByBounds({
-  minLon,
-  minLat,
-  maxLon,
-  maxLat
-}) {
-  const params = new URLSearchParams({
-    minLon: String(minLon),
-    minLat: String(minLat),
-    maxLon: String(maxLon),
-    maxLat: String(maxLat)
-  });
-
-  return request('GET', `/theft-reports?${params.toString()}`);
-}
