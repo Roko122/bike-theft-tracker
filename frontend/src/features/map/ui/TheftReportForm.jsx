@@ -256,7 +256,7 @@ export default function TheftReportForm({
         {successMsg && <Alert variant="success">{successMsg}</Alert>}
 
         <Form onSubmit={handleSubmit}>
-          {/* Varkaus */}
+          {/* Kuvaus */}
           <Form.Group className="mb-3">
             <Form.Label className="d-flex align-items-center gap-1">
               Kuvaus
@@ -284,7 +284,7 @@ export default function TheftReportForm({
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Esimerkiksi: Pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.05"
+              placeholder="Pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.05"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -346,6 +346,7 @@ export default function TheftReportForm({
               </OverlayTrigger>
             </Form.Label>
             <Form.Control
+              placeholder="Kauppakatu 29"
               value={theftAddress}
               onChange={(e) => setTheftAddress(e.target.value)}
             />
@@ -462,6 +463,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Merkki</Form.Label>
             <Form.Control
+              placeholder="Helkama"
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
             />
@@ -470,6 +472,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Malli</Form.Label>
             <Form.Control
+              placeholder="Trail 7"
               value={model}
               onChange={(e) => setModel(e.target.value)}
             />
@@ -478,6 +481,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Tyyppi</Form.Label>
             <Form.Control
+              placeholder="Maastopyörä"
               value={type}
               onChange={(e) => setType(e.target.value)}
             />
@@ -486,6 +490,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Väri</Form.Label>
             <Form.Control
+              placeholder="sininen"
               value={color}
               onChange={(e) => setColor(e.target.value)}
             />
@@ -494,6 +499,7 @@ export default function TheftReportForm({
           <Form.Group className="mb-3">
             <Form.Label>Sarjanumero</Form.Label>
             <Form.Control
+              placeholder="123456789"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
             />
@@ -524,6 +530,7 @@ export default function TheftReportForm({
               </OverlayTrigger>
             </Form.Label>
             <Form.Control
+              placeholder="Ruosteinen mutta hyvä, etukori ja tarakka."
               as="textarea"
               rows={2}
               value={bikeDescription}
