@@ -260,6 +260,7 @@ export default function MapPage({
         )}
 
         {showThefts &&
+          !isPickingLocation &&
           thefts.map((t) => (
             <Marker
               key={t.id}
