@@ -129,13 +129,15 @@ function BlinkingDotStyle() {
  * Kuuntelee kartan klikkauksia ja ilmoittaa parentille valitun sijainnin.
  * Tämä ei renderöi mitään (return null).
  */
-function MapClickPicker({ enabled, onPick }) {
+function MapClickPicker({ enabled, onPick, onLocalPick }) {
   useMapEvents({
     click(e) {
       if (!enabled) return;
 
       const loc = { latitude: e.latlng.lat, longitude: e.latlng.lng };
       console.log('Kartalta valittu sijainti:', loc);
+
+      onLocalPick?.(loc);
       onPick?.(loc);
     }
   });
