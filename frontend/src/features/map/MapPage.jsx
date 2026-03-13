@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
-import { getTheftReports } from '../theftReports/api';
+import { fetchTheftReportMapItemsByBounds } from '../theftReports/api';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -34,6 +34,18 @@ function formatDate(iso) {
   const adjusted = new Date(d.getTime() + 2 * 60 * 60 * 1000);
 
   return adjusted.toLocaleString();
+}
+
+//BTT 95 uusi funktio
+function getBoundsParams(map) {
+  const bounds = map.getBounds();
+
+  return {
+    minLon: bounds.getWest(),
+    minLat: bounds.getSouth(),
+    maxLon: bounds.getEast(),
+    maxLat: bounds.getNorth()
+  };
 }
 
 const FIELD_LABELS_FI = {
@@ -88,6 +100,21 @@ function MapClickPicker({ enabled, onPick }) {
   return null;
 }
 // BTT 28/79 koodi päättyy tähän
+
+//BTT 95 funktio
+function VisibleTheftsLoader({ onLoad }) {
+  const map = useMapEvents({
+    moveend() {
+      onLoad?.(map);
+    }
+  });
+
+  useEffect(() => {
+    onLoad?.(map);
+  }, [map, onLoad]);
+
+  return null;
+}
 
 export default function MapPage({
   isMenuOpen,
@@ -239,7 +266,7 @@ export default function MapPage({
                         width: '100%',
                         padding: '6px 8px',
                         fontWeight: 600,
-                        cursor: 'default',
+                        cursor: 'default'
                       }}
                     >
                       Näytä tiedot
