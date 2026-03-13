@@ -1,8 +1,8 @@
 // TheftReportForm.jsx
-import { useEffect, useState } from "react";
-import { Alert, Button, Card, Form, Spinner } from "react-bootstrap";
-import { Send } from "lucide-react";
-import { createTheftReport } from "../theftReportsApi";
+import { useEffect, useState } from 'react';
+import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap';
+import { Send } from 'lucide-react';
+import { createTheftReport } from '../theftReportsApi';
 
 /**
  * TheftReportForm
@@ -18,48 +18,66 @@ import { createTheftReport } from "../theftReportsApi";
  * - onCreated?: (createdReport) => void
  *   -> Callback onnistuneen tallennuksen jälkeen.
  */
-export default function TheftReportForm({ defaultLocation, onCreated,  onStartPickFromMap,
-  onStopPickFromMap }) {
+export default function TheftReportForm({
+  defaultLocation,
+  onCreated,
+  onStartPickFromMap,
+  onStopPickFromMap
+}) {
+  // BTT-92 kellonaika valmiiksi
+  function getCurrentDateTimeLocal() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  // BTT-92 päättyy
+
   // -------------------------
   // 1) Lomakkeen kenttien tilat (state)
   // -------------------------
 
   // Varkausilmoituksen perustiedot
-  const [description, setDescription] = useState("");
-  const [theftTime, setTheftTime] = useState("");
-  const [theftAddress, setTheftAddress] = useState("");
+  const [description, setDescription] = useState('');
+  const [theftTime, setTheftTime] = useState(getCurrentDateTimeLocal());
+  const [theftAddress, setTheftAddress] = useState('');
 
   /**
    * Koordinaatit pidetään stringinä, koska ne sidotaan input-tyyppisiin kenttiin/teksteihin.
    * Payloadissa ne muutetaan Numberiksi.
    */
-  const [latitude, setLatitude] = useState(defaultLocation?.latitude ?? "");
-  const [longitude, setLongitude] = useState(defaultLocation?.longitude ?? "");
+  const [latitude, setLatitude] = useState(defaultLocation?.latitude ?? '');
+  const [longitude, setLongitude] = useState(defaultLocation?.longitude ?? '');
 
   // Mistä sijainti on tullut: "gps" | "map" | ""
   const [locationSource, setLocationSource] = useState(
-    defaultLocation ? "map" : ""
+    defaultLocation ? 'map' : ''
   );
 
   // Sijaintiin liittyvät virheet (esim. selain estää geolocationin)
-  const [locationError, setLocationError] = useState("");
+  const [locationError, setLocationError] = useState('');
 
   // Pyörän tiedot
-  const [brand, setBrand] = useState("");
-  const [model, setModel] = useState("");
-  const [type, setType] = useState("");
-  const [color, setColor] = useState("");
-  const [serialNumber, setSerialNumber] = useState("");
-  const [bikeDescription, setBikeDescription] = useState("");
+  const [brand, setBrand] = useState('');
+  const [model, setModel] = useState('');
+  const [type, setType] = useState('');
+  const [color, setColor] = useState('');
+  const [serialNumber, setSerialNumber] = useState('');
+  const [bikeDescription, setBikeDescription] = useState('');
 
   // Ilmoittajan tiedot (bike.user)
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   // UI-tilat
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   // -------------------------
   // 2) Apufunktiot
@@ -86,26 +104,26 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
    * Hae käyttäjän nykyinen sijainti selaimen geolocation API:lla.
    */
   function useMyLocation() {
-    setLocationError("");
+    setLocationError('');
 
     if (!navigator.geolocation) {
-      setLocationError("Selaimesi ei tue sijainnin hakua (geolocation).");
+      setLocationError('Selaimesi ei tue sijainnin hakua (geolocation).');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation(pos.coords.latitude, pos.coords.longitude, "gps");
+        setLocation(pos.coords.latitude, pos.coords.longitude, 'gps');
       },
       (err) => {
         setLocationError(
-          err.message || "Sijainnin haku epäonnistui. Tarkista selaimen luvat."
+          err.message || 'Sijainnin haku epäonnistui. Tarkista selaimen luvat.'
         );
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 30000,
+        maximumAge: 30000
       }
     );
   }
@@ -114,10 +132,10 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
    * Tyhjennä valittu sijainti (esim. jos käyttäjä haluaa valita uuden).
    */
   function clearLocation() {
-    setLatitude("");
-    setLongitude("");
-    setLocationSource("");
-    setLocationError("");
+    setLatitude('');
+    setLongitude('');
+    setLocationSource('');
+    setLocationError('');
   }
 
   // -------------------------
@@ -130,8 +148,8 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
    */
   useEffect(() => {
     if (defaultLocation?.latitude && defaultLocation?.longitude) {
-      setLocation(defaultLocation.latitude, defaultLocation.longitude, "map");
-      setLocationError("");
+      setLocation(defaultLocation.latitude, defaultLocation.longitude, 'map');
+      setLocationError('');
     }
   }, [defaultLocation?.latitude, defaultLocation?.longitude]);
 
@@ -140,16 +158,16 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
   // -------------------------
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-    setSuccessMsg("");
+    setError('');
+    setSuccessMsg('');
 
     // Pakolliset peruskentät
     if (!description.trim()) {
-      setError("Kuvaus on pakollinen.");
+      setError('Kuvaus on pakollinen.');
       return;
     }
     if (!theftTime) {
-      setError("Varkauden aika on pakollinen.");
+      setError('Varkauden aika on pakollinen.');
       return;
     }
 
@@ -157,14 +175,21 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
     const latNum = Number(latitude);
     const lonNum = Number(longitude);
 
-    if (!latitude || !longitude || Number.isNaN(latNum) || Number.isNaN(lonNum)) {
-      setError("Sijainti puuttuu. Valitse oma sijainti tai kartalta.");
+    if (
+      !latitude ||
+      !longitude ||
+      Number.isNaN(latNum) ||
+      Number.isNaN(lonNum)
+    ) {
+      setError('Sijainti puuttuu. Valitse oma sijainti tai kartalta.');
       return;
     }
 
     // Valinnainen: rajavalidointi (helpottaa virheitä)
     if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
-      setError("Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).");
+      setError(
+        'Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).'
+      );
       return;
     }
 
@@ -175,7 +200,7 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
       theftAddress: theftAddress.trim() || null,
       location: {
         latitude: latNum,
-        longitude: lonNum,
+        longitude: lonNum
       },
       bike: {
         brand,
@@ -186,9 +211,9 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
         description: bikeDescription,
         user: {
           username,
-          email,
-        },
-      },
+          email
+        }
+      }
     };
 
     try {
@@ -201,7 +226,7 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
       // clearLocation();
       // setDescription(""); setTheftTime(""); ...
     } catch (err) {
-      setError(err.message || "Tallennus epäonnistui.");
+      setError(err.message || 'Tallennus epäonnistui.');
     } finally {
       setLoading(false);
     }
@@ -255,7 +280,11 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
           {locationError && <Alert variant="warning">{locationError}</Alert>}
 
           <div className="d-flex gap-2 flex-wrap mb-2">
-            <Button type="button" variant="outline-primary" onClick={useMyLocation}>
+            <Button
+              type="button"
+              variant="outline-primary"
+              onClick={useMyLocation}
+            >
               Käytä omaa sijaintia
             </Button>
 
@@ -269,8 +298,8 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
               type="button"
               variant="outline-secondary"
               onClick={() => {
-                setLocationError("");
-                setLocationSource("map");
+                setLocationError('');
+                setLocationSource('map');
                 onStartPickFromMap?.(); // <-- TÄMÄ käynnistää kartan valintatilaan
               }}
             >
@@ -278,26 +307,26 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
             </Button>
 
             <Button
-                type="button"
-                variant="outline-danger"
-                onClick={() => {
-                    clearLocation();
-                    onStopPickFromMap?.();
-                }}
+              type="button"
+              variant="outline-danger"
+              onClick={() => {
+                clearLocation();
+                onStopPickFromMap?.();
+              }}
             >
-                Tyhjennä sijainti
+              Tyhjennä sijainti
             </Button>
           </div>
 
           <div className="small text-muted mb-3">
             {latitude && longitude ? (
               <>
-                Valittu sijainti: <strong>{latitude}</strong>,{" "}
-                <strong>{longitude}</strong>{" "}
-                ({locationSource === "gps" ? "oma sijainti" : "kartta"})
+                Valittu sijainti: <strong>{latitude}</strong>,{' '}
+                <strong>{longitude}</strong> (
+                {locationSource === 'gps' ? 'oma sijainti' : 'kartta'})
               </>
             ) : (
-              "Valitse sijainti: käytä omaa sijaintia tai klikkaa karttaa."
+              'Valitse sijainti: käytä omaa sijaintia tai klikkaa karttaa.'
             )}
           </div>
 
@@ -308,22 +337,34 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
 
           <Form.Group className="mb-3">
             <Form.Label>Merkki</Form.Label>
-            <Form.Control value={brand} onChange={(e) => setBrand(e.target.value)} />
+            <Form.Control
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Malli</Form.Label>
-            <Form.Control value={model} onChange={(e) => setModel(e.target.value)} />
+            <Form.Control
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Tyyppi</Form.Label>
-            <Form.Control value={type} onChange={(e) => setType(e.target.value)} />
+            <Form.Control
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Väri</Form.Label>
-            <Form.Control value={color} onChange={(e) => setColor(e.target.value)} />
+            <Form.Control
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -359,7 +400,10 @@ export default function TheftReportForm({ defaultLocation, onCreated,  onStartPi
 
           <Form.Group className="mb-3">
             <Form.Label>Sähköposti</Form.Label>
-            <Form.Control value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Form.Control
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </Form.Group>
 
           <Button
