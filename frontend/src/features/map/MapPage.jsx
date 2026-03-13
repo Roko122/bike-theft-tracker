@@ -1,4 +1,5 @@
 import {
+  CircleMarker,
   MapContainer,
   Marker,
   Popup,
@@ -23,6 +24,28 @@ L.Icon.Default.mergeOptions({
   iconUrl: marker1x,
   shadowUrl: markerShadow
 });
+
+//BTT96 punainen täplä
+const blinkingDotStyle = `
+  .blinking-location-dot {
+    animation: blink-location 1s infinite;
+  }
+
+  @keyframes blink-location {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.35;
+      transform: scale(1.35);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+`;
 
 function formatDate(iso) {
   if (!iso) return '-';
