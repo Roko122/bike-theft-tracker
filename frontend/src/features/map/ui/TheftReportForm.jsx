@@ -4,6 +4,9 @@ import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap';
 import { Send } from 'lucide-react';
 import { createTheftReport } from '../theftReportsApi';
 
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Info } from 'lucide-react';
+
 /**
  * TheftReportForm
  * ---------------
@@ -232,6 +235,15 @@ export default function TheftReportForm({
     }
   }
 
+  //Btt92 tooltip
+  function renderTooltip(id, text) {
+    return (
+      <Tooltip id={id} style={{ zIndex: 9999 }}>
+        {text}
+      </Tooltip>
+    );
+  }
+
   // -------------------------
   // 5) UI
   // -------------------------
@@ -256,7 +268,29 @@ export default function TheftReportForm({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Varkauden aika</Form.Label>
+            <Form.Label className="d-flex align-items-center gap-1">
+              Tapahtuma-aika
+              <OverlayTrigger
+                trigger={['hover', 'focus']}
+                placement="right"
+                container={document.body}
+                overlay={renderTooltip(
+                  'tooltip-theft-time',
+                  'Syötä aika jolloin varkaus tapahtui.'
+                )}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  tabIndex={0}
+                >
+                  <Info size={16} color="#6c757d" />
+                </span>
+              </OverlayTrigger>
+            </Form.Label>
             <Form.Control
               type="datetime-local"
               value={theftTime}
