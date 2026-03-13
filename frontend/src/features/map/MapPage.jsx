@@ -25,28 +25,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow
 });
 
-//BTT96 punainen täplä
-const blinkingDotStyle = `
-  .blinking-location-dot {
-    animation: blink-location 1s infinite;
-  }
-
-  @keyframes blink-location {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.35;
-      transform: scale(1.35);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-`;
-
 function formatDate(iso) {
   if (!iso) return '-';
 
@@ -100,26 +78,6 @@ function MapRefBinder({ mapRef }) {
     mapRef.current = map;
     console.log('mapRef asetettu:', map);
   }, [map, mapRef]);
-
-  return null;
-}
-
-//BTT96 Uusi funktio
-function BlinkingDotStyle() {
-  useEffect(() => {
-    const styleId = 'blinking-location-dot-style';
-
-    if (document.getElementById(styleId)) return;
-
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = blinkingDotStyle;
-    document.head.appendChild(style);
-
-    return () => {
-      style.remove();
-    };
-  }, []);
 
   return null;
 }
@@ -239,7 +197,6 @@ export default function MapPage({
   return (
     <div className="map-wrap">
       <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
-        <BlinkingDotStyle />
         <MapRefBinder mapRef={mapRef} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
 
@@ -258,13 +215,12 @@ export default function MapPage({
         {pickedLocation && (
           <CircleMarker
             center={[pickedLocation.latitude, pickedLocation.longitude]}
-            radius={10}
+            radius={8}
             pathOptions={{
               color: 'red',
               fillColor: 'red',
-              fillOpacity: 0.9
+              fillOpacity: 1
             }}
-            className="blinking-location-dot"
           />
         )}
 
