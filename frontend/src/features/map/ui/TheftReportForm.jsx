@@ -258,7 +258,29 @@ export default function TheftReportForm({
         <Form onSubmit={handleSubmit}>
           {/* Varkaus */}
           <Form.Group className="mb-3">
-            <Form.Label>Kuvaus</Form.Label>
+            <Form.Label className="d-flex align-items-center gap-1">
+              Kuvaus
+              <OverlayTrigger
+                trigger={['hover', 'focus']}
+                placement="right"
+                container={document.body}
+                overlay={renderTooltip(
+                  'tooltip-description',
+                  'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.'
+                )}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  tabIndex={0}
+                >
+                  <Info size={16} color="#6c757d" />
+                </span>
+              </OverlayTrigger>
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -299,7 +321,29 @@ export default function TheftReportForm({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Osoite</Form.Label>
+            <Form.Label className="d-flex align-items-center gap-1">
+              Osoite
+              <OverlayTrigger
+                trigger={['hover', 'focus']}
+                placement="right"
+                container={document.body}
+                overlay={renderTooltip(
+                  'tooltip-address',
+                  'Anna lähin osoite jossa varkaus tapahtui.'
+                )}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  tabIndex={0}
+                >
+                  <Info size={16} color="#6c757d" />
+                </span>
+              </OverlayTrigger>
+            </Form.Label>
             <Form.Control
               value={theftAddress}
               onChange={(e) => setTheftAddress(e.target.value)}
@@ -309,7 +353,29 @@ export default function TheftReportForm({
           <hr />
 
           {/* Sijainti */}
-          <h6>Sijainti</h6>
+          <h6 className="d-flex align-items-center gap-1">
+            Sijainti
+            <OverlayTrigger
+              trigger={['hover', 'focus']}
+              placement="right"
+              container={document.body}
+              overlay={renderTooltip(
+                'tooltip-location',
+                'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.'
+              )}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  cursor: 'pointer'
+                }}
+                tabIndex={0}
+              >
+                <Info size={16} color="#6c757d" />
+              </span>
+            </OverlayTrigger>
+          </h6>
 
           {locationError && <Alert variant="warning">{locationError}</Alert>}
 
@@ -367,7 +433,30 @@ export default function TheftReportForm({
           <hr />
 
           {/* Bike */}
-          <h6>Pyörän tiedot</h6>
+          <h6 className="d-flex align-items-center gap-1">
+            Pyörän tiedot
+            <OverlayTrigger
+              trigger={['hover', 'focus']}
+              placement="right"
+              container={document.body}
+              overlay={renderTooltip(
+                'tooltip-bike-section',
+                'Täytä pyörän tiedot mahdollisimman tarkasti.'
+              )}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  lineHeight: 1
+                }}
+                tabIndex={0}
+              >
+                <Info size={16} color="#6c757d" />
+              </span>
+            </OverlayTrigger>
+          </h6>
 
           <Form.Group className="mb-3">
             <Form.Label>Merkki</Form.Label>
@@ -410,7 +499,29 @@ export default function TheftReportForm({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Lisäkuvaus pyörästä</Form.Label>
+            <Form.Label className="d-flex align-items-center gap-1">
+              Lisäkuvaus pyörästä
+              <OverlayTrigger
+                trigger={['hover', 'focus']}
+                placement="right"
+                container={document.body}
+                overlay={renderTooltip(
+                  'tooltip-bike-description',
+                  'Kerro pyörän tuntomerkit, lisävarusteet, tarrat, korit, vauriot tai muut tunnistamista helpottavat tiedot.'
+                )}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  tabIndex={0}
+                >
+                  <Info size={16} color="#6c757d" />
+                </span>
+              </OverlayTrigger>
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={2}
