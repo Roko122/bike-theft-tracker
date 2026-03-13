@@ -176,6 +176,7 @@ export default function MapPage({
   const [showThefts, setShowThefts] = useState(true);
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
+  const [pickedLocation, setPickedLocation] = useState(null);
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
@@ -238,6 +239,7 @@ export default function MapPage({
   return (
     <div className="map-wrap">
       <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
+        <BlinkingDotStyle />
         <MapRefBinder mapRef={mapRef} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
 
@@ -245,12 +247,26 @@ export default function MapPage({
         <MapClickPicker
           enabled={isPickingLocation}
           onPick={onLocationSelected}
+          onLocalPick={setPickedLocation}
         />
 
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {pickedLocation && (
+          <CircleMarker
+            center={[pickedLocation.latitude, pickedLocation.longitude]}
+            radius={10}
+            pathOptions={{
+              color: 'red',
+              fillColor: 'red',
+              fillOpacity: 0.9
+            }}
+            className="blinking-location-dot"
+          />
+        )}
 
         {showThefts &&
           thefts.map((t) => (
