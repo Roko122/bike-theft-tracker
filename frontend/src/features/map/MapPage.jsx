@@ -135,40 +135,6 @@ export default function MapPage({
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
 
-  // BTT-27: hae data backendistä kerran sivun latauksessa
-  useEffect(() => {
-    let alive = true;
-
-    (async () => {
-      try {
-        setLoadingThefts(true);
-        setTheftsError(null);
-
-        const data = await getTheftReports();
-        //if (alive) setThefts(data);
-        // uutta btt43
-
-        const valid = (data ?? []).filter(
-          (r) => r?.location?.latitude != null && r?.location?.longitude != null
-        );
-
-        if (alive) setThefts(valid);
-
-        //päättyy43
-
-        console.log('BTT-27 theft reports:', data);
-      } catch (e) {
-        if (alive) setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
-      } finally {
-        if (alive) setLoadingThefts(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
-
   // BTT-77: keskitä käyttäjän sijaintiin
   const onCenterToUser = useCallback(() => {
     const map = mapRef.current;
