@@ -284,6 +284,7 @@ export default function TheftReportForm({
             <Form.Control
               as="textarea"
               rows={3}
+              placeholder="Esimerkiksi: Pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.05"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
