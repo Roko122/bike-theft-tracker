@@ -1,4 +1,5 @@
 import {
+  CircleMarker,
   MapContainer,
   Marker,
   Popup,
@@ -92,13 +93,13 @@ function MapClickPicker({ enabled, onPick }) {
       if (!enabled) return;
 
       const loc = { latitude: e.latlng.lat, longitude: e.latlng.lng };
-      console.log('Kartalta valittu sijainti:', loc);
       onPick?.(loc);
     }
   });
 
   return null;
 }
+
 // BTT 28/79 koodi päättyy tähän
 
 //BTT 95 funktio
@@ -120,7 +121,8 @@ export default function MapPage({
   isMenuOpen,
   onLocationSelected,
   isPickingLocation,
-  onReportSelected //  BTT-26: ilmoitetaan parentille valittu ilmoitus
+  onReportSelected, //  BTT-26: ilmoitetaan parentille valittu ilmoitus
+  selectedLocation
 }) {
   // react-leaflet v4: käytetään refiä (ei whenCreated)
   // react-leaflet v4: käytetään refiä (ei whenCreated)
@@ -134,6 +136,7 @@ export default function MapPage({
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
+<<<<<<< HEAD
   //BTT 95
   const loadVisibleThefts = useCallback(async (map) => {
     if (!map) return;
@@ -157,6 +160,41 @@ export default function MapPage({
     } finally {
       setLoadingThefts(false);
     }
+=======
+
+  // BTT-27: hae data backendistä kerran sivun latauksessa
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoadingThefts(true);
+        setTheftsError(null);
+
+        const data = await getTheftReports();
+        //if (alive) setThefts(data);
+        // uutta btt43
+
+        const valid = (data ?? []).filter(
+          (r) => r?.location?.latitude != null && r?.location?.longitude != null
+        );
+
+        if (alive) setThefts(valid);
+
+        //päättyy43
+
+        console.log('BTT-27 theft reports:', data);
+      } catch (e) {
+        if (alive) setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
+      } finally {
+        if (alive) setLoadingThefts(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+>>>>>>> ad66f83 ( map page sekosi viime commitin jälkeen tehty siihen melko rajua oikaisua tähän taskiin liittyviin funktioihin, koita kestää, lisätty tarvittavia ominaisuuksia app ja theftreport tiedostoihin että saadaan hallittua pistettä myös lisää omaan sijaintiin napeilla ja tyhjennä sijainti napeilla)
   }, []);
 
   // BTT-77: keskitä käyttäjän sijaintiin
@@ -199,7 +237,9 @@ export default function MapPage({
         {/* UUSI: karttaklikki -> onLocationSelected */}
         <MapClickPicker
           enabled={isPickingLocation}
-          onPick={onLocationSelected}
+          onPick={(loc) => {
+            onLocationSelected?.(loc);
+          }}
         />
 
         <TileLayer
@@ -207,7 +247,20 @@ export default function MapPage({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {selectedLocation && (
+          <CircleMarker
+            center={[selectedLocation.latitude, selectedLocation.longitude]}
+            radius={8}
+            pathOptions={{
+              color: 'red',
+              fillColor: 'red',
+              fillOpacity: 1
+            }}
+          />
+        )}
+
         {showThefts &&
+          !isPickingLocation &&
           thefts.map((t) => (
             <Marker
               key={t.id}

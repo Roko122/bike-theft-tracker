@@ -154,7 +154,7 @@ export default function TheftReportForm({
       setLocation(defaultLocation.latitude, defaultLocation.longitude, 'map');
       setLocationError('');
     }
-  }, [defaultLocation?.latitude, defaultLocation?.longitude]);
+  }, [defaultLocation]);
 
   // -------------------------
   // 4) Lomakkeen lähetys

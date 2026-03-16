@@ -71,6 +71,7 @@ export default function App() {
 
                   <TheftReportForm
                     defaultLocation={selectedLocation}
+                    onLocationSelected={setSelectedLocation}
                     onStartPickFromMap={() => setIsPickingLocation(true)}
                     onStopPickFromMap={() => setIsPickingLocation(false)}
                     onCreated={() => {
@@ -103,9 +104,10 @@ export default function App() {
         )}
       </header>
 
-        <main className={open ? 'main main--dimmed' : 'main'}>
+      <main className={open ? 'main main--dimmed' : 'main'}>
         <MapPage
           isMenuOpen={open}
+          selectedLocation={selectedLocation}
           isPickingLocation={isPickingLocation}
           onLocationSelected={(loc) => {
             // BTT-28: käyttäjä valitsi pisteen kartalta lomakkeelle
