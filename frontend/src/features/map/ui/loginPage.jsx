@@ -1,13 +1,26 @@
 import { useState } from 'react';
-import { Card, Form, Button } from 'react-bootstrap';
+import { Card, Form, Button, Alert } from 'react-bootstrap';
+import { loginUser } from './auth.Api';
 
 export default function LoginPage({ onLoginSuccess, onFirstTime }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    onLoginSuccess?.({ email });
+    setError('');
+
+    try {
+      setLoading(true);
+      const user = await loginUser({ username, password });
+      onLoginSuccess?.(user);
+    } catch (err) {
+      setError(err.message || 'Kirjautuminen epäonnistui');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -15,13 +28,15 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
       <Card.Body>
         <Card.Title>Kirjaudu sisään</Card.Title>
 
+        {error && <Alert variant="danger">{error}</Alert>}
+
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Käyttäjänimi</Form.Label>
             <Form.Control
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </Form.Group>
@@ -36,8 +51,8 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
             />
           </Form.Group>
 
-          <Button type="submit" className="w-100">
-            Kirjaudu
+          <Button type="submit" className="w-100" disabled={loading}>
+            {loading ? 'Kirjaudutaan...' : 'Kirjaudu'}
           </Button>
 
           <Button
