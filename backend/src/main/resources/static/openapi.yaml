@@ -45,7 +45,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /api/v1/auth/me:
+  /auth/me:
     get:
       security:
         - access-token: [ ]
@@ -137,10 +137,20 @@ paths:
       operationId: "createTheftReport"
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/CreateTheftReportRequest"
-        required: true
+              type: "object"
+              properties:
+                theftReport:
+                  $ref: "#/components/schemas/CreateTheftReportRequest"
+                images:
+                  description: "Up to 5 photos (PNG, JPEG) can be uploaded. Each file must be 5 MB or smaller"
+                  type: "file"
+            encoding:
+              theftReport:
+                contentType: "application/json"
+              images:
+                contentType: "image/png, image/jpeg"
       responses:
         "201":
           description: "CREATED"
@@ -300,6 +310,14 @@ components:
           format: "date-time"
         bike:
           $ref: "#/components/schemas/BikeResponse"
+        images:
+          type: "array"
+          items:
+            type: "string"
+          example: [
+            "http://localhost:8080/images/bikes/3fa85f64-5717-4562-b3fc-2c963f66afa6/fca2a871-53f2-4077-9c57-c6c1724c3094.jpeg",
+            "http://localhost:8080/images/bikes/3fa85f64-5717-4562-b3fc-2c963f66afa6/dbf20e73-6b64-4ad8-a378-69c6cf5af17e.jpeg"
+          ]
     CreateBikeRequest:
       type: "object"
       required:
