@@ -17,5 +17,5 @@ public class BikeImage {
     private Bike bike;
 
     @Column
-    private String imagePath;
+    private String imageName;
 }

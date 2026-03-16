@@ -1,9 +1,14 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.*;
+import com.rkrs.bikethefttracker.entity.BikeImage;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class TheftReportMapper {
@@ -19,6 +24,7 @@ public class TheftReportMapper {
     public TheftReportResponse toTheftReportResponse(TheftReport theftReport) {
         GeoPoint location = geoPointMapper.toGeoPoint(theftReport.getLocation());
         BikeResponse bike = bikeMapper.toBikeResponse(theftReport.getBike());
+        List<String> images = this.imagePaths(theftReport.getBike().getImages());
 
         return new TheftReportResponse(
                 theftReport.getId(),
@@ -28,7 +34,8 @@ public class TheftReportMapper {
                 location,
                 theftReport.getStatus(),
                 theftReport.getCreatedAt(),
-                bike
+                bike,
+                images
         );
     }
 
@@ -56,5 +63,22 @@ public class TheftReportMapper {
                 point,
                 data.theftTime()
         );
+    }
+
+    private List<String> imagePaths(List<BikeImage> bikeImages) {
+        if (bikeImages == null || bikeImages.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return bikeImages.stream().map(this::buildImageUrl).toList();
+    }
+
+    private String buildImageUrl(BikeImage bikeImage) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/images/bikes/")
+                .path(bikeImage.getBike().getId().toString())
+                .path("/")
+                .path(bikeImage.getImageName())
+                .toUriString();
     }
 }
