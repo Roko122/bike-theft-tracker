@@ -136,7 +136,7 @@ export default function MapPage({
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
-<<<<<<< HEAD
+
   //BTT 95
   const loadVisibleThefts = useCallback(async (map) => {
     if (!map) return;
@@ -160,7 +160,7 @@ export default function MapPage({
     } finally {
       setLoadingThefts(false);
     }
-=======
+  }, []);
 
   // BTT-27: hae data backendistä kerran sivun latauksessa
   useEffect(() => {
@@ -194,7 +194,6 @@ export default function MapPage({
     return () => {
       alive = false;
     };
->>>>>>> ad66f83 ( map page sekosi viime commitin jälkeen tehty siihen melko rajua oikaisua tähän taskiin liittyviin funktioihin, koita kestää, lisätty tarvittavia ominaisuuksia app ja theftreport tiedostoihin että saadaan hallittua pistettä myös lisää omaan sijaintiin napeilla ja tyhjennä sijainti napeilla)
   }, []);
 
   // BTT-77: keskitä käyttäjän sijaintiin
