@@ -3,6 +3,8 @@ package com.rkrs.bikethefttracker.exception;
 import com.rkrs.bikethefttracker.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -133,6 +135,32 @@ public class ExceptionController {
                 httpStatus.getReasonPhrase(),
                 httpStatus.value(),
                 "Resource not found."
+        );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleBadCredentialsException(BadCredentialsException ex) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                "Invalid username or password."
+        );
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                "Invalid username or password."
         );
     }
 }
