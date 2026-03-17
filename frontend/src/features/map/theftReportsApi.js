@@ -8,6 +8,7 @@ function url(path) {
 async function request(method, path, body) {
   const res = await fetch(url(path), {
     method,
+    credentials: "include",
     headers: {
       Accept: 'application/json',
       ...(body ? { 'Content-Type': 'application/json' } : {})

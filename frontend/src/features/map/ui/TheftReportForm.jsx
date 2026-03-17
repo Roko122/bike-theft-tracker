@@ -212,11 +212,7 @@ export default function TheftReportForm({
         color,
         serialNumber,
         description: bikeDescription,
-        user: {
-          username,
-          email
-        }
-      }
+      },
     };
 
     try {
