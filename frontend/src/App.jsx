@@ -1,7 +1,10 @@
 import MapPage from './features/map/MapPage.jsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
+import LoginPage from './features/map/ui/loginPage.jsx';
+import RegisterPage from './features/map/ui/RegisterPage.jsx';
+import { getCurrentUser } from './features/map/ui/auth.Api';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -12,6 +15,25 @@ export default function App() {
   const [isPickingLocation, setIsPickingLocation] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
 
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    getCurrentUser()
+      .then((user) => {
+        if (active) setCurrentUser(user);
+      })
+      .catch(() => {
+        if (active) setCurrentUser(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
     <div className="app-shell">
       <header className="header">
@@ -30,14 +52,18 @@ export default function App() {
             onClick={() => {
               setOpen(false);
               setShowForm(false);
+              //log in
+              setShowLogin(false);
+              setShowRegister(false);
               // BTT26
               setIsPickingLocation(false);
-              setSelectedReportId(null); // ✅ BTT-26: poistetaan detail-valinta
+              setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
+
             }}
           >
             <div onClick={(e) => e.stopPropagation()} className="d-grid gap-2">
               {/* ✅ 1) BTT-26: Detail-näkymä */}
-              {selectedReportId && !showForm && (
+              {selectedReportId && !showForm && !showLogin && !showRegister && (
                 <>
                   <button
                     onClick={() => {
@@ -58,7 +84,7 @@ export default function App() {
               )}
 
               {/* 2) BTT-28: Lomake */}
-              {showForm && !selectedReportId && (
+              {showForm && !selectedReportId && !showLogin && !showRegister && (
                 <>
                   <button
                     onClick={() => {
@@ -84,19 +110,66 @@ export default function App() {
                 </>
               )}
 
+              {showLogin && !showForm && !selectedReportId && !showRegister && (
+                  <>
+                    <button onClick={() => setShowLogin(false)}>← takaisin</button>
+                    <LoginPage
+                      onLoginSuccess={(user) => {
+                        setCurrentUser(user);
+                        setShowLogin(false);
+                      }}
+                      onFirstTime={() => {
+                        setShowLogin(false);
+                        setShowRegister(true);
+                      }}
+                    />
+                  </>
+              )}
+
+              {showRegister && !showForm && !selectedReportId && !showLogin && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowRegister(false);
+                        setShowLogin(true);
+                      }}
+                    >
+                      ← takaisin
+                    </button>
+                    <RegisterPage onRegistered={() => setShowRegister(false)} />
+                  </>
+              )}
+
               {/* 3) Perusvalikko */}
-              {!showForm && !selectedReportId && (
+              {!showForm && !selectedReportId && !showLogin && !showRegister && (
                 <>
                   <button>heloo world</button>
 
                   <button
                     onClick={() => {
                       setShowForm(true);
+                      setShowLogin(false);
+                      setShowRegister(false);
                       setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
                     }}
                   >
                     varkausilmoitus
                   </button>
+                  {currentUser ? (
+                    <button disabled>Kirjautunut: {currentUser.username}</button>
+                  ) : (
+                    <button
+                        onClick={() => {
+                          setShowLogin(true);
+                          setShowRegister(false);
+                          setShowForm(false);
+                          setSelectedReportId(null);
+                        }}
+                    >
+                      Kirjaudu
+                    </button>
+                  )}
+
                 </>
               )}
             </div>
@@ -115,7 +188,7 @@ export default function App() {
             setIsPickingLocation(false);
           }}
           /**
-           * ✅ BTT-26: MapPage ilmoittaa, että käyttäjä valitsi ilmoituksen (marker/lista/popup)
+           *BTT-26: MapPage ilmoittaa, että käyttäjä valitsi ilmoituksen (marker/lista/popup)
            * - Avataan menu automaattisesti ja näytetään detailit.
            * - Suljetaan lomake, jos se oli auki (ettei tule päällekkäisyyksiä).
            */
@@ -123,6 +196,8 @@ export default function App() {
             setSelectedReportId(reportId);
             setOpen(true); // avaa sivupalkki automaattisesti
             setShowForm(false);
+            setShowLogin(false);
+            setShowRegister(false);
             setIsPickingLocation(false);
           }}
         />

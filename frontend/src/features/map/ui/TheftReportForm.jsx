@@ -73,10 +73,6 @@ export default function TheftReportForm({
   const [serialNumber, setSerialNumber] = useState('');
   const [bikeDescription, setBikeDescription] = useState('');
 
-  // Ilmoittajan tiedot (bike.user)
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-
   // UI-tilat
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -211,11 +207,7 @@ export default function TheftReportForm({
         type,
         color,
         serialNumber,
-        description: bikeDescription,
-        user: {
-          username,
-          email
-        }
+        description: bikeDescription
       }
     };
 
@@ -539,27 +531,6 @@ export default function TheftReportForm({
           </Form.Group>
 
           <hr />
-
-          {/* User */}
-          <h6>Ilmoittajan tiedot</h6>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Käyttäjänimi</Form.Label>
-            <Form.Control
-              placeholder="tämä kenttä tullaan poistamaan kirjautumisen myötä"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Sähköposti</Form.Label>
-            <Form.Control
-              placeholder="tämä kenttä tullaan poistamaan kirjautumisen myötä"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Group>
 
           <Button
             type="submit"

@@ -183,21 +183,6 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
               value={report.bike?.serialNumber ?? report.serialNumber}
             />
             <Row label="Lisäkuvaus" value={report.bike?.description} />
-
-            {/* Ilmoittaja */}
-            <h4 style={{ margin: '12px 0 4px' }}>Ilmoittaja</h4>
-
-            <Row
-              label="Käyttäjänimi"
-              value={report.bike?.user?.username ?? report.reporterName}
-            />
-
-            <Row
-              label="Sähköposti"
-              value={
-                report.email ?? report.user?.email ?? report.bike?.user?.email
-              }
-            />
           </div>
         </div>
       )}
