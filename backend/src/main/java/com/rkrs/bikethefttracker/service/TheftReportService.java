@@ -66,8 +66,11 @@ public class TheftReportService {
 
     private Bike createBikeWithImages(CreateBikeRequest bikeDto, User user, List<MultipartFile> images) {
         Bike createdBike = bikeService.createBike(bikeDto, user);
-        List<String> imagePaths = imageStorageService.saveImages(images, createdBike.getId());
-        bikeService.addImages(createdBike, imagePaths);
+
+        if (images != null) {
+            List<String> imagePaths = imageStorageService.saveImages(images, createdBike.getId());
+            bikeService.addImages(createdBike, imagePaths);
+        }
 
         return createdBike;
     }
