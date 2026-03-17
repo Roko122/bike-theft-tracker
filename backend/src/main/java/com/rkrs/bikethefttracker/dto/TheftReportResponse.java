@@ -3,6 +3,7 @@ package com.rkrs.bikethefttracker.dto;
 import com.rkrs.bikethefttracker.entity.Status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record TheftReportResponse(
@@ -13,6 +14,7 @@ public record TheftReportResponse(
     GeoPoint location,
     Status status,
     LocalDateTime createdAt,
-    BikeResponse bike
+    BikeResponse bike,
+    List<String> images
 ) {
 }

@@ -5,9 +5,31 @@ function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
 }
 
-async function request(method, path, body) {
+async function parseResponse(res, method, path) {
+  const text = await res.text().catch(() => '');
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    // ignore non-json response body
+  }
+
+  if (!res.ok) {
+    const message =
+      (data && (data.message || data.error)) ||
+      text ||
+      `${method} ${path} failed: ${res.status}`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+async function request(method, path, body, { includeCredentials = false } = {}) {
   const res = await fetch(url(path), {
     method,
+    ...(includeCredentials ? { credentials: 'include' } : {}),
     headers: {
       Accept: 'application/json',
       ...(body ? { 'Content-Type': 'application/json' } : {})
@@ -15,12 +37,25 @@ async function request(method, path, body) {
     ...(body ? { body: JSON.stringify(body) } : {})
   });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`${method} ${path} failed: ${res.status} ${text}`);
-  }
+  return parseResponse(res, method, path);
+}
 
-  return res.json().catch(() => null);
+async function requestFormData(
+  method,
+  path,
+  formData,
+  { includeCredentials = false } = {}
+) {
+  const res = await fetch(url(path), {
+    method,
+    ...(includeCredentials ? { credentials: 'include' } : {}),
+    headers: {
+      Accept: 'application/json'
+    },
+    body: formData
+  });
+
+  return parseResponse(res, method, path);
 }
 
 // Hae kaikki ilmoitukset
@@ -35,5 +70,13 @@ export function fetchTheftReportMapItems() {
 
 // Luo uusi ilmoitus
 export function createTheftReport(payload) {
-  return request('POST', '/theft-reports', payload);
+  const formData = new FormData();
+  formData.append(
+    'theftReport',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
+
+  return requestFormData('POST', '/theft-reports', formData, {
+    includeCredentials: true
+  });
 }

@@ -28,16 +28,14 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final JwtContext jwtContext;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenService refreshTokenService, JwtContext jwtContext) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
-        this.jwtContext = jwtContext;
     }
 
     @Transactional
@@ -69,17 +67,26 @@ public class AuthenticationService {
         return new LoginResult(loginResponse, accessToken, refreshToken);
     }
 
-    public void logout() {
-        String jtiString = jwtContext.getClaims().getId();
+    public void logout(String refreshToken) {
+        if (refreshToken == null) {
+            return;
+        }
+
+        Claims claims = jwtService.parseToken(refreshToken);
+        String jtiString = claims.getId();
         if (jtiString == null) {
-            throw new InvalidRefreshTokenException("Invalid refresh token.");
+            return;
         }
 
         refreshTokenService.deleteByJwtId(getJti(jtiString));
     }
 
-    public JwtToken renewAccessToken() {
-        Claims claims = jwtContext.getClaims();
+    public JwtToken renewAccessToken(String refreshTokenCookie) {
+        if (refreshTokenCookie == null) {
+            throw new InvalidRefreshTokenException("Invalid refresh token. Please log in again.");
+        }
+
+        Claims claims = jwtService.parseToken(refreshTokenCookie);
         RefreshToken refreshToken = this.getValidRefreshToken(claims);
 
         User user = refreshToken.getUser();

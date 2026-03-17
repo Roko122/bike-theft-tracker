@@ -84,11 +84,18 @@
             <version>7.2.1.Final</version>
         </dependency>
 
+        <!-- Image dependencies -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.21</version>
+        </dependency>
+
         <!-- OpenAPI/SwaggerUI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- Test dependencies -->
