@@ -1,9 +1,10 @@
 import MapPage from './features/map/MapPage.jsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
+import { getCurrentUser } from './features/map/ui/auth.Api';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -16,6 +17,23 @@ export default function App() {
 
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    getCurrentUser()
+      .then((user) => {
+        if (active) setCurrentUser(user);
+      })
+      .catch(() => {
+        if (active) setCurrentUser(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
     <div className="app-shell">
       <header className="header">
@@ -94,7 +112,10 @@ export default function App() {
                   <>
                     <button onClick={() => setShowLogin(false)}>← takaisin</button>
                     <LoginPage
-                      onLoginSuccess={() => setShowLogin(false)}
+                      onLoginSuccess={(user) => {
+                        setCurrentUser(user);
+                        setShowLogin(false);
+                      }}
                       onFirstTime={() => {
                         setShowLogin(false);
                         setShowRegister(true);
@@ -132,16 +153,20 @@ export default function App() {
                   >
                     varkausilmoitus
                   </button>
-                  <button
-                      onClick={() => {
-                        setShowLogin(true);
-                        setShowRegister(false);
-                        setShowForm(false);
-                        setSelectedReportId(null);
-                      }}
-                  >
-                    Kirjaudu
-                  </button>
+                  {currentUser ? (
+                    <button disabled>Kirjautunut: {currentUser.username}</button>
+                  ) : (
+                    <button
+                        onClick={() => {
+                          setShowLogin(true);
+                          setShowRegister(false);
+                          setShowForm(false);
+                          setSelectedReportId(null);
+                        }}
+                    >
+                      Kirjaudu
+                    </button>
+                  )}
 
                 </>
               )}
