@@ -64,15 +64,6 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
             Luo tunnus
           </Button>
         </Form>
-
-                <Button
-                    type="button"
-                    variant="outline-secondary"
-                    className="mt-2"
-                    onClick={() => onFirstTime?.()}
-                >
-                    Luo tunnus
-                </Button>
       </Card.Body>
     </Card>
   );

@@ -140,21 +140,6 @@ export default function App() {
                   </>
               )}
 
-              {showRegister && !showForm && !selectedReportId && !showLogin && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setShowRegister(false);
-                        setShowLogin(true);
-                      }}
-                    >
-                      ← takaisin
-                    </button>
-                    <RegisterPage onRegistered={() => setShowRegister(false)} />
-                    </>
-              )}
-
-
               {/* 3) Perusvalikko */}
               {!showForm && !selectedReportId && !showLogin && !showRegister && (
                 <>
