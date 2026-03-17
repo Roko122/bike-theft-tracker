@@ -26,16 +26,25 @@ async function parseResponse(res, method, path) {
   return data;
 }
 
-async function request(method, path, body, { includeCredentials = false } = {}) {
-  const res = await fetch(url(path), {
+async function request(method, path, body, options = {}) {
+  const includeCredentials = options.includeCredentials === true;
+  const fetchOptions = {
     method,
-    ...(includeCredentials ? { credentials: 'include' } : {}),
     headers: {
-      Accept: 'application/json',
-      ...(body ? { 'Content-Type': 'application/json' } : {})
-    },
-    ...(body ? { body: JSON.stringify(body) } : {})
-  });
+      Accept: 'application/json'
+    }
+  };
+
+  if (includeCredentials) {
+    fetchOptions.credentials = 'include';
+  }
+
+  if (body !== undefined) {
+    fetchOptions.headers['Content-Type'] = 'application/json';
+    fetchOptions.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(url(path), fetchOptions);
 
   return parseResponse(res, method, path);
 }
@@ -44,16 +53,22 @@ async function requestFormData(
   method,
   path,
   formData,
-  { includeCredentials = false } = {}
+  options = {}
 ) {
-  const res = await fetch(url(path), {
+  const includeCredentials = options.includeCredentials === true;
+  const fetchOptions = {
     method,
-    ...(includeCredentials ? { credentials: 'include' } : {}),
     headers: {
       Accept: 'application/json'
     },
     body: formData
-  });
+  };
+
+  if (includeCredentials) {
+    fetchOptions.credentials = 'include';
+  }
+
+  const res = await fetch(url(path), fetchOptions);
 
   return parseResponse(res, method, path);
 }

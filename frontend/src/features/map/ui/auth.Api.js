@@ -5,16 +5,30 @@ function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
 }
 
-async function request(method, path, body) {
-  const res = await fetch(url(path), {
+async function request(
+  method,
+  path,
+  body,
+  options = {}
+) {
+  const includeCredentials = options.includeCredentials === true;
+  const fetchOptions = {
     method,
-    credentials: 'include',
     headers: {
-      Accept: 'application/json',
-      ...(body ? { 'Content-Type': 'application/json' } : {})
-    },
-    ...(body ? { body: JSON.stringify(body) } : {})
-  });
+      Accept: 'application/json'
+    }
+  };
+
+  if (includeCredentials) {
+    fetchOptions.credentials = 'include';
+  }
+
+  if (body !== undefined) {
+    fetchOptions.headers['Content-Type'] = 'application/json';
+    fetchOptions.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(url(path), fetchOptions);
 
   const text = await res.text().catch(() => '');
   let data = null;
@@ -40,13 +54,23 @@ export function registerUser(payload) {
 }
 
 export function loginUser(payload) {
-  return request('POST', '/auth/login', payload);
+  return request('POST', '/auth/login', payload, {
+    includeCredentials: true
+  });
 }
 
 export function getCurrentUser() {
-  return request('GET', '/auth/me');
+  return request('GET', '/auth/me', undefined, { includeCredentials: true });
 }
 
 export function logoutUser() {
-  return request('POST', '/auth/logout');
+  return request('POST', '/auth/logout', undefined, {
+    includeCredentials: true
+  });
+}
+
+export function refreshUser() {
+  return request('POST', '/auth/refresh', undefined, {
+    includeCredentials: true
+  });
 }
