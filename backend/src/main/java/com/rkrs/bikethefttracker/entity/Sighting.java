@@ -30,6 +30,10 @@ public class Sighting {
     @ManyToOne(fetch = FetchType.LAZY)
     private TheftReport theftReport;
 
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User reporter;
+
     @Column
     private LocalDateTime createdAt;
 
