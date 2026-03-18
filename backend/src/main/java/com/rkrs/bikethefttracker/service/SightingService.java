@@ -31,6 +31,6 @@ public class SightingService {
 
         Sighting createdSighting = sightingRepository.save(sightingToCreate);
 
-        return sightingMapper.toSightingResponse(createdSighting);
+        return sightingMapper.toSightingResponse(createdSighting, user.getUsername());
     }
 }

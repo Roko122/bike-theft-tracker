@@ -29,14 +29,14 @@ public class SightingMapper {
                 .build();
     }
 
-    public SightingResponse toSightingResponse(Sighting sighting) {
+    public SightingResponse toSightingResponse(Sighting sighting, String username) {
         GeoPoint geoPoint = geoPointMapper.toGeoPoint(sighting.getLocation());
 
         return new SightingResponse(
                 sighting.getId(),
                 geoPoint,
                 sighting.getDescription(),
-                sighting.getReporter().getUsername(),
+                username,
                 sighting.getCreatedAt()
         );
     }
