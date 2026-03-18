@@ -10,6 +10,7 @@ import com.rkrs.bikethefttracker.repository.SightingRepository;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,5 +33,13 @@ public class SightingService {
         Sighting createdSighting = sightingRepository.save(sightingToCreate);
 
         return sightingMapper.toSightingResponse(createdSighting, user.getUsername());
+    }
+
+    public List<SightingResponse> getAllSightings(UUID theftReportId) {
+        List<Sighting> sightings = sightingRepository.findByTheftReportId(theftReportId);
+
+        return sightings.stream()
+                .map(s -> sightingMapper.toSightingResponse(s, s.getReporter().getUsername()))
+                .toList();
     }
 }
