@@ -163,4 +163,17 @@ public class ExceptionController {
                 "Invalid username or password."
         );
     }
+
+    @ExceptionHandler(InvalidImageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUsernameNotFoundException(InvalidImageException ex) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
 }

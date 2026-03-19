@@ -8,6 +8,7 @@ public record SightingResponse(
         GeoPoint location,
         String description,
         String reporter,
+        String image,
         LocalDateTime createdAt
 ) {
 }

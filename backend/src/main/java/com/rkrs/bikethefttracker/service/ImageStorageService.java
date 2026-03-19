@@ -1,5 +1,6 @@
 package com.rkrs.bikethefttracker.service;
 
+import com.rkrs.bikethefttracker.exception.InvalidImageException;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
@@ -21,41 +22,47 @@ public class ImageStorageService {
     private static final int MAX_WIDTH = 1280;
     private static final String PROJECT_ROOT = System.getProperty("user.dir");
 
-    public List<String> saveImages(List<MultipartFile> images, UUID bikeId) {
-        if (images.size() > 5) {
-            throw new IllegalArgumentException("Maximum 5 images allowed");
+    public String saveImage(MultipartFile image, String folderName, UUID id) {
+        File folder = this.createFolder(folderName, id);
+
+        try {
+            return this.handleImage(image, folder);
+        } catch (IOException e) {
+            log.warn("Something went wrong when trying to save image {}", image.getOriginalFilename());
+            throw new InvalidImageException("Invalid image.");
         }
-
-        File bikeFolder = this.createFolder(bikeId);
-
-        return handleImages(images, bikeFolder);
     }
 
-    private List<String> handleImages(List<MultipartFile> images, File bikeFolder) {
+    public List<String> saveImages(List<MultipartFile> images, String folderName, UUID id) {
+        File folder = this.createFolder(folderName, id);
+
+        return handleImages(images, folder);
+    }
+
+    private List<String> handleImages(List<MultipartFile> images, File folder) {
         List<String> imagePaths = new ArrayList<>();
 
         for (MultipartFile image : images) {
-            String imagePath = this.handleImage(image, bikeFolder);
-            imagePaths.add(imagePath);
+            try {
+                String imagePath = this.handleImage(image, folder);
+                imagePaths.add(imagePath);
+            } catch (IOException e) {
+                log.warn("Something went wrong when trying to save image {}", image.getOriginalFilename());
+            }
         }
 
         return imagePaths;
     }
 
-    private String handleImage(MultipartFile image, File bikeFolder) {
+    private String handleImage(MultipartFile image, File folder) throws IOException {
         String imageName = UUID.randomUUID() + ".jpeg";
-
-        try {
-            this.saveImage(image, bikeFolder, imageName);
-        } catch (IOException e) {
-            log.warn("Something went wrong when trying to save image {}", image.getOriginalFilename());
-        }
+        this.saveImage(image, folder, imageName);
 
         return imageName;
     }
 
-    private void saveImage(MultipartFile image, File bikeFolder, String imageName) throws IOException {
-        File outputFile = new File(bikeFolder, imageName);
+    private void saveImage(MultipartFile image, File folder, String imageName) throws IOException {
+        File outputFile = new File(folder, imageName);
 
         BufferedImage bi = ImageIO.read(image.getInputStream());
         if (bi.getWidth() > MAX_WIDTH) {
@@ -71,8 +78,8 @@ public class ImageStorageService {
         }
     }
 
-    private File createFolder(UUID bikeId) {
-        Path bikeFolderPath = Paths.get(PROJECT_ROOT, "images", "bikes", bikeId.toString());
+    private File createFolder(String folderName, UUID id) {
+        Path bikeFolderPath = Paths.get(PROJECT_ROOT, "images", folderName, id.toString());
         File dir = bikeFolderPath.toFile();
         if (!dir.exists()) {
             dir.mkdirs();

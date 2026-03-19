@@ -8,6 +8,7 @@ import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Component
 public class SightingMapper {
@@ -31,13 +32,24 @@ public class SightingMapper {
 
     public SightingResponse toSightingResponse(Sighting sighting, String username) {
         GeoPoint geoPoint = geoPointMapper.toGeoPoint(sighting.getLocation());
+        String imageUrl = buildImageUrl(sighting);
 
         return new SightingResponse(
                 sighting.getId(),
                 geoPoint,
                 sighting.getDescription(),
                 username,
+                imageUrl,
                 sighting.getCreatedAt()
         );
+    }
+
+    private String buildImageUrl(Sighting sighting) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/images/sightings/")
+                .path(sighting.getTheftReport().getId().toString())
+                .path("/")
+                .path(sighting.getImageName())
+                .toUriString();
     }
 }
