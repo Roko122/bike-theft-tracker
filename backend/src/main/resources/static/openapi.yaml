@@ -20,8 +20,8 @@ paths:
               $ref: "#/components/schemas/RegisterUserRequest"
         required: true
       responses:
-        "200":
-          description: "OK"
+        "201":
+          description: "CREATED"
           content:
             application/json:
               schema:
@@ -69,8 +69,8 @@ paths:
       summary: "Log out user"
       operationId: "logout"
       responses:
-        "200":
-          description: "OK"
+        "204":
+          description: "NO CONTENT"
           content: {}
   /auth/refresh:
     post:
@@ -88,37 +88,37 @@ paths:
     get:
       tags:
         - TheftReports
-      summary: "Returns all TheftReport map items, or only those within the visible map area if parameters are provided."
+      summary: "Returns all TheftReport map items within the visible map area."
       operationId: "getTheftReportMapItems"
       parameters:
         - name: minLon
           in: query
-          required: false
+          required: true
           schema:
             type: number
             format: double
-          description: "Minimum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Minimum longitude of the map view."
         - name: minLat
           in: query
-          required: false
+          required: true
           schema:
             type: number
             format: double
-          description: "Minimum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Minimum latitude of the map view."
         - name: maxLon
           in: query
-          required: false
+          required: true
           schema:
             type: number
             format: double
-          description: "Maximum longitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Maximum longitude of the map view."
         - name: maxLat
           in: query
-          required: false
+          required: true
           schema:
             type: number
             format: double
-          description: "Maximum latitude of the map view. Required only if you want to fetch TheftReports visible on the map."
+          description: "Maximum latitude of the map view."
       responses:
         "200":
           description: "OK"
@@ -144,7 +144,7 @@ paths:
                 theftReport:
                   $ref: "#/components/schemas/CreateTheftReportRequest"
                 images:
-                  description: "Up to 5 photos (PNG, JPEG) can be uploaded. Each file must be 5 MB or smaller"
+                  description: "Up to 5 images (PNG, JPEG) can be uploaded. Each file must be 5 MB or smaller"
                   type: "file"
             encoding:
               theftReport:
@@ -185,6 +185,65 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /theft-reports/{id}/sightings:
+    get:
+      tags:
+        - Sightings
+      summary: "Retrieve sightings of a theft report"
+      operationId: "getSightings"
+      parameters:
+        - name: "theftReportId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SightingResponse"
+    post:
+      tags:
+        - Sightings
+      security:
+        - access-token: [ ]
+      summary: "Create a sighting for a theft report"
+      operationId: "createSighting"
+      parameters:
+        - name: "theftReportId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: "object"
+              properties:
+                sighting:
+                  $ref: "#/components/schemas/SightingRequest"
+                image:
+                  description: "One image (PNG, JPEG) can be uploaded. File must be 5 MB or smaller"
+                  type: "file"
+            encoding:
+              theftReport:
+                contentType: "application/json"
+              images:
+                contentType: "image/png, image/jpeg"
+      responses:
+        "201":
+          description: "CREATED"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SightingResponse"
 
 components:
   securitySchemes:
@@ -470,3 +529,33 @@ components:
           items:
             type: "string"
           example: ["ROLE_USER"]
+    SightingResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        location:
+          $ref: "#/components/schemas/GeoPoint"
+        description:
+          type: "string"
+          example: "Pyörä löytyi S-market Kauppakadun pyörätelineestä"
+        reporter:
+          type: "string"
+          example: "test_user"
+        image:
+          type: "string"
+          example: "http://localhost:8080/images/sightings/3fa85f64-5717-4562-b3fc-2c963f66afa6/fca2a871-53f2-4077-9c57-c6c1724c3094.jpeg"
+        createdAt:
+          type: "string"
+          format: "date-time"
+    SightingRequest:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+          example: "Pyörä löytyi S-market Kauppakadun pyörätelineestä"
+          minLength: 1
+          maxLength: 300
+        location:
+          $ref: "#/components/schemas/GeoPoint"
