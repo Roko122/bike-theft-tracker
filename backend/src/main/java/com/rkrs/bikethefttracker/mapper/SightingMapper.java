@@ -37,6 +37,7 @@ public class SightingMapper {
                 geoPoint,
                 sighting.getDescription(),
                 username,
+                sighting.getImageName(),
                 sighting.getCreatedAt()
         );
     }
