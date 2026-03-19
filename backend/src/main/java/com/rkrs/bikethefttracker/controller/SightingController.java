@@ -4,6 +4,8 @@ import com.rkrs.bikethefttracker.dto.SightingRequest;
 import com.rkrs.bikethefttracker.dto.SightingResponse;
 import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import com.rkrs.bikethefttracker.service.SightingService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,15 +23,17 @@ public class SightingController {
     }
 
     @GetMapping
-    public List<SightingResponse> getSightings(@PathVariable UUID theftReportId) {
-        return sightingService.getAllSightings(theftReportId);
+    public ResponseEntity<List<SightingResponse>> getSightings(@PathVariable UUID theftReportId) {
+        List<SightingResponse> sightingResponses = sightingService.getAllSightings(theftReportId);
+        return new ResponseEntity<>(sightingResponses, HttpStatus.OK);
     }
 
     @PostMapping
-    public SightingResponse createSighting(@RequestBody SightingRequest sightingRequest,
+    public ResponseEntity<SightingResponse> createSighting(@RequestBody SightingRequest sightingRequest,
                                            @PathVariable UUID theftReportId,
                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return sightingService.createSighting(sightingRequest, userDetails.getUserEntity(), theftReportId);
+        SightingResponse sightingResponse = sightingService.createSighting(sightingRequest, userDetails.getUserEntity(), theftReportId);
+        return new ResponseEntity<>(sightingResponse, HttpStatus.CREATED);
     }
 }
