@@ -26,12 +26,6 @@ public class Notification {
     @Column(nullable = false)
     private String message;
 
-    @Column(nullable = false)
-    private boolean read;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User recipient;
@@ -39,6 +33,12 @@ public class Notification {
     @JoinColumn(name = "theft_report_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private TheftReport theftReport;
+
+    @Column(nullable = false)
+    private boolean read;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     private void onCreate() {
