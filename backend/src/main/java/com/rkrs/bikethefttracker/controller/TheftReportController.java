@@ -53,7 +53,7 @@ public class TheftReportController {
             @RequestPart(name = "images", required = false) List<@Image MultipartFile> images,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        if (images.size() > 5) {
+        if (images != null && images.size() > 5) {
             throw new IllegalArgumentException("Maximum 5 images allowed");
         }
 
