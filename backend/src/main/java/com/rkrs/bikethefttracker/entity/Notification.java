@@ -1,10 +1,7 @@
 package com.rkrs.bikethefttracker.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,7 +9,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "notifications")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Notification {
 
     @Id
@@ -23,15 +20,6 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    @Column(nullable = false)
-    private String message;
-
-    @Column(nullable = false)
-    private boolean read;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User recipient;
@@ -39,6 +27,12 @@ public class Notification {
     @JoinColumn(name = "theft_report_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private TheftReport theftReport;
+
+    @Column(nullable = false)
+    private boolean read;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     private void onCreate() {

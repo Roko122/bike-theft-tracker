@@ -2,6 +2,7 @@ package com.rkrs.bikethefttracker.service;
 
 import com.rkrs.bikethefttracker.dto.SightingRequest;
 import com.rkrs.bikethefttracker.dto.SightingResponse;
+import com.rkrs.bikethefttracker.entity.NotificationType;
 import com.rkrs.bikethefttracker.entity.Sighting;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
@@ -22,12 +23,14 @@ public class SightingService {
     private final SightingMapper sightingMapper;
     private final SightingRepository sightingRepository;
     private final ImageStorageService imageStorageService;
+    private final NotificationService notificationService;
 
-    public SightingService(TheftReportRepository theftReportRepository, SightingMapper sightingMapper, SightingRepository sightingRepository, ImageStorageService imageStorageService) {
+    public SightingService(TheftReportRepository theftReportRepository, SightingMapper sightingMapper, SightingRepository sightingRepository, ImageStorageService imageStorageService, NotificationService notificationService) {
         this.theftReportRepository = theftReportRepository;
         this.sightingMapper = sightingMapper;
         this.sightingRepository = sightingRepository;
         this.imageStorageService = imageStorageService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -37,6 +40,9 @@ public class SightingService {
 
         Sighting createdSighting = sightingRepository.save(sightingToCreate);
         this.addImage(image, theftReportId, createdSighting);
+
+        //Create a notification
+        notificationService.createNotification(NotificationType.NEW_SIGHTING, theftReport.getBike().getUser(), theftReport);
 
         return sightingMapper.toSightingResponse(createdSighting, user.getUsername());
     }
