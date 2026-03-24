@@ -24,10 +24,9 @@ public class NotificationService {
         this.notificationMapper = notificationMapper;
     }
 
-    public void createNotification(NotificationType type, String message, User recipient, TheftReport theftReport) {
+    public void createNotification(NotificationType type, User recipient, TheftReport theftReport) {
         Notification notificationToCreate = Notification.builder()
                 .type(type)
-                .message(message)
                 .recipient(recipient)
                 .theftReport(theftReport)
                 .build();

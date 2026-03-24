@@ -10,7 +10,6 @@ public class NotificationMapper {
     public NotificationResponse toNotificationResponse(Notification notification) {
         return new NotificationResponse(
                 notification.getId(),
-                notification.getMessage(),
                 notification.getType(),
                 notification.isRead(),
                 notification.getCreatedAt(),
