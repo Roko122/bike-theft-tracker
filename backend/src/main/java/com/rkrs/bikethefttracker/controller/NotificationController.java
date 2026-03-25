@@ -1,5 +1,6 @@
 package com.rkrs.bikethefttracker.controller;
 
+import com.rkrs.bikethefttracker.dto.NotificationCountResponse;
 import com.rkrs.bikethefttracker.dto.NotificationResponse;
 import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import com.rkrs.bikethefttracker.service.NotificationService;
@@ -26,6 +27,13 @@ public class NotificationController {
         List<NotificationResponse> unreadNotifications = notificationService.getUnreadNotifications(customUserDetails.getUserEntity());
 
         return new ResponseEntity<>(unreadNotifications, HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<NotificationCountResponse> getUnreadNotificationsCount(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        int count = notificationService.getUnreadNotificationCount(customUserDetails.getUserEntity());
+
+        return new ResponseEntity<>(new NotificationCountResponse(count), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/read")
