@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/{theftReportId}/sightings").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/notifications/{notificationId}/read").authenticated()
                         .requestMatchers(HttpMethod.GET,"/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET,"/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
