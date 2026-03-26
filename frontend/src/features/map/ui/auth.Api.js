@@ -1,5 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 const API_PREFIX = '/api/v1';
+const NO_BODY = Symbol('NO_BODY');
 
 function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
@@ -8,7 +9,7 @@ function url(path) {
 async function request(
   method,
   path,
-  body,
+  body = NO_BODY,
   options = {}
 ) {
   const includeCredentials = options.includeCredentials === true;
@@ -23,7 +24,9 @@ async function request(
     fetchOptions.credentials = 'include';
   }
 
-  if (body !== undefined) {
+  const shouldSendJsonBody = body !== NO_BODY;
+
+  if (shouldSendJsonBody) {
     fetchOptions.headers['Content-Type'] = 'application/json';
     fetchOptions.body = JSON.stringify(body);
   }
@@ -60,17 +63,17 @@ export function loginUser(payload) {
 }
 
 export function getCurrentUser() {
-  return request('GET', '/auth/me', undefined, { includeCredentials: true });
+  return request('GET', '/auth/me', NO_BODY, { includeCredentials: true });
 }
 
 export function logoutUser() {
-  return request('POST', '/auth/logout', undefined, {
+  return request('POST', '/auth/logout', NO_BODY, {
     includeCredentials: true
   });
 }
 
 export function refreshUser() {
-  return request('POST', '/auth/refresh', undefined, {
+  return request('POST', '/auth/refresh', NO_BODY, {
     includeCredentials: true
   });
 }
