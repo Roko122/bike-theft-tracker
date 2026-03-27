@@ -213,9 +213,10 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
-      const created = await createTheftReport(payload);
-      setSuccessMsg(`Ilmoitus tallennettu! id = ${created.id}`);
-      onCreated?.(created);
+      await createTheftReport(payload);
+
+      // Päivitä sivu, jotta uusi ilmoitus näkyy kartalla
+      window.location.reload();
 
       // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
       // clearLocation();
