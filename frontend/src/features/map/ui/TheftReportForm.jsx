@@ -72,6 +72,7 @@ export default function TheftReportForm({
   const [color, setColor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
   const [bikeDescription, setBikeDescription] = useState('');
+  const [images, setImages] = useState([]);
 
   // UI-tilat
   const [loading, setLoading] = useState(false);
@@ -213,6 +214,7 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
+      await createTheftReport(payload, images);
 
       const created = await createTheftReport(payload);
 
@@ -529,6 +531,16 @@ export default function TheftReportForm({
           </Form.Group>
 
           <hr />
+
+          <Form.Group className="mb-3">
+            <Form.Label>Kuvat</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setImages(Array.from(e.target.files ?? []))}
+            />
+          </Form.Group>
 
           <Button
             type="submit"
