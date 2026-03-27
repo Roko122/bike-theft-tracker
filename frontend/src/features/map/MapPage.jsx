@@ -133,6 +133,7 @@ export default function MapPage({
   const [showThefts, setShowThefts] = useState(true);
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
+  const [showMapSuccess, setShowMapSuccess] = useState(false);
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
@@ -196,6 +197,26 @@ export default function MapPage({
     };
   }, []);
 
+  // lisätään onnistumisviesti
+  useEffect(() => {
+    const shouldShow = sessionStorage.getItem('showMapSuccess');
+
+    if (shouldShow === 'true') {
+      setShowMapSuccess(true);
+      sessionStorage.removeItem('showMapSuccess');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!showMapSuccess) return;
+
+    const timer = setTimeout(() => {
+      setShowMapSuccess(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [showMapSuccess]);
+
   // BTT-77: keskitä käyttäjän sijaintiin
   const onCenterToUser = useCallback(() => {
     const map = mapRef.current;
@@ -228,7 +249,27 @@ export default function MapPage({
   }, []);
 
   return (
-    <div className="map-wrap">
+    <div className="map-wrap" style={{ position: 'relative' }}>
+      {showMapSuccess && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 2000,
+            backgroundColor: '#198754',
+            color: 'white',
+            padding: '10px 16px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            fontWeight: 600
+          }}
+        >
+          Ilmoitus tallennettu!
+        </div>
+      )}
+
       <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
         <MapRefBinder mapRef={mapRef} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />

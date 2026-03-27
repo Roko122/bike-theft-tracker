@@ -215,7 +215,9 @@ export default function TheftReportForm({
       setLoading(true);
       await createTheftReport(payload);
 
-      // Päivitä sivu, jotta uusi ilmoitus näkyy kartalla
+      // Kerrotaan seuraavalle sivulataukselle, että näytetään kartan päällä onnistumisviesti
+      sessionStorage.setItem('showMapSuccess', 'true');
+
       window.location.reload();
 
       // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
