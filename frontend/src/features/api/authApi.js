@@ -52,7 +52,7 @@ export function registerUser(payload) {
 }
 
 export function loginUser(payload) {
-  return request('POST', '/auth/login', payload);
+  return requestCred('POST', '/auth/login', payload, true);
 }
 
 export function getCurrentUser() {
