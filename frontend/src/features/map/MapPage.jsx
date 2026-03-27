@@ -11,7 +11,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
-import { fetchTheftReportMapItemsByBounds } from '../theftReports/api';
+import { fetchTheftReportMapItemsByBounds } from '../api/theftReportApi.js';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';

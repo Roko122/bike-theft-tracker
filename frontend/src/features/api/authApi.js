@@ -5,16 +5,24 @@ function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
 }
 
-async function request(method, path, body) {
-  const res = await fetch(url(path), {
+async function requestCred(method, path, body, includeCredentials) {
+  const fetchOptions = {
     method,
-    credentials: 'include',
     headers: {
-      Accept: 'application/json',
-      ...(body ? { 'Content-Type': 'application/json' } : {})
-    },
-    ...(body ? { body: JSON.stringify(body) } : {})
-  });
+      Accept: 'application/json'
+    }
+  };
+
+  if (includeCredentials) {
+    fetchOptions.credentials = 'include';
+  }
+
+  if (body) {
+    fetchOptions.headers['Content-Type'] = 'application/json';
+    fetchOptions.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(url(path), fetchOptions);
 
   const text = await res.text().catch(() => '');
   let data = null;
@@ -35,6 +43,10 @@ async function request(method, path, body) {
   return data;
 }
 
+function request(method, path, body) {
+  return requestCred(method, path, body, false);
+}
+
 export function registerUser(payload) {
   return request('POST', '/auth/register', payload);
 }
@@ -44,9 +56,13 @@ export function loginUser(payload) {
 }
 
 export function getCurrentUser() {
-  return request('GET', '/auth/me');
+  return requestCred('GET', '/auth/me', null, true);
 }
 
 export function logoutUser() {
-  return request('POST', '/auth/logout');
+  return requestCred('POST', '/auth/logout', null, true);
+}
+
+export function refreshUser() {
+  return requestCred('POST', '/auth/refresh', null, true);
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap';
 import { Send } from 'lucide-react';
-import { createTheftReport } from '../theftReportsApi';
+import { createTheftReport } from '../../api/theftReportApi.js';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Info } from 'lucide-react';

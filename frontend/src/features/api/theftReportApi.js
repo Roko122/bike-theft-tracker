@@ -1,4 +1,4 @@
-// frontend/src/features/theftReports/api.js
+// frontend/src/features/theftReports/theftReportApi.js
 
 const DEFAULT_BASE_URL = 'http://localhost:8080';
 const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
@@ -67,33 +67,6 @@ export async function getTheftReportById(id, { signal } = {}) {
   return parseJsonOrThrow(res);
 }
 
-/**
- * Luo varkausilmoituksen.
- * POST http://localhost:8080/api/v1/theft-reports
- *
- * payload pitää olla backendin CreateTheftReportRequest-muodossa:
- * {
- *  description, theftTime, theftAddress,
- *  location: { longitude, latitude },
- *  bike: { brand, model, type, color, serialNumber, description, user: { username, email } }
- * }
- */
-export async function createTheftReport(payload, { signal } = {}) {
-  if (!payload) throw new Error('payload is required');
-
-  const res = await fetch(buildUrl(''), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: JSON.stringify(payload),
-    signal
-  });
-
-  return parseJsonOrThrow(res);
-}
-
 //BTT 95 uusi funktio
 /**
  * Hakee kartalla näkyvän alueen varkausilmoitukset bounding boxin perusteella.
@@ -127,4 +100,30 @@ export async function fetchTheftReportMapItemsByBounds(
   });
 
   return parseJsonOrThrow(res);
+}
+
+async function requestFormData(method, formData) {
+  const fetchOptions = {
+    method,
+    headers: {
+      Accept: 'application/json'
+    },
+    body: formData,
+    credentials: 'include'
+  };
+
+  const res = await fetch(buildUrl(), fetchOptions);
+
+  return parseJsonOrThrow(res);
+}
+
+// Luo uusi ilmoitus
+export function createTheftReport(payload) {
+  const formData = new FormData();
+  formData.append(
+    'theftReport',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
+
+  return requestFormData('POST', formData);
 }

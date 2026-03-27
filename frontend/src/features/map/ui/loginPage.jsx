@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
-import { loginUser } from './auth.Api';
+import { loginUser } from '../../api/authApi.js';
 
 export default function LoginPage({ onLoginSuccess, onFirstTime }) {
   const [username, setUsername] = useState('');
