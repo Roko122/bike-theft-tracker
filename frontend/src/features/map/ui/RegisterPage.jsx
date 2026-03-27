@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
-import { registerUser } from './auth.Api';
+import { registerUser } from '../../api/authApi.js';
 
 export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');

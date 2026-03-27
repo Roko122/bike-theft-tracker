@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
 import MapPage from '../../../features/map/MapPage';
-import { getTheftReports } from '../../../features/theftReports/api';
+import { getTheftReports } from '../../../features/api/theftReportApi.js';
 
 vi.mock('../../../features/theftReports/api', () => ({
   getTheftReports: vi.fn(() => Promise.resolve([]))

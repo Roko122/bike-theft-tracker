@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getTheftReportById } from '../../theftReports/api';
+import { getTheftReportById } from '../../api/theftReportApi.js';
 
 // Yksittäinen “label + value” rivi sivupalkkiin
 function Row({ label, value }) {

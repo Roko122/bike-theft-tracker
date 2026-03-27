@@ -1,18 +1,11 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 const API_PREFIX = '/api/v1';
-const NO_BODY = Symbol('NO_BODY');
 
 function url(path) {
   return `${BASE_URL}${API_PREFIX}${path}`;
 }
 
-async function request(
-  method,
-  path,
-  body = NO_BODY,
-  options = {}
-) {
-  const includeCredentials = options.includeCredentials === true;
+async function requestCred(method, path, body, includeCredentials) {
   const fetchOptions = {
     method,
     headers: {
@@ -24,9 +17,7 @@ async function request(
     fetchOptions.credentials = 'include';
   }
 
-  const shouldSendJsonBody = body !== NO_BODY;
-
-  if (shouldSendJsonBody) {
+  if (body) {
     fetchOptions.headers['Content-Type'] = 'application/json';
     fetchOptions.body = JSON.stringify(body);
   }
@@ -52,28 +43,26 @@ async function request(
   return data;
 }
 
+function request(method, path, body) {
+  return requestCred(method, path, body, false);
+}
+
 export function registerUser(payload) {
   return request('POST', '/auth/register', payload);
 }
 
 export function loginUser(payload) {
-  return request('POST', '/auth/login', payload, {
-    includeCredentials: true
-  });
+  return request('POST', '/auth/login', payload);
 }
 
 export function getCurrentUser() {
-  return request('GET', '/auth/me', NO_BODY, { includeCredentials: true });
+  return requestCred('GET', '/auth/me', null, true);
 }
 
 export function logoutUser() {
-  return request('POST', '/auth/logout', NO_BODY, {
-    includeCredentials: true
-  });
+  return requestCred('POST', '/auth/logout', null, true);
 }
 
 export function refreshUser() {
-  return request('POST', '/auth/refresh', NO_BODY, {
-    includeCredentials: true
-  });
+  return requestCred('POST', '/auth/refresh', null, true);
 }

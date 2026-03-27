@@ -4,7 +4,7 @@ import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
-import { getCurrentUser } from './features/map/ui/auth.Api';
+import { getCurrentUser } from './features/api/authApi.js';
 
 export default function App() {
   const [open, setOpen] = useState(false);
