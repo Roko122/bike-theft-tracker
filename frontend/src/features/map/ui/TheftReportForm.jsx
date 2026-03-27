@@ -213,9 +213,12 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
-      const created = await createTheftReport(payload);
-      setSuccessMsg(`Ilmoitus tallennettu! id = ${created.id}`);
-      onCreated?.(created);
+      await createTheftReport(payload);
+
+      // Kerrotaan seuraavalle sivulataukselle, että näytetään kartan päällä onnistumisviesti
+      sessionStorage.setItem('showMapSuccess', 'true');
+
+      window.location.reload();
 
       // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
       // clearLocation();
