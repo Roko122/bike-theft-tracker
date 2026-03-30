@@ -11,8 +11,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
+import ImageCarousel from './ui/ImageCarousel.jsx';
 import {
   fetchTheftReportMapItemsByBounds,
+  getTheftReportById,
   getTheftReports
 } from '../api/theftReportApi.js';
 import { getReportImageUrls } from './utils/reportImages.js';
@@ -139,6 +141,8 @@ export default function MapPage({
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
+  const [popupImagesById, setPopupImagesById] = useState({});
+  const popupImageRequestsInFlightRef = useRef(new Set());
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
@@ -260,6 +264,30 @@ export default function MapPage({
     );
   }, []);
 
+  const ensurePopupImages = useCallback(
+    async (reportId, currentImages) => {
+      if (!reportId) return;
+
+      const inlineImageUrls = getReportImageUrls(currentImages);
+      if (inlineImageUrls.length > 0) return;
+      if (Object.prototype.hasOwnProperty.call(popupImagesById, reportId)) return;
+      if (popupImageRequestsInFlightRef.current.has(reportId)) return;
+
+      popupImageRequestsInFlightRef.current.add(reportId);
+      try {
+        const fullReport = await getTheftReportById(reportId);
+        const detailImageUrls = getReportImageUrls(fullReport?.images);
+
+        setPopupImagesById((prev) => ({ ...prev, [reportId]: detailImageUrls }));
+      } catch {
+        setPopupImagesById((prev) => ({ ...prev, [reportId]: [] }));
+      } finally {
+        popupImageRequestsInFlightRef.current.delete(reportId);
+      }
+    },
+    [popupImagesById]
+  );
+
   const handleReportCreated = async () => {
     const map = mapRef.current;
     if (!map) return;
@@ -321,33 +349,37 @@ export default function MapPage({
         {showThefts &&
           !isPickingLocation &&
           thefts.map((t) => {
-            const imageUrls = getReportImageUrls(t.images);
-            const previewUrl = imageUrls[0];
+            const inlineImageUrls = getReportImageUrls(t.images);
+            const imageUrls =
+              inlineImageUrls.length > 0
+                ? inlineImageUrls
+                : (popupImagesById[t.id] ?? []);
 
             return (
               <Marker
                 key={t.id}
                 position={[t.location.latitude, t.location.longitude]} // [lat, lng]
               >
-                <Popup>
+                <Popup
+                  eventHandlers={{
+                    add: () => {
+                      void ensurePopupImages(t.id, t.images);
+                    }
+                  }}
+                >
                   <div style={{ minWidth: 260, maxWidth: 320 }}>
                     <div style={{ fontWeight: 700, marginBottom: 6 }}>
                       {t.brand ?? ''} {t.model ?? ''}
                     </div>
 
-                    {previewUrl && (
-                      <img
-                        src={previewUrl}
-                        alt="Ilmoituksen kuva"
-                        loading="lazy"
-                        style={{
-                          width: '100%',
-                          height: 140,
-                          objectFit: 'cover',
-                          borderRadius: 8,
-                          marginBottom: 8
-                        }}
-                      />
+                    {imageUrls.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <ImageCarousel
+                          images={imageUrls}
+                          height={140}
+                          fit="contain"
+                        />
+                      </div>
                     )}
 
                     {/* Näyttää kaikki avain-arvo parit */}
@@ -377,12 +409,6 @@ export default function MapPage({
                           </div>
                         ))}
                     </div>
-
-                    {imageUrls.length > 1 && (
-                      <div style={{ marginTop: 6, fontSize: 12, opacity: 0.7 }}>
-                        +{imageUrls.length - 1} muuta kuvaa
-                      </div>
-                    )}
 
                     {/* Alapainike */}
                     <div style={{ marginTop: 12 }}>

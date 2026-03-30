@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTheftReportById } from '../../api/theftReportApi.js';
+import ImageCarousel from './ImageCarousel.jsx';
 import { getReportImageUrls } from '../utils/reportImages.js';
 
 // Yksittäinen “label + value” rivi sivupalkkiin
@@ -163,36 +164,7 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
           {imageUrls.length > 0 && (
             <div style={{ display: 'grid', gap: 6 }}>
               <h4 style={{ margin: '12px 0 4px' }}>Kuvat</h4>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-                  gap: 8
-                }}
-              >
-                {imageUrls.map((url, index) => (
-                  <a
-                    key={`${url}-${index}`}
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ display: 'block' }}
-                  >
-                    <img
-                      src={url}
-                      alt={`Ilmoituksen kuva ${index + 1}`}
-                      loading="lazy"
-                      style={{
-                        width: '100%',
-                        height: 96,
-                        borderRadius: 8,
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </a>
-                ))}
-              </div>
+              <ImageCarousel images={imageUrls} height={220} fit="contain" />
             </div>
           )}
 
