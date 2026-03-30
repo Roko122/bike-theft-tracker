@@ -8,12 +8,22 @@ const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
  * Voit halutessasi määrittää Vite-muuttujan: VITE_API_BASE_URL
  * esim. .env.frontend: VITE_API_BASE_URL=http://localhost:8080
  */
-function getBaseUrl() {
+export function getApiBaseUrl() {
   return import.meta?.env?.VITE_API_BASE_URL || DEFAULT_BASE_URL;
 }
 
 function buildUrl(path = '') {
-  return `${getBaseUrl()}${DEFAULT_API_PREFIX}${path}`;
+  return `${getApiBaseUrl()}${DEFAULT_API_PREFIX}${path}`;
+}
+
+export function resolveApiAssetUrl(pathOrUrl) {
+  if (typeof pathOrUrl !== 'string' || pathOrUrl.trim() === '') return '';
+
+  try {
+    return new URL(pathOrUrl, `${getApiBaseUrl().replace(/\/+$/, '')}/`).toString();
+  } catch {
+    return pathOrUrl;
+  }
 }
 
 async function parseJsonOrThrow(res) {
@@ -118,12 +128,15 @@ async function requestFormData(method, formData) {
 }
 
 // Luo uusi ilmoitus
-export function createTheftReport(payload) {
+export function createTheftReport(payload, images = []) {
   const formData = new FormData();
   formData.append(
     'theftReport',
     new Blob([JSON.stringify(payload)], { type: 'application/json' })
   );
+  images.forEach((file) => {
+    formData.append('images', file);
+  });
 
   return requestFormData('POST', formData);
 }

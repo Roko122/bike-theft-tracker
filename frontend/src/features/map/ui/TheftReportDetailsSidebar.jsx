@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTheftReportById } from '../../api/theftReportApi.js';
+import { getReportImageUrls } from '../utils/reportImages.js';
 
 // Yksittäinen “label + value” rivi sivupalkkiin
 function Row({ label, value }) {
@@ -118,6 +119,11 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
     };
   }, [reportId]);
 
+  const imageUrls = useMemo(
+    () => getReportImageUrls(report?.images),
+    [report?.images]
+  );
+
   return (
     <div className="details">
       <div className="details-header">
@@ -153,6 +159,42 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
           <div style={{ fontWeight: 700 }}>
             {report.brand ?? ''} {report.model ?? ''}
           </div>
+
+          {imageUrls.length > 0 && (
+            <div style={{ display: 'grid', gap: 6 }}>
+              <h4 style={{ margin: '12px 0 4px' }}>Kuvat</h4>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                  gap: 8
+                }}
+              >
+                {imageUrls.map((url, index) => (
+                  <a
+                    key={`${url}-${index}`}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'block' }}
+                  >
+                    <img
+                      src={url}
+                      alt={`Ilmoituksen kuva ${index + 1}`}
+                      loading="lazy"
+                      style={{
+                        width: '100%',
+                        height: 96,
+                        borderRadius: 8,
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Perustiedot */}
           <div style={{ display: 'grid', gap: 6 }}>

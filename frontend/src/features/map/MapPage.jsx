@@ -11,7 +11,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
-import { fetchTheftReportMapItemsByBounds } from '../api/theftReportApi.js';
+import {
+  fetchTheftReportMapItemsByBounds,
+  getTheftReports
+} from '../api/theftReportApi.js';
+import { getReportImageUrls } from './utils/reportImages.js';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -316,65 +320,92 @@ export default function MapPage({
 
         {showThefts &&
           !isPickingLocation &&
-          thefts.map((t) => (
-            <Marker
-              key={t.id}
-              position={[t.location.latitude, t.location.longitude]} // [lat, lng]
-            >
-              <Popup>
-                <div style={{ minWidth: 260, maxWidth: 320 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                    {t.brand ?? ''} {t.model ?? ''}
-                  </div>
+          thefts.map((t) => {
+            const imageUrls = getReportImageUrls(t.images);
+            const previewUrl = imageUrls[0];
 
-                  {/* Näyttää kaikki avain-arvo parit */}
-                  <div style={{ display: 'grid', gap: 4 }}>
-                    {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
-                    {Object.entries(t)
-                      .filter(([key]) => key !== 'location') // piilotetaan koordinaatit
-                      .map(([key, value]) => (
-                        <div
-                          key={key}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '90px 1fr',
-                            gap: 8
-                          }}
-                        >
-                          <div style={{ opacity: 0.7, fontSize: 12 }}>
-                            {labelFi(key)}
-                          </div>
+            return (
+              <Marker
+                key={t.id}
+                position={[t.location.latitude, t.location.longitude]} // [lat, lng]
+              >
+                <Popup>
+                  <div style={{ minWidth: 260, maxWidth: 320 }}>
+                    <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                      {t.brand ?? ''} {t.model ?? ''}
+                    </div>
 
-                          {/* location näytetään nätisti, muut perusmuodossa */}
-                          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
-                            {key === 'theftTime'
-                              ? formatDate(value)
-                              : renderValue(value)}
+                    {previewUrl && (
+                      <img
+                        src={previewUrl}
+                        alt="Ilmoituksen kuva"
+                        loading="lazy"
+                        style={{
+                          width: '100%',
+                          height: 140,
+                          objectFit: 'cover',
+                          borderRadius: 8,
+                          marginBottom: 8
+                        }}
+                      />
+                    )}
+
+                    {/* Näyttää kaikki avain-arvo parit */}
+                    <div style={{ display: 'grid', gap: 4 }}>
+                      {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
+                      {Object.entries(t)
+                        .filter(([key]) => key !== 'location' && key !== 'images')
+                        .map(([key, value]) => (
+                          <div
+                            key={key}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '90px 1fr',
+                              gap: 8
+                            }}
+                          >
+                            <div style={{ opacity: 0.7, fontSize: 12 }}>
+                              {labelFi(key)}
+                            </div>
+
+                            {/* location näytetään nätisti, muut perusmuodossa */}
+                            <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
+                              {key === 'theftTime'
+                                ? formatDate(value)
+                                : renderValue(value)}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                    </div>
+
+                    {imageUrls.length > 1 && (
+                      <div style={{ marginTop: 6, fontSize: 12, opacity: 0.7 }}>
+                        +{imageUrls.length - 1} muuta kuvaa
+                      </div>
+                    )}
+
+                    {/* Alapainike */}
+                    <div style={{ marginTop: 12 }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onReportSelected?.(t.id);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '6px 8px',
+                          fontWeight: 600,
+                          cursor: 'default'
+                        }}
+                      >
+                        Näytä tiedot
+                      </button>
+                    </div>
                   </div>
-                  {/* Alapainike */}
-                  <div style={{ marginTop: 12 }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onReportSelected?.(t.id);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '6px 8px',
-                        fontWeight: 600,
-                        cursor: 'default'
-                      }}
-                    >
-                      Näytä tiedot
-                    </button>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+                </Popup>
+              </Marker>
+            );
+          })}
       </MapContainer>
 
       {isPickingLocation && (
