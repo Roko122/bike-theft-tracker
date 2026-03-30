@@ -11,13 +11,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
-import ImageCarousel from './ui/ImageCarousel.jsx';
 import {
   fetchTheftReportMapItemsByBounds,
-  getTheftReportById,
   getTheftReports
 } from '../api/theftReportApi.js';
-import { getReportImageUrls } from './utils/reportImages.js';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -141,8 +138,6 @@ export default function MapPage({
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
-  const [popupImagesById, setPopupImagesById] = useState({});
-  const popupImageRequestsInFlightRef = useRef(new Set());
 
   const center = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
@@ -264,29 +259,7 @@ export default function MapPage({
     );
   }, []);
 
-  const ensurePopupImages = useCallback(
-    async (reportId, currentImages) => {
-      if (!reportId) return;
 
-      const inlineImageUrls = getReportImageUrls(currentImages);
-      if (inlineImageUrls.length > 0) return;
-      if (Object.prototype.hasOwnProperty.call(popupImagesById, reportId)) return;
-      if (popupImageRequestsInFlightRef.current.has(reportId)) return;
-
-      popupImageRequestsInFlightRef.current.add(reportId);
-      try {
-        const fullReport = await getTheftReportById(reportId);
-        const detailImageUrls = getReportImageUrls(fullReport?.images);
-
-        setPopupImagesById((prev) => ({ ...prev, [reportId]: detailImageUrls }));
-      } catch {
-        setPopupImagesById((prev) => ({ ...prev, [reportId]: [] }));
-      } finally {
-        popupImageRequestsInFlightRef.current.delete(reportId);
-      }
-    },
-    [popupImagesById]
-  );
 
   const handleReportCreated = async () => {
     const map = mapRef.current;
@@ -348,90 +321,66 @@ export default function MapPage({
 
         {showThefts &&
           !isPickingLocation &&
-          thefts.map((t) => {
-            const inlineImageUrls = getReportImageUrls(t.images);
-            const imageUrls =
-              inlineImageUrls.length > 0
-                ? inlineImageUrls
-                : (popupImagesById[t.id] ?? []);
-
-            return (
-              <Marker
-                key={t.id}
-                position={[t.location.latitude, t.location.longitude]} // [lat, lng]
-              >
-                <Popup
-                  eventHandlers={{
-                    add: () => {
-                      void ensurePopupImages(t.id, t.images);
-                    }
-                  }}
-                >
-                  <div style={{ minWidth: 260, maxWidth: 320 }}>
-                    <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                      {t.brand ?? ''} {t.model ?? ''}
-                    </div>
-
-                    {imageUrls.length > 0 && (
-                      <div style={{ marginBottom: 8 }}>
-                        <ImageCarousel
-                          images={imageUrls}
-                          height={140}
-                          fit="contain"
-                        />
-                      </div>
-                    )}
-
-                    {/* Näyttää kaikki avain-arvo parit */}
-                    <div style={{ display: 'grid', gap: 4 }}>
-                      {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
-                      {Object.entries(t)
-                        .filter(([key]) => key !== 'location' && key !== 'images')
-                        .map(([key, value]) => (
-                          <div
-                            key={key}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '90px 1fr',
-                              gap: 8
-                            }}
-                          >
-                            <div style={{ opacity: 0.7, fontSize: 12 }}>
-                              {labelFi(key)}
-                            </div>
-
-                            {/* location näytetään nätisti, muut perusmuodossa */}
-                            <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
-                              {key === 'theftTime'
-                                ? formatDate(value)
-                                : renderValue(value)}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-
-                    {/* Alapainike */}
-                    <div style={{ marginTop: 12 }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onReportSelected?.(t.id);
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '6px 8px',
-                          fontWeight: 600,
-                          cursor: 'default'
-                        }}
-                      >
-                        Näytä tiedot
-                      </button>
-                    </div>
+          thefts.map((t) => (
+            <Marker
+              key={t.id}
+              position={[t.location.latitude, t.location.longitude]} // [lat, lng]
+            >
+              <Popup>
+                <div style={{ minWidth: 260, maxWidth: 320 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                    {t.brand ?? ''} {t.model ?? ''}
                   </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+
+                  {/* Näyttää kaikki avain-arvo parit */}
+                  <div style={{ display: 'grid', gap: 4 }}>
+                    {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
+                    {Object.entries(t)
+                      .filter(([key]) => key !== 'location' && key !== 'images')
+                      .map(([key, value]) => (
+                        <div
+                          key={key}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '90px 1fr',
+                            gap: 8
+                          }}
+                        >
+                          <div style={{ opacity: 0.7, fontSize: 12 }}>
+                            {labelFi(key)}
+                          </div>
+
+                          {/* location näytetään nätisti, muut perusmuodossa */}
+                          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
+                            {key === 'theftTime'
+                              ? formatDate(value)
+                              : renderValue(value)}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Alapainike */}
+                  <div style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onReportSelected?.(t.id);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '6px 8px',
+                        fontWeight: 600,
+                        cursor: 'default'
+                      }}
+                    >
+                      Näytä tiedot
+                    </button>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
       </MapContainer>
 
       {isPickingLocation && (
