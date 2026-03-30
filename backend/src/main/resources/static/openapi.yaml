@@ -51,7 +51,7 @@ paths:
         - access-token: [ ]
       tags:
         - Auth
-      summary: "Get logged-in user's id, username, and roles."
+      summary: "Get logged-in user's id, username, and roles"
       operationId: "getCurrentUser"
       responses:
         "200":
@@ -244,6 +244,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SightingResponse"
+  /api/v1/notifications:
+    get:
+      tags:
+        - Notifications
+      security:
+        - access-token: [ ]
+      summary: "Retrieve all unread notifications for logged-in user"
+      operationId: "getUnreadNotifications"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/NotificationResponse"
+  /api/v1/notifications/count:
+    get:
+      tags:
+        - Notifications
+      security:
+        - access-token: [ ]
+      summary: "Get unread notification count for logged-in user"
+      operationId: "getUnreadNotificationsCount"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationCountResponse"
+  /api/v1/notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      security:
+        - access-token: [ ]
+      summary: "Mark specified notification as read"
+      operationId: "markNotificationAsRead"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
 
 components:
   securitySchemes:
@@ -559,3 +609,29 @@ components:
           maxLength: 300
         location:
           $ref: "#/components/schemas/GeoPoint"
+    NotificationResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        type:
+          type: "string"
+          enum:
+            - "NEW_SIGHTING"
+        read:
+          type: "boolean"
+          example: "false"
+        time:
+          type: "string"
+          format: "date-time"
+        theftReport:
+          type: "string"
+          format: "uuid"
+    NotificationCountResponse:
+      type: "object"
+      properties:
+        unreadCount:
+          type: "integer"
+          format: "int32"
+          example: 3
