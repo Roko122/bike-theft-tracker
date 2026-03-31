@@ -6,6 +6,8 @@ import com.rkrs.bikethefttracker.entity.NotificationType;
 import com.rkrs.bikethefttracker.entity.Sighting;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.exception.AccessDeniedException;
+import com.rkrs.bikethefttracker.exception.NotFoundException;
 import com.rkrs.bikethefttracker.mapper.SightingMapper;
 import com.rkrs.bikethefttracker.repository.SightingRepository;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
@@ -47,7 +49,16 @@ public class SightingService {
         return sightingMapper.toSightingResponse(createdSighting, user.getUsername());
     }
 
-    public List<SightingResponse> getAllSightings(UUID theftReportId) {
+    @Transactional(readOnly = true)
+    public List<SightingResponse> getAllSightings(UUID theftReportId, User user) {
+        TheftReport theftReport = theftReportRepository.findById(theftReportId).orElseThrow(() ->
+                new NotFoundException("TheftReport with id " + theftReportId + " not found.")
+        );
+
+        if (!theftReport.getBike().getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Not allowed.");
+        }
+
         List<Sighting> sightings = sightingRepository.findByTheftReportId(theftReportId);
 
         return sightings.stream()

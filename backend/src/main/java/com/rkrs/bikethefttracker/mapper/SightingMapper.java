@@ -45,6 +45,10 @@ public class SightingMapper {
     }
 
     private String buildImageUrl(Sighting sighting) {
+        if (sighting.getImageName() == null) {
+            return null;
+        }
+
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/images/sightings/")
                 .path(sighting.getTheftReport().getId().toString())

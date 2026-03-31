@@ -25,8 +25,11 @@ public class SightingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SightingResponse>> getSightings(@PathVariable UUID theftReportId) {
-        List<SightingResponse> sightingResponses = sightingService.getAllSightings(theftReportId);
+    public ResponseEntity<List<SightingResponse>> getSightings(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable UUID theftReportId) {
+
+        List<SightingResponse> sightingResponses = sightingService.getAllSightings(theftReportId, userDetails.getUserEntity());
         return new ResponseEntity<>(sightingResponses, HttpStatus.OK);
     }
 

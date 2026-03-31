@@ -1,7 +1,9 @@
 package com.rkrs.bikethefttracker.exception;
 
 import com.rkrs.bikethefttracker.dto.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -174,6 +176,45 @@ public class ExceptionController {
                 httpStatus.getReasonPhrase(),
                 httpStatus.value(),
                 ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                "Request could not be completed due to a data conflict"
+        );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        log.warn(ex.getMessage());
+
+        return new ErrorResponse(
+                httpStatus.getReasonPhrase(),
+                httpStatus.value(),
+                "Resource not found."
         );
     }
 }
