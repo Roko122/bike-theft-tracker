@@ -189,10 +189,13 @@ paths:
     get:
       tags:
         - Sightings
-      summary: "Retrieve sightings of a theft report"
+      security:
+        - access-token: [ ]
+      summary: "Retrieve sightings for the logged-in user's theft report"
       operationId: "getSightings"
       parameters:
-        - name: "theftReportId"
+        - name: "id"
+          description: "TheftReport id"
           in: "path"
           required: true
           schema:
@@ -215,7 +218,8 @@ paths:
       summary: "Create a sighting for a theft report"
       operationId: "createSighting"
       parameters:
-        - name: "theftReportId"
+        - name: "id"
+          description: "TheftReport id"
           in: "path"
           required: true
           schema:
@@ -244,7 +248,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SightingResponse"
-  /api/v1/notifications:
+  /notifications:
     get:
       tags:
         - Notifications
@@ -261,7 +265,7 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/NotificationResponse"
-  /api/v1/notifications/count:
+  /notifications/count:
     get:
       tags:
         - Notifications
@@ -276,7 +280,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NotificationCountResponse"
-  /api/v1/notifications/{id}/read:
+  /notifications/{id}/read:
     patch:
       tags:
         - Notifications
