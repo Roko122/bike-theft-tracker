@@ -47,6 +47,13 @@ public class TheftReportController {
         return new ResponseEntity<>(theftReportResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<List<TheftReportResponse>> getLoggedInUsersTheftReports(@AuthenticationPrincipal CustomUserDetails user) {
+        List<TheftReportResponse> theftReportResponses = theftReportService.getUsersTheftReports(user.getUserEntity());
+
+        return new ResponseEntity<>(theftReportResponses, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<TheftReportResponse> createTheftReport(
             @Valid @RequestPart("theftReport") CreateTheftReportRequest createTheftReportRequest,
