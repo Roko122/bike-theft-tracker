@@ -64,6 +64,14 @@ public class TheftReportService {
         return theftReportMapper.toTheftReportResponse(theftReport);
     }
 
+    public List<TheftReportResponse> getUsersTheftReports(User user) {
+        List<TheftReport> theftReports = theftReportRepository.findAllByBikeUser(user);
+
+        return theftReports.stream()
+                .map(theftReportMapper::toTheftReportResponse)
+                .toList();
+    }
+
     private Bike createBikeWithImages(CreateBikeRequest bikeDto, User user, List<MultipartFile> images) {
         Bike createdBike = bikeService.createBike(bikeDto, user);
 

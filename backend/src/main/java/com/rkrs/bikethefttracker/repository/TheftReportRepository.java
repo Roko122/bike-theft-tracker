@@ -2,6 +2,7 @@ package com.rkrs.bikethefttracker.repository;
 
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemData;
+import com.rkrs.bikethefttracker.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -55,4 +56,5 @@ public interface TheftReportRepository extends JpaRepository<TheftReport, UUID> 
                                                                    double maxLon,
                                                                    double maxLat);
 
+    List<TheftReport> findAllByBikeUser(User user);
 }

@@ -185,6 +185,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /theft-reports/me:
+    get:
+      tags:
+        - TheftReports
+      security:
+        - access-token: [ ]
+      summary: "Get logged-in user's theft reports"
+      operationId: "getLoggedInUsersTheftReports"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TheftReportResponse"
+
   /theft-reports/{id}/sightings:
     get:
       tags:

@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/images/bikes/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/images/sightings/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
