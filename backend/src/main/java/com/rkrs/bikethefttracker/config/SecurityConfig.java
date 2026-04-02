@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/images/sightings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/{theftReportId}/sightings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/notifications/{notificationId}/read").authenticated()
