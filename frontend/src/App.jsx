@@ -4,7 +4,7 @@ import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
-import { getCurrentUser } from './features/api/authApi.js';
+import { getCurrentUser, logoutUser } from './features/api/authApi.js';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -39,6 +39,22 @@ export default function App() {
       active = false;
     };
   }, []);
+
+  async function handleLogout() {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error('Uloskirjautuminen epäonnistui:', error);
+    } finally {
+      setCurrentUser(null);
+      setShowLogin(false);
+      setShowRegister(false);
+      setShowForm(false);
+      setSelectedReportId(null);
+      setIsPickingLocation(false);
+    }
+  }
+
   return (
     <div className="app-shell">
       <header className="header">
@@ -65,7 +81,11 @@ export default function App() {
               setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
             }}
           >
-            <div onClick={(e) => e.stopPropagation()} className="d-grid gap-2">
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="d-flex flex-column gap-2"
+              style={{ minHeight: '100%' }}
+            >
               {/* ✅ 1) BTT-26: Detail-näkymä */}
               {selectedReportId && !showForm && !showLogin && !showRegister && (
                 <>
@@ -180,12 +200,19 @@ export default function App() {
                           setShowForm(false);
                           setSelectedReportId(null);
                         }}
-                      >
-                        Kirjaudu
-                      </button>
-                    )}
-                  </>
-                )}
+                    >
+                      Kirjaudu
+                    </button>
+                  )}
+
+                </>
+              )}
+
+              {currentUser && (
+                <div style={{ marginTop: 'auto', paddingTop: 10 }}>
+                  <button onClick={handleLogout}>Kirjaudu ulos</button>
+                </div>
+              )}
             </div>
           </div>
         )}
