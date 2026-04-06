@@ -6,12 +6,18 @@ export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    if (password !== confirmPassword) {
+      setError('Salasanat eivät täsmää');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -60,7 +66,20 @@ export default function RegisterPage({ onRegistered }) {
             />
           </Form.Group>
 
-          <Button type="submit" disabled={loading}>
+          <Form.Group className="mb-3">
+            <Form.Label>Salasana uudelleen</Form.Label>
+            <Form.Control
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Button
+            type="submit"
+            disabled={loading || password !== confirmPassword}
+          >
             {loading ? 'Luodaan tiliä...' : 'Luo tili'}
           </Button>
         </Form>
