@@ -13,6 +13,9 @@ import L from 'leaflet';
 import MapControls from './ui/MapControls';
 import { fetchTheftReportMapItemsByBounds } from '../api/theftReportApi.js';
 
+const fallbackCenter = [62.601, 29.7636]; // Joensuu
+const initialZoom = 11;
+
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
 import marker1x from 'leaflet/dist/images/marker-icon.png';
@@ -156,6 +159,7 @@ function AutoCenterToUser({
 }
 
 export default function MapPage({
+  refreshKey,
   isMenuOpen,
   onLocationSelected,
   isPickingLocation,
@@ -173,8 +177,8 @@ export default function MapPage({
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
 
-  const fallbackCenter = [62.601, 29.7636]; // Joensuu
-  const initialZoom = 11;
+  // const fallbackCenter = [62.601, 29.7636]; // Joensuu
+  // const initialZoom = 11;
 
   //BTT 95
   const loadVisibleThefts = useCallback(async (map) => {
@@ -200,6 +204,13 @@ export default function MapPage({
       setLoadingThefts(false);
     }
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    loadVisibleThefts(map);
+  }, [refreshKey, loadVisibleThefts]);
 
   // BTT-27: hae data backendistä kerran sivun latauksessa
   useEffect(() => {
@@ -285,6 +296,13 @@ export default function MapPage({
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 0 }
     );
   }, []);
+
+  const handleReportCreated = async () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    await loadVisibleThefts(map);
+  };
 
   return (
     <div className="map-wrap" style={{ position: 'relative' }}>
