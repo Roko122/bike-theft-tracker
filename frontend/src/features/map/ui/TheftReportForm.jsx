@@ -218,19 +218,6 @@ export default function TheftReportForm({
 
       // ilmoitetaan parentille että uusi ilmoitus luotiin
       onCreated?.(created);
-      //await createTheftReport(payload);
-
-      // Kerrotaan seuraavalle sivulataukselle, että näytetään kartan päällä onnistumisviesti
-
-      //poistetaan se BTT 155
-      //sessionStorage.setItem('showMapSuccess', 'true');
-
-      // poistetaan tämä BTT 155
-      //window.location.reload();
-
-      // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
-      // clearLocation();
-      // setDescription(""); setTheftTime(""); ...
     } catch (err) {
       setError(err.message || 'Tallennus epäonnistui.');
     } finally {
