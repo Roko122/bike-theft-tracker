@@ -18,6 +18,11 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  // lisätään BTT155
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleReportCreated = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     let active = true;
@@ -58,7 +63,6 @@ export default function App() {
               // BTT26
               setIsPickingLocation(false);
               setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
-
             }}
           >
             <div onClick={(e) => e.stopPropagation()} className="d-grid gap-2">
@@ -100,8 +104,11 @@ export default function App() {
                     onLocationSelected={setSelectedLocation}
                     onStartPickFromMap={() => setIsPickingLocation(true)}
                     onStopPickFromMap={() => setIsPickingLocation(false)}
+                    // tätä muutettu BTT155
                     onCreated={() => {
-                      // kun ilmoitus luotu, suljetaan menu ja lopetetaan kartalta valinta
+                      handleReportCreated();
+
+                      // suljetaan menu
                       setOpen(false);
                       setShowForm(false);
                       setIsPickingLocation(false);
@@ -111,67 +118,73 @@ export default function App() {
               )}
 
               {showLogin && !showForm && !selectedReportId && !showRegister && (
-                  <>
-                    <button onClick={() => setShowLogin(false)}>← takaisin</button>
-                    <LoginPage
-                      onLoginSuccess={(user) => {
-                        setCurrentUser(user);
-                        setShowLogin(false);
-                      }}
-                      onFirstTime={() => {
-                        setShowLogin(false);
-                        setShowRegister(true);
-                      }}
-                    />
-                  </>
+                <>
+                  <button onClick={() => setShowLogin(false)}>
+                    ← takaisin
+                  </button>
+                  <LoginPage
+                    onLoginSuccess={(user) => {
+                      setCurrentUser(user);
+                      setShowLogin(false);
+                    }}
+                    onFirstTime={() => {
+                      setShowLogin(false);
+                      setShowRegister(true);
+                    }}
+                  />
+                </>
               )}
 
               {showRegister && !showForm && !selectedReportId && !showLogin && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setShowRegister(false);
-                        setShowLogin(true);
-                      }}
-                    >
-                      ← takaisin
-                    </button>
-                    <RegisterPage onRegistered={() => setShowRegister(false)} />
-                  </>
+                <>
+                  <button
+                    onClick={() => {
+                      setShowRegister(false);
+                      setShowLogin(true);
+                    }}
+                  >
+                    ← takaisin
+                  </button>
+                  <RegisterPage onRegistered={() => setShowRegister(false)} />
+                </>
               )}
 
               {/* 3) Perusvalikko */}
-              {!showForm && !selectedReportId && !showLogin && !showRegister && (
-                <>
-                  <button>heloo world</button>
+              {!showForm &&
+                !selectedReportId &&
+                !showLogin &&
+                !showRegister && (
+                  <>
+                    <button>heloo world</button>
 
-                  <button
-                    onClick={() => {
-                      setShowForm(true);
-                      setShowLogin(false);
-                      setShowRegister(false);
-                      setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
-                    }}
-                  >
-                    varkausilmoitus
-                  </button>
-                  {currentUser ? (
-                    <button disabled>Kirjautunut: {currentUser.username}</button>
-                  ) : (
                     <button
+                      onClick={() => {
+                        setShowForm(true);
+                        setShowLogin(false);
+                        setShowRegister(false);
+                        setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
+                      }}
+                    >
+                      varkausilmoitus
+                    </button>
+                    {currentUser ? (
+                      <button disabled>
+                        Kirjautunut: {currentUser.username}
+                      </button>
+                    ) : (
+                      <button
                         onClick={() => {
                           setShowLogin(true);
                           setShowRegister(false);
                           setShowForm(false);
                           setSelectedReportId(null);
                         }}
-                    >
-                      Kirjaudu
-                    </button>
-                  )}
-
-                </>
-              )}
+                      >
+                        Kirjaudu
+                      </button>
+                    )}
+                  </>
+                )}
             </div>
           </div>
         )}
@@ -179,6 +192,7 @@ export default function App() {
 
       <main className={open ? 'main main--dimmed' : 'main'}>
         <MapPage
+          refreshKey={refreshKey}
           isMenuOpen={open}
           selectedLocation={selectedLocation}
           isPickingLocation={isPickingLocation}
