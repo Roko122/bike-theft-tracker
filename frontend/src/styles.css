@@ -246,6 +246,91 @@ body {
 
   pointer-events: none;
 }
+
+.image-carousel {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.image-carousel__image {
+  display: block;
+  width: 100%;
+  height: var(--carousel-height, 180px);
+}
+
+.image-carousel__image--cover {
+  object-fit: cover;
+}
+
+.image-carousel__image--contain {
+  object-fit: contain;
+  background: #f3f4f6;
+}
+
+.image-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #111827;
+  font-size: 23px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: default !important;
+}
+
+.image-carousel__nav--prev {
+  left: 8px;
+}
+
+.image-carousel__nav--next {
+  right: 8px;
+}
+
+.image-carousel__counter {
+  position: absolute;
+  right: 8px;
+  bottom: 10px;
+  background: rgba(17, 24, 39, 0.75);
+  color: white;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+.image-carousel__dots {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.image-carousel__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 0;
+  cursor: default !important;
+}
+
+.image-carousel__dot--active {
+  background: white;
+}
+
 @media (max-width: 900px) {
   .map-menu {
     width: 60vw;
@@ -259,4 +344,3 @@ body {
     min-width: 0;
   }
 }
-

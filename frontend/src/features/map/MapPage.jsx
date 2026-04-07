@@ -11,7 +11,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import MapControls from './ui/MapControls';
-import { fetchTheftReportMapItemsByBounds } from '../api/theftReportApi.js';
+import {
+  fetchTheftReportMapItemsByBounds,
+  getTheftReports
+} from '../api/theftReportApi.js';
 
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -256,6 +259,8 @@ export default function MapPage({
     );
   }, []);
 
+
+
   const handleReportCreated = async () => {
     const map = mapRef.current;
     if (!map) return;
@@ -331,7 +336,7 @@ export default function MapPage({
                   <div style={{ display: 'grid', gap: 4 }}>
                     {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
                     {Object.entries(t)
-                      .filter(([key]) => key !== 'location') // piilotetaan koordinaatit
+                      .filter(([key]) => key !== 'location' && key !== 'images')
                       .map(([key, value]) => (
                         <div
                           key={key}
@@ -354,6 +359,7 @@ export default function MapPage({
                         </div>
                       ))}
                   </div>
+
                   {/* Alapainike */}
                   <div style={{ marginTop: 12 }}>
                     <button

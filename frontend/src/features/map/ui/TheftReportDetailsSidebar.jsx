@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTheftReportById } from '../../api/theftReportApi.js';
+import ImageCarousel from './ImageCarousel.jsx';
+import { getReportImageUrls } from '../utils/reportImages.js';
 
 // Yksittäinen “label + value” rivi sivupalkkiin
 function Row({ label, value }) {
@@ -118,6 +120,11 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
     };
   }, [reportId]);
 
+  const imageUrls = useMemo(
+    () => getReportImageUrls(report?.images),
+    [report?.images]
+  );
+
   return (
     <div className="details">
       <div className="details-header">
@@ -153,6 +160,13 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
           <div style={{ fontWeight: 700 }}>
             {report.brand ?? ''} {report.model ?? ''}
           </div>
+
+          {imageUrls.length > 0 && (
+            <div style={{ display: 'grid', gap: 6 }}>
+              <h4 style={{ margin: '12px 0 4px' }}>Kuvat</h4>
+              <ImageCarousel images={imageUrls} height={220} fit="contain" />
+            </div>
+          )}
 
           {/* Perustiedot */}
           <div style={{ display: 'grid', gap: 6 }}>
