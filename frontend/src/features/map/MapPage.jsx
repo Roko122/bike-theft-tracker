@@ -118,6 +118,7 @@ function VisibleTheftsLoader({ onLoad }) {
 }
 
 export default function MapPage({
+  refreshKey,
   isMenuOpen,
   onLocationSelected,
   isPickingLocation,
@@ -162,6 +163,13 @@ export default function MapPage({
       setLoadingThefts(false);
     }
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    loadVisibleThefts(map);
+  }, [refreshKey, loadVisibleThefts]);
 
   // BTT-27: hae data backendistä kerran sivun latauksessa
   useEffect(() => {
