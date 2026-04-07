@@ -112,6 +112,7 @@ export default function App() {
                       setOpen(false);
                       setShowForm(false);
                       setIsPickingLocation(false);
+                      setSelectedLocation(null);
                     }}
                   />
                 </>
