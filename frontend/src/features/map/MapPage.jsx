@@ -248,6 +248,13 @@ export default function MapPage({
     );
   }, []);
 
+  const handleReportCreated = async () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    await loadVisibleThefts(map);
+  };
+
   return (
     <div className="map-wrap" style={{ position: 'relative' }}>
       {showMapSuccess && (
