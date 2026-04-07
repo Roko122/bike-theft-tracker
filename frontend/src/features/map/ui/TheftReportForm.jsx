@@ -213,16 +213,11 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
-      await createTheftReport(payload);
 
-      // Kerrotaan seuraavalle sivulataukselle, että näytetään kartan päällä onnistumisviesti
-      sessionStorage.setItem('showMapSuccess', 'true');
+      const created = await createTheftReport(payload);
 
-      window.location.reload();
-
-      // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
-      // clearLocation();
-      // setDescription(""); setTheftTime(""); ...
+      // ilmoitetaan parentille että uusi ilmoitus luotiin
+      onCreated?.(created);
     } catch (err) {
       setError(err.message || 'Tallennus epäonnistui.');
     } finally {
