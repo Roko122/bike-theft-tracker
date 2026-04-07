@@ -213,12 +213,20 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
-      await createTheftReport(payload);
+
+      const created = await createTheftReport(payload);
+
+      // ilmoitetaan parentille että uusi ilmoitus luotiin
+      onCreated?.(created);
+      //await createTheftReport(payload);
 
       // Kerrotaan seuraavalle sivulataukselle, että näytetään kartan päällä onnistumisviesti
-      sessionStorage.setItem('showMapSuccess', 'true');
 
-      window.location.reload();
+      //poistetaan se BTT 155
+      //sessionStorage.setItem('showMapSuccess', 'true');
+
+      // poistetaan tämä BTT 155
+      //window.location.reload();
 
       // Halutessasi voit tyhjentää lomakkeen tässä (en tee automaattisesti, mutta helppo lisätä)
       // clearLocation();
