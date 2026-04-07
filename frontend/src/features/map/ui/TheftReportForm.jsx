@@ -214,9 +214,8 @@ export default function TheftReportForm({
 
     try {
       setLoading(true);
-      await createTheftReport(payload, images);
-
-      const created = await createTheftReport(payload);
+      const created = await createTheftReport(payload, images);
+      onCreated?.(created);
 
       // ilmoitetaan parentille että uusi ilmoitus luotiin
       onCreated?.(created);
