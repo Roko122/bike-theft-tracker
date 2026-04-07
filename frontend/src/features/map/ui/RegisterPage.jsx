@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
 import { registerUser } from '../../api/authApi.js';
+import { passwordsMatch, validatePassword } from './passwordValidation.js';
 
 export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');
@@ -9,12 +10,21 @@ export default function RegisterPage({ onRegistered }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const passwordValidation = validatePassword(password);
+  const isPasswordValid = passwordValidation.isValid;
+  const isPasswordMatch = passwordsMatch(password, confirmPassword);
+  const showPasswordMismatch = confirmPassword.length > 0 && !isPasswordMatch;
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
+    if (!isPasswordValid) {
+      setError('Salasana ei täytä vaatimuksia');
+      return;
+    }
+
+    if (!isPasswordMatch) {
       setError('Salasanat eivät täsmää');
       return;
     }
@@ -64,6 +74,18 @@ export default function RegisterPage({ onRegistered }) {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div style={{ marginTop: 6 }}>
+              {passwordValidation.rules.map((rule) => (
+                <Form.Text
+                  key={rule.key}
+                  className={
+                    rule.passed ? 'text-success d-block' : 'text-danger d-block'
+                  }
+                >
+                  {rule.label}
+                </Form.Text>
+              ))}
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -74,11 +96,16 @@ export default function RegisterPage({ onRegistered }) {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            {showPasswordMismatch && (
+              <Form.Text className="text-danger d-block">
+                Salasanat eivät ole samat
+              </Form.Text>
+            )}
           </Form.Group>
 
           <Button
             type="submit"
-            disabled={loading || password !== confirmPassword}
+            disabled={loading || !isPasswordValid || !isPasswordMatch}
           >
             {loading ? 'Luodaan tiliä...' : 'Luo tili'}
           </Button>
