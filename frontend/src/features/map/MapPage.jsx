@@ -117,6 +117,44 @@ function VisibleTheftsLoader({ onLoad }) {
   return null;
 }
 
+//BTT156 funktio
+function AutoCenterToUser({
+  fallbackCenter,
+  fallbackZoom = 11,
+  userZoom = 15
+}) {
+  const map = useMap();
+  const hasCenteredRef = useRef(false);
+
+  useEffect(() => {
+    if (hasCenteredRef.current) return;
+
+    hasCenteredRef.current = true;
+
+    if (!('geolocation' in navigator)) {
+      map.setView(fallbackCenter, fallbackZoom);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], userZoom);
+      },
+      () => {
+        map.setView(fallbackCenter, fallbackZoom);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  }, [map, fallbackCenter, fallbackZoom, userZoom]);
+
+  return null;
+}
+
 export default function MapPage({
   isMenuOpen,
   onLocationSelected,
@@ -135,7 +173,7 @@ export default function MapPage({
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
 
-  const center = [62.601, 29.7636]; // Joensuu
+  const fallbackCenter = [62.601, 29.7636]; // Joensuu
   const initialZoom = 11;
 
   //BTT 95
@@ -172,7 +210,7 @@ export default function MapPage({
         setLoadingThefts(true);
         setTheftsError(null);
 
-        const data = await getTheftReports();
+        //const data = await getTheftReports();
         //if (alive) setThefts(data);
         // uutta btt43
 
@@ -270,8 +308,9 @@ export default function MapPage({
         </div>
       )}
 
-      <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
+      <MapContainer center={fallbackCenter} zoom={initialZoom} scrollWheelZoom>
         <MapRefBinder mapRef={mapRef} />
+        <AutoCenterToUser fallbackCenter={fallbackCenter} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
 
         {/* UUSI: karttaklikki -> onLocationSelected */}
