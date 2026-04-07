@@ -120,22 +120,21 @@ function VisibleTheftsLoader({ onLoad }) {
   return null;
 }
 
-//BTT156 funktio
 function AutoCenterToUser({
   fallbackCenter,
   fallbackZoom = 11,
   userZoom = 15
 }) {
   const map = useMap();
-  const hasCenteredRef = useRef(false);
 
   useEffect(() => {
-    if (hasCenteredRef.current) return;
+    const hasCentered = sessionStorage.getItem('mapCentered');
 
-    hasCenteredRef.current = true;
+    if (hasCentered === 'true') return;
 
     if (!('geolocation' in navigator)) {
       map.setView(fallbackCenter, fallbackZoom);
+      sessionStorage.setItem('mapCentered', 'true');
       return;
     }
 
@@ -143,9 +142,11 @@ function AutoCenterToUser({
       (pos) => {
         const { latitude, longitude } = pos.coords;
         map.setView([latitude, longitude], userZoom);
+        sessionStorage.setItem('mapCentered', 'true');
       },
       () => {
         map.setView(fallbackCenter, fallbackZoom);
+        sessionStorage.setItem('mapCentered', 'true');
       },
       {
         enableHighAccuracy: true,
