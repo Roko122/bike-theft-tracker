@@ -1,9 +1,10 @@
 package com.rkrs.bikethefttracker.mapper;
 
-import com.rkrs.bikethefttracker.entity.Bike;
-import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.BikeResponse;
+import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.UserResponse;
+import com.rkrs.bikethefttracker.entity.Bike;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,8 +16,9 @@ public class BikeMapper {
         this.userMapper = userMapper;
     }
 
-    public BikeResponse toBikeResponse(Bike bike) {
-        UserResponse owner = userMapper.toUserResponse(bike.getUser());
+    public BikeResponse toBikeResponse(TheftReport theftReport) {
+        UserResponse owner = userMapper.toUserResponse(theftReport.getUser());
+        Bike bike = theftReport.getBike();
 
         return new BikeResponse(
                 bike.getId(),

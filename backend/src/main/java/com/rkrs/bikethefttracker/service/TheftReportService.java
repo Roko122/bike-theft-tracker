@@ -51,8 +51,8 @@ public class TheftReportService {
                                                  User user,
                                                  List<MultipartFile> images) {
 
-        Bike createdBike = this.createBikeWithImages(createTheftReportRequest.bike(), user, images);
-        TheftReport createdTheftReport = this.createTheftReport(createTheftReportRequest, createdBike);
+        Bike createdBike = this.createBikeWithImages(createTheftReportRequest.bike(), images);
+        TheftReport createdTheftReport = this.createTheftReport(createTheftReportRequest, createdBike, user);
 
         return theftReportMapper.toTheftReportResponse(createdTheftReport);
     }
@@ -65,15 +65,15 @@ public class TheftReportService {
     }
 
     public List<TheftReportResponse> getUsersTheftReports(User user) {
-        List<TheftReport> theftReports = theftReportRepository.findAllByBikeUser(user);
+        List<TheftReport> theftReports = theftReportRepository.findAllByUser(user);
 
         return theftReports.stream()
                 .map(theftReportMapper::toTheftReportResponse)
                 .toList();
     }
 
-    private Bike createBikeWithImages(CreateBikeRequest bikeDto, User user, List<MultipartFile> images) {
-        Bike createdBike = bikeService.createBike(bikeDto, user);
+    private Bike createBikeWithImages(CreateBikeRequest bikeDto, List<MultipartFile> images) {
+        Bike createdBike = bikeService.createBike(bikeDto);
 
         if (images != null) {
             List<String> imagePaths = imageStorageService.saveImages(images, "bikes", createdBike.getId());
@@ -83,9 +83,10 @@ public class TheftReportService {
         return createdBike;
     }
 
-    private TheftReport createTheftReport(CreateTheftReportRequest theftReportDto, Bike createdBike) {
+    private TheftReport createTheftReport(CreateTheftReportRequest theftReportDto, Bike createdBike, User user) {
         TheftReport theftReportToSave = theftReportMapper.toTheftReport(theftReportDto);
         theftReportToSave.setBike(createdBike);
+        theftReportToSave.setUser(user);
 
         return theftReportRepository.save(theftReportToSave);
     }

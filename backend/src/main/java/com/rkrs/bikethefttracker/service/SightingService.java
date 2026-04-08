@@ -44,7 +44,7 @@ public class SightingService {
         this.addImage(image, theftReportId, createdSighting);
 
         //Create a notification
-        notificationService.createNotification(NotificationType.NEW_SIGHTING, theftReport.getBike().getUser(), theftReport);
+        notificationService.createNotification(NotificationType.NEW_SIGHTING, theftReport.getUser(), theftReport);
 
         return sightingMapper.toSightingResponse(createdSighting, user.getUsername());
     }
@@ -55,7 +55,7 @@ public class SightingService {
                 new NotFoundException("TheftReport with id " + theftReportId + " not found.")
         );
 
-        if (!theftReport.getBike().getUser().getId().equals(user.getId())) {
+        if (!theftReport.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Not allowed.");
         }
 
