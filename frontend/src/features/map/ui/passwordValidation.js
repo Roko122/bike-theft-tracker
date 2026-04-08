@@ -1,10 +1,4 @@
-import { X } from 'lucide-react';
 const SPECIAL_CHAR_REGEX = /[^A-Za-z0-9]/;
-const App = () => {
-  return <X />;
-};
-
-export default App;
 
 const PASSWORD_RULES = [
   {
