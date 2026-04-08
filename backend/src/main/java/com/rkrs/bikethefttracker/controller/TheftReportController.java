@@ -72,4 +72,16 @@ public class TheftReportController {
 
         return new ResponseEntity<>(createdTheftReport, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TheftReportResponse> updateTheftReport(
+            @Valid @RequestBody CreateTheftReportRequest updateTheftReportRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable UUID id) {
+
+        TheftReportResponse updatedTheftReport = theftReportService.updateTheftReport(
+                updateTheftReportRequest, customUserDetails.getUserEntity(), id);
+
+        return new ResponseEntity<>(updatedTheftReport, HttpStatus.OK);
+    }
 }
