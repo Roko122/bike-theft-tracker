@@ -31,7 +31,7 @@ public interface TheftReportRepository extends JpaRepository<TheftReport, UUID> 
     """)
     List<TheftReportMapItemData> findAllTheftReportMapItems();
 
-    @EntityGraph(attributePaths = {"bike", "bike.user", "bike.images"})
+    @EntityGraph(attributePaths = {"bike", "user", "bike.images"})
     Optional<TheftReport> findById(UUID id);
 
     @Query("""
@@ -56,5 +56,5 @@ public interface TheftReportRepository extends JpaRepository<TheftReport, UUID> 
                                                                    double maxLon,
                                                                    double maxLat);
 
-    List<TheftReport> findAllByBikeUser(User user);
+    List<TheftReport> findAllByUser(User user);
 }

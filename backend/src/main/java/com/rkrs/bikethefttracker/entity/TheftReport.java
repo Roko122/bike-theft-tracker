@@ -34,6 +34,10 @@ public class TheftReport {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bike_id")
     private Bike bike;

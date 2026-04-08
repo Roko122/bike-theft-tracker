@@ -3,7 +3,6 @@ package com.rkrs.bikethefttracker.service;
 import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.entity.Bike;
 import com.rkrs.bikethefttracker.entity.BikeImage;
-import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.mapper.BikeMapper;
 import com.rkrs.bikethefttracker.repository.BikeRepository;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,8 @@ public class BikeService {
         this.bikeRepository = bikeRepository;
     }
 
-    public Bike createBike(CreateBikeRequest bike, User user) {
+    public Bike createBike(CreateBikeRequest bike) {
         Bike bikeToCreate = bikeMapper.toBike(bike);
-        bikeToCreate.setUser(user);
         return bikeRepository.save(bikeToCreate);
     }
 

@@ -37,10 +37,6 @@ public class Bike {
     @Column(nullable = false, columnDefinition = "text")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Builder.Default
     @OneToMany(mappedBy = "bike", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BikeImage> images = new ArrayList<>();
