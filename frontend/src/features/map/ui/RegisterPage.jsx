@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Card, Form, Button, Alert } from 'react-bootstrap';
+import { Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { registerUser } from '../../api/authApi.js';
+import { passwordsMatch, validatePassword } from './passwordValidation.js';
+import { Eye, EyeOff, X } from 'lucide-react';
 
 export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');
@@ -9,12 +11,26 @@ export default function RegisterPage({ onRegistered }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const passwordValidation = validatePassword(password);
+  const unmetPasswordRules = passwordValidation.rules.filter(
+    (rule) => !rule.passed
+  );
+  const isPasswordValid = passwordValidation.isValid;
+  const isPasswordMatch = passwordsMatch(password, confirmPassword);
+  const showPasswordMismatch = confirmPassword.length > 0 && !isPasswordMatch;
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
+    if (!isPasswordValid) {
+      setError('Salasana ei täytä vaatimuksia');
+      return;
+    }
+
+    if (!isPasswordMatch) {
       setError('Salasanat eivät täsmää');
       return;
     }
@@ -58,27 +74,72 @@ export default function RegisterPage({ onRegistered }) {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Salasana</Form.Label>
-            <Form.Control
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <InputGroup>
+              <Form.Control
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? 'Piilota' : 'Näytä'}
+                </span>
+              </Button>
+            </InputGroup>
+            <div style={{ marginTop: 6 }}>
+              {unmetPasswordRules.map((rule) => (
+                <Form.Text key={rule.key} className="text-danger d-block">
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <X size={14} />
+                    {rule.label}
+                  </span>
+                </Form.Text>
+              ))}
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Salasana uudelleen</Form.Label>
-            <Form.Control
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <InputGroup>
+              <Form.Control
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? 'Piilota' : 'Näytä'}
+                </span>
+              </Button>
+            </InputGroup>
+            {showPasswordMismatch && (
+              <Form.Text className="text-danger d-block">
+                Salasanat eivät ole samat
+              </Form.Text>
+            )}
           </Form.Group>
 
           <Button
             type="submit"
-            disabled={loading || password !== confirmPassword}
+            disabled={loading || !isPasswordValid || !isPasswordMatch}
           >
             {loading ? 'Luodaan tiliä...' : 'Luo tili'}
           </Button>
