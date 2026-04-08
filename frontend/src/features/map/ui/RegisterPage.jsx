@@ -11,6 +11,9 @@ export default function RegisterPage({ onRegistered }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const passwordValidation = validatePassword(password);
+  const unmetPasswordRules = passwordValidation.rules.filter(
+    (rule) => !rule.passed
+  );
   const isPasswordValid = passwordValidation.isValid;
   const isPasswordMatch = passwordsMatch(password, confirmPassword);
   const showPasswordMismatch = confirmPassword.length > 0 && !isPasswordMatch;
@@ -75,13 +78,8 @@ export default function RegisterPage({ onRegistered }) {
               required
             />
             <div style={{ marginTop: 6 }}>
-              {passwordValidation.rules.map((rule) => (
-                <Form.Text
-                  key={rule.key}
-                  className={
-                    rule.passed ? 'text-success d-block' : 'text-danger d-block'
-                  }
-                >
+              {unmetPasswordRules.map((rule) => (
+                <Form.Text key={rule.key} className="text-danger d-block">
                   {rule.label}
                 </Form.Text>
               ))}
