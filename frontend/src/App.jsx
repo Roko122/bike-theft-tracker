@@ -5,6 +5,9 @@ import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSideb
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
 import { getCurrentUser, logoutUser } from './features/api/authApi.js';
+import { FiMenu, FiX } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
+import { FaCat } from 'react-icons/fa';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -59,7 +62,7 @@ export default function App() {
     <div className="app-shell">
       <header className="header">
         <button className="menu-btn" onClick={() => setOpen((v) => !v)}>
-          {open ? '✕' : '☰'}
+          {open ? <FiX /> : <FiMenu />}
         </button>
 
         <div className="title">
@@ -95,7 +98,8 @@ export default function App() {
                       setSelectedReportId(null);
                     }}
                   >
-                    ← takaisin
+                    <FiArrowLeft />
+                    <span>Takaisin</span>
                   </button>
                   <TheftReportDetailsSidebar
                     reportId={selectedReportId}
@@ -116,7 +120,8 @@ export default function App() {
                       setIsPickingLocation(false);
                     }}
                   >
-                    ← takaisin
+                    <FiArrowLeft />
+                    <span>Takaisin</span>
                   </button>
 
                   <TheftReportForm
@@ -141,7 +146,8 @@ export default function App() {
               {showLogin && !showForm && !selectedReportId && !showRegister && (
                 <>
                   <button onClick={() => setShowLogin(false)}>
-                    ← takaisin
+                    <FiArrowLeft />
+                    <span>Takaisin</span>
                   </button>
                   <LoginPage
                     onLoginSuccess={(user) => {
@@ -164,7 +170,8 @@ export default function App() {
                       setShowLogin(true);
                     }}
                   >
-                    ← takaisin
+                    <FiArrowLeft />
+                    <span>Takaisin</span>
                   </button>
                   <RegisterPage onRegistered={() => setShowRegister(false)} />
                 </>
@@ -176,7 +183,11 @@ export default function App() {
                 !showLogin &&
                 !showRegister && (
                   <>
-                    <button>heloo world</button>
+                    <button>
+                      {FaCat && <FaCat />}
+                      <span> heloo world </span>
+                      {FaCat && <FaCat />}
+                    </button>
 
                     <button
                       onClick={() => {
@@ -200,13 +211,12 @@ export default function App() {
                           setShowForm(false);
                           setSelectedReportId(null);
                         }}
-                    >
-                      Kirjaudu
-                    </button>
-                  )}
-
-                </>
-              )}
+                      >
+                        Kirjaudu
+                      </button>
+                    )}
+                  </>
+                )}
 
               {currentUser && (
                 <div style={{ marginTop: 'auto', paddingTop: 10 }}>
