@@ -36,9 +36,6 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<Bike> bikes = new ArrayList<>();
-
     @PrePersist
     private void onCreate() {
         createdAt = LocalDateTime.now();

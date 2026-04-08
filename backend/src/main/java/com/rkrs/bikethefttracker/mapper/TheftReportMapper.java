@@ -23,7 +23,7 @@ public class TheftReportMapper {
 
     public TheftReportResponse toTheftReportResponse(TheftReport theftReport) {
         GeoPoint location = geoPointMapper.toGeoPoint(theftReport.getLocation());
-        BikeResponse bike = bikeMapper.toBikeResponse(theftReport.getBike());
+        BikeResponse bike = bikeMapper.toBikeResponse(theftReport);
         List<String> images = this.imagePaths(theftReport.getBike().getImages());
 
         return new TheftReportResponse(
