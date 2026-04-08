@@ -5,9 +5,7 @@ import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSideb
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
 import { getCurrentUser, logoutUser } from './features/api/authApi.js';
-import { FiMenu, FiX } from 'react-icons/fi';
-import { FiArrowLeft } from 'react-icons/fi';
-import { FaCat } from 'react-icons/fa';
+import { ArrowLeft, Cat, Menu, X } from 'lucide-react';
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -62,7 +60,7 @@ export default function App() {
     <div className="app-shell">
       <header className="header">
         <button className="menu-btn" onClick={() => setOpen((v) => !v)}>
-          {open ? <FiX /> : <FiMenu />}
+          {open ? <X /> : <Menu />}
         </button>
 
         <div className="title">
@@ -98,7 +96,7 @@ export default function App() {
                       setSelectedReportId(null);
                     }}
                   >
-                    <FiArrowLeft />
+                    <ArrowLeft />
                     <span>Takaisin</span>
                   </button>
                   <TheftReportDetailsSidebar
@@ -120,7 +118,7 @@ export default function App() {
                       setIsPickingLocation(false);
                     }}
                   >
-                    <FiArrowLeft />
+                    <ArrowLeft />
                     <span>Takaisin</span>
                   </button>
 
@@ -146,7 +144,7 @@ export default function App() {
               {showLogin && !showForm && !selectedReportId && !showRegister && (
                 <>
                   <button onClick={() => setShowLogin(false)}>
-                    <FiArrowLeft />
+                    <ArrowLeft />
                     <span>Takaisin</span>
                   </button>
                   <LoginPage
@@ -170,7 +168,7 @@ export default function App() {
                       setShowLogin(true);
                     }}
                   >
-                    <FiArrowLeft />
+                    <ArrowLeft />
                     <span>Takaisin</span>
                   </button>
                   <RegisterPage onRegistered={() => setShowRegister(false)} />
@@ -184,9 +182,9 @@ export default function App() {
                 !showRegister && (
                   <>
                     <button>
-                      {FaCat && <FaCat />}
+                      <Cat />
                       <span> heloo world </span>
-                      {FaCat && <FaCat />}
+                      <Cat />
                     </button>
 
                     <button
