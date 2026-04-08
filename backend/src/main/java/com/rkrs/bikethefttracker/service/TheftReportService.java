@@ -4,9 +4,12 @@ import com.rkrs.bikethefttracker.dto.*;
 import com.rkrs.bikethefttracker.entity.Bike;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.exception.AccessDeniedException;
 import com.rkrs.bikethefttracker.exception.NotFoundException;
+import com.rkrs.bikethefttracker.mapper.GeoPointMapper;
 import com.rkrs.bikethefttracker.mapper.TheftReportMapper;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,12 +24,14 @@ public class TheftReportService {
     private final TheftReportMapper theftReportMapper;
     private final BikeService bikeService;
     private final ImageStorageService imageStorageService;
+    private final GeoPointMapper geoPointMapper;
 
-    public TheftReportService(TheftReportRepository theftReportRepository, TheftReportMapper theftReportMapper, BikeService bikeService, ImageStorageService imageStorageService) {
+    public TheftReportService(TheftReportRepository theftReportRepository, TheftReportMapper theftReportMapper, BikeService bikeService, ImageStorageService imageStorageService, GeoPointMapper geoPointMapper) {
         this.theftReportRepository = theftReportRepository;
         this.theftReportMapper = theftReportMapper;
         this.bikeService = bikeService;
         this.imageStorageService = imageStorageService;
+        this.geoPointMapper = geoPointMapper;
     }
 
     public List<TheftReportMapItemResponse> getAllTheftReportMapItems() {
@@ -58,8 +63,7 @@ public class TheftReportService {
     }
 
     public TheftReportResponse getTheftReportResponse(UUID id) {
-        TheftReport theftReport = theftReportRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("TheftReport with id " + id + "was not found."));
+        TheftReport theftReport = fetchTheftReport(id);
 
         return theftReportMapper.toTheftReportResponse(theftReport);
     }
@@ -70,6 +74,22 @@ public class TheftReportService {
         return theftReports.stream()
                 .map(theftReportMapper::toTheftReportResponse)
                 .toList();
+    }
+
+    public TheftReportResponse updateTheftReport(CreateTheftReportRequest updateTheftReportRequest,
+                                                 User user,
+                                                 UUID theftReportId) {
+
+        TheftReport theftReportToUpdate = fetchTheftReport(theftReportId);
+        //check if logged-in user owns theft report
+        if (!theftReportToUpdate.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Not allowed.");
+        }
+
+        this.updateTheftReportData(theftReportToUpdate, updateTheftReportRequest);
+        TheftReport updateTheftReport = theftReportRepository.save(theftReportToUpdate);
+
+        return theftReportMapper.toTheftReportResponse(updateTheftReport);
     }
 
     private Bike createBikeWithImages(CreateBikeRequest bikeDto, List<MultipartFile> images) {
@@ -89,5 +109,28 @@ public class TheftReportService {
         theftReportToSave.setUser(user);
 
         return theftReportRepository.save(theftReportToSave);
+    }
+
+    private TheftReport fetchTheftReport(UUID id) {
+        return theftReportRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("TheftReport with id " + id + " not found")
+        );
+    }
+
+    private void updateTheftReportData(TheftReport toUpdate, CreateTheftReportRequest data) {
+        Bike bike = toUpdate.getBike();
+        Point geoPoint = geoPointMapper.toPoint(data.location());
+
+        toUpdate.setTheftAddress(data.theftAddress());
+        toUpdate.setLocation(geoPoint);
+        toUpdate.setTheftTime(data.theftTime());
+        toUpdate.setDescription(data.description());
+
+        bike.setDescription(data.bike().description());
+        bike.setBrand(data.bike().brand());
+        bike.setColor(data.bike().color());
+        bike.setModel(data.bike().model());
+        bike.setSerialNumber(data.bike().serialNumber());
+        bike.setType(data.bike().type());
     }
 }
