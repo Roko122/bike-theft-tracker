@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Form, Button, Alert } from 'react-bootstrap';
+import { Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { registerUser } from '../../api/authApi.js';
 import { passwordsMatch, validatePassword } from './passwordValidation.js';
 
@@ -10,7 +10,8 @@ export default function RegisterPage({ onRegistered }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPasswords, setShowPasswords] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const passwordValidation = validatePassword(password);
   const unmetPasswordRules = passwordValidation.rules.filter(
     (rule) => !rule.passed
@@ -72,12 +73,21 @@ export default function RegisterPage({ onRegistered }) {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Salasana</Form.Label>
-            <Form.Control
-              type={showPasswords ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <InputGroup>
+              <Form.Control
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? 'Piilota' : 'Näytä'}
+              </Button>
+            </InputGroup>
             <div style={{ marginTop: 6 }}>
               {unmetPasswordRules.map((rule) => (
                 <Form.Text key={rule.key} className="text-danger d-block">
@@ -89,26 +99,27 @@ export default function RegisterPage({ onRegistered }) {
 
           <Form.Group className="mb-3">
             <Form.Label>Salasana uudelleen</Form.Label>
-            <Form.Control
-              type={showPasswords ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <InputGroup>
+              <Form.Control
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+              >
+                {showConfirmPassword ? 'Piilota' : 'Näytä'}
+              </Button>
+            </InputGroup>
             {showPasswordMismatch && (
               <Form.Text className="text-danger d-block">
                 Salasanat eivät ole samat
               </Form.Text>
             )}
           </Form.Group>
-
-          <Form.Check
-            type="checkbox"
-            id="show-passwords"
-            label="Näytä salasanat"
-            checked={showPasswords}
-            onChange={(e) => setShowPasswords(e.target.checked)}
-          />
 
           <Button
             type="submit"
