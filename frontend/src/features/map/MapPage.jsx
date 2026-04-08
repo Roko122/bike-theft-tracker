@@ -16,6 +16,9 @@ import {
   getTheftReports
 } from '../api/theftReportApi.js';
 
+const fallbackCenter = [62.601, 29.7636]; // Joensuu
+const initialZoom = 11;
+
 // Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
 import marker1x from 'leaflet/dist/images/marker-icon.png';
@@ -120,6 +123,44 @@ function VisibleTheftsLoader({ onLoad }) {
   return null;
 }
 
+//BTT156 funktio
+function AutoCenterToUser({
+  fallbackCenter,
+  fallbackZoom = 11,
+  userZoom = 13
+}) {
+  const map = useMap();
+  const hasCenteredRef = useRef(false);
+
+  useEffect(() => {
+    if (hasCenteredRef.current) return;
+
+    hasCenteredRef.current = true;
+
+    if (!('geolocation' in navigator)) {
+      map.setView(fallbackCenter, fallbackZoom);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], userZoom);
+      },
+      () => {
+        map.setView(fallbackCenter, fallbackZoom);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  }, [map, fallbackCenter, fallbackZoom, userZoom]);
+
+  return null;
+}
+
 export default function MapPage({
   refreshKey,
   isMenuOpen,
@@ -139,8 +180,8 @@ export default function MapPage({
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
 
-  const center = [62.601, 29.7636]; // Joensuu
-  const initialZoom = 11;
+  // const fallbackCenter = [62.601, 29.7636]; // Joensuu
+  // const initialZoom = 11;
 
   //BTT 95
   const loadVisibleThefts = useCallback(async (map) => {
@@ -183,7 +224,7 @@ export default function MapPage({
         setLoadingThefts(true);
         setTheftsError(null);
 
-        const data = await getTheftReports();
+        //const data = await getTheftReports();
         //if (alive) setThefts(data);
         // uutta btt43
 
@@ -258,15 +299,7 @@ export default function MapPage({
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 0 }
     );
   }, []);
-
-
-
-  const handleReportCreated = async () => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    await loadVisibleThefts(map);
-  };
+  // tässä oli
 
   return (
     <div className="map-wrap" style={{ position: 'relative' }}>
@@ -290,8 +323,10 @@ export default function MapPage({
         </div>
       )}
 
-      <MapContainer center={center} zoom={initialZoom} scrollWheelZoom>
+      <MapContainer center={fallbackCenter} zoom={initialZoom} scrollWheelZoom>
         <MapRefBinder mapRef={mapRef} />
+        <AutoCenterToUser fallbackCenter={fallbackCenter} />
+
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
 
         {/* UUSI: karttaklikki -> onLocationSelected */}
@@ -359,7 +394,6 @@ export default function MapPage({
                         </div>
                       ))}
                   </div>
-
                   {/* Alapainike */}
                   <div style={{ marginTop: 12 }}>
                     <button
