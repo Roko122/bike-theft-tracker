@@ -10,6 +10,7 @@ export default function RegisterPage({ onRegistered }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
   const passwordValidation = validatePassword(password);
   const unmetPasswordRules = passwordValidation.rules.filter(
     (rule) => !rule.passed
@@ -72,7 +73,7 @@ export default function RegisterPage({ onRegistered }) {
           <Form.Group className="mb-3">
             <Form.Label>Salasana</Form.Label>
             <Form.Control
-              type="password"
+              type={showPasswords ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -89,7 +90,7 @@ export default function RegisterPage({ onRegistered }) {
           <Form.Group className="mb-3">
             <Form.Label>Salasana uudelleen</Form.Label>
             <Form.Control
-              type="password"
+              type={showPasswords ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -100,6 +101,14 @@ export default function RegisterPage({ onRegistered }) {
               </Form.Text>
             )}
           </Form.Group>
+
+          <Form.Check
+            type="checkbox"
+            id="show-passwords"
+            label="Näytä salasanat"
+            checked={showPasswords}
+            onChange={(e) => setShowPasswords(e.target.checked)}
+          />
 
           <Button
             type="submit"
