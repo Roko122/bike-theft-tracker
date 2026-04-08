@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { registerUser } from '../../api/authApi.js';
 import { passwordsMatch, validatePassword } from './passwordValidation.js';
+import { Eye, EyeOff, X } from 'lucide-react';
 
 export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');
@@ -85,13 +86,25 @@ export default function RegisterPage({ onRegistered }) {
                 variant="outline-secondary"
                 onClick={() => setShowPassword((v) => !v)}
               >
-                {showPassword ? 'Piilota' : 'Näytä'}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? 'Piilota' : 'Näytä'}
+                </span>
               </Button>
             </InputGroup>
             <div style={{ marginTop: 6 }}>
               {unmetPasswordRules.map((rule) => (
                 <Form.Text key={rule.key} className="text-danger d-block">
-                  {rule.label}
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <X size={14} />
+                    {rule.label}
+                  </span>
                 </Form.Text>
               ))}
             </div>
@@ -111,7 +124,10 @@ export default function RegisterPage({ onRegistered }) {
                 variant="outline-secondary"
                 onClick={() => setShowConfirmPassword((v) => !v)}
               >
-                {showConfirmPassword ? 'Piilota' : 'Näytä'}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? 'Piilota' : 'Näytä'}
+                </span>
               </Button>
             </InputGroup>
             {showPasswordMismatch && (
