@@ -200,13 +200,12 @@ export default function App() {
                           setShowForm(false);
                           setSelectedReportId(null);
                         }}
-                    >
-                      Kirjaudu
-                    </button>
-                  )}
-
-                </>
-              )}
+                      >
+                        Kirjaudu
+                      </button>
+                    )}
+                  </>
+                )}
 
               {currentUser && (
                 <div style={{ marginTop: 'auto', paddingTop: 10 }}>
