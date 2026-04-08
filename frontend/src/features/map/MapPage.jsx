@@ -179,6 +179,7 @@ export default function MapPage({
   const [loadingThefts, setLoadingThefts] = useState(true);
   const [theftsError, setTheftsError] = useState(null);
   const [showMapSuccess, setShowMapSuccess] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
   // const fallbackCenter = [62.601, 29.7636]; // Joensuu
   // const initialZoom = 11;
@@ -291,6 +292,7 @@ export default function MapPage({
         const { latitude, longitude } = pos.coords;
         console.log('SAIN SIJAINNIN:', latitude, longitude);
 
+        setUserLocation({ latitude, longitude });
         map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.2 });
       },
       (err) => {
@@ -349,6 +351,18 @@ export default function MapPage({
             pathOptions={{
               color: 'red',
               fillColor: 'red',
+              fillOpacity: 1
+            }}
+          />
+        )}
+
+        {userLocation && (
+          <CircleMarker
+            center={[userLocation.latitude, userLocation.longitude]}
+            radius={8}
+            pathOptions={{
+              color: '#0d6efd',
+              fillColor: '#0d6efd',
               fillOpacity: 1
             }}
           />
