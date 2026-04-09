@@ -3,6 +3,7 @@ package com.rkrs.bikethefttracker.controller;
 import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
 import com.rkrs.bikethefttracker.dto.TheftReportResponse;
+import com.rkrs.bikethefttracker.dto.UpdateTheftReportRequest;
 import com.rkrs.bikethefttracker.entity.User;
 import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import com.rkrs.bikethefttracker.service.TheftReportService;
@@ -75,7 +76,7 @@ public class TheftReportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TheftReportResponse> updateTheftReport(
-            @Valid @RequestBody CreateTheftReportRequest updateTheftReportRequest,
+            @Valid @RequestBody UpdateTheftReportRequest updateTheftReportRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable UUID id) {
 

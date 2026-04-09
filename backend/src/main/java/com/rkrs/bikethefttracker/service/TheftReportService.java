@@ -76,7 +76,7 @@ public class TheftReportService {
                 .toList();
     }
 
-    public TheftReportResponse updateTheftReport(CreateTheftReportRequest updateTheftReportRequest,
+    public TheftReportResponse updateTheftReport(UpdateTheftReportRequest updateTheftReportRequest,
                                                  User user,
                                                  UUID theftReportId) {
 
@@ -117,7 +117,7 @@ public class TheftReportService {
         );
     }
 
-    private void updateTheftReportData(TheftReport toUpdate, CreateTheftReportRequest data) {
+    private void updateTheftReportData(TheftReport toUpdate, UpdateTheftReportRequest data) {
         Bike bike = toUpdate.getBike();
         Point geoPoint = geoPointMapper.toPoint(data.location());
 
