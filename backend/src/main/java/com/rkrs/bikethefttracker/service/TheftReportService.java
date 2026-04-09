@@ -80,6 +80,11 @@ public class TheftReportService {
                                                  User user,
                                                  UUID theftReportId) {
 
+        //Check if ids match
+        if (!updateTheftReportRequest.id().equals(theftReportId)) {
+            throw new IllegalArgumentException("Request IDs do not match.");
+        }
+
         TheftReport theftReportToUpdate = fetchTheftReport(theftReportId);
         //check if logged-in user owns theft report
         if (!theftReportToUpdate.getUser().getId().equals(user.getId())) {
