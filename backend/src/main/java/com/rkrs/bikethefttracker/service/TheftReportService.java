@@ -76,6 +76,7 @@ public class TheftReportService {
                 .toList();
     }
 
+    @Transactional
     public TheftReportResponse updateTheftReport(UpdateTheftReportRequest updateTheftReportRequest,
                                                  User user,
                                                  UUID theftReportId) {
@@ -86,15 +87,23 @@ public class TheftReportService {
         }
 
         TheftReport theftReportToUpdate = fetchTheftReport(theftReportId);
-        //check if logged-in user owns theft report
-        if (!theftReportToUpdate.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("Not allowed.");
-        }
+        this.checkOwnership(theftReportToUpdate, user);
 
         this.updateTheftReportData(theftReportToUpdate, updateTheftReportRequest);
         TheftReport updateTheftReport = theftReportRepository.save(theftReportToUpdate);
 
         return theftReportMapper.toTheftReportResponse(updateTheftReport);
+    }
+
+    @Transactional
+    public TheftReportResponse updateStatus(UpdateStatusRequest updateStatusRequest, User user, UUID id) {
+        TheftReport toUpdate = fetchTheftReport(id);
+        this.checkOwnership(toUpdate, user);
+
+        toUpdate.setStatus(updateStatusRequest.status());
+
+        TheftReport updated = theftReportRepository.save(toUpdate);
+        return theftReportMapper.toTheftReportResponse(updated);
     }
 
     private Bike createBikeWithImages(CreateBikeRequest bikeDto, List<MultipartFile> images) {
@@ -120,6 +129,13 @@ public class TheftReportService {
         return theftReportRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("TheftReport with id " + id + " not found")
         );
+    }
+
+    private void checkOwnership(TheftReport theftReport, User user) {
+        //check if logged-in user owns theft report
+        if (!theftReport.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Not allowed.");
+        }
     }
 
     private void updateTheftReportData(TheftReport toUpdate, UpdateTheftReportRequest data) {
