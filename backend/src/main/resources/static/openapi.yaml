@@ -229,6 +229,34 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/TheftReportResponse"
+  /theft-reports/{id}/status:
+    patch:
+      tags:
+        - TheftReports
+      security:
+        - access-token: [ ]
+      summary: "Update status of logged-in user's TheftReport"
+      operationId: "updateTheftReportStatus"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TheftReportResponse"
 
   /theft-reports/{id}/sightings:
     get:
@@ -763,3 +791,13 @@ components:
             "http://localhost:8080/images/bikes/3fa85f64-5717-4562-b3fc-2c963f66afa6/fca2a871-53f2-4077-9c57-c6c1724c3094.jpeg",
             "http://localhost:8080/images/bikes/3fa85f64-5717-4562-b3fc-2c963f66afa6/dbf20e73-6b64-4ad8-a378-69c6cf5af17e.jpeg"
           ]
+    UpdateStatusRequest:
+      type: "object"
+      properties:
+        status:
+          type: "string"
+          enum:
+            - "ACTIVE"
+            - "SIGHTED"
+            - "RECOVERED"
+            - "CLOSED"
