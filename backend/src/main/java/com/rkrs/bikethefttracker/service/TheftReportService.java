@@ -108,6 +108,18 @@ public class TheftReportService {
         return theftReportMapper.toTheftReportResponse(updated);
     }
 
+    @Transactional
+    public void deleteTheftReport(UUID id, User user) {
+        TheftReport toDelete = fetchTheftReport(id);
+        this.checkOwnership(toDelete, user);
+
+        if (!imageStorageService.deleteImages(toDelete.getId())) {
+            throw new RuntimeException();
+        }
+
+        theftReportRepository.delete(toDelete);
+    }
+
     private Bike createBikeWithImages(CreateBikeRequest bikeDto, List<MultipartFile> images, UUID theftReportId) {
         Bike createdBike = bikeService.createBike(bikeDto);
 
