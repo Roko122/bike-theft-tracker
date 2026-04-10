@@ -10,6 +10,8 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.UUID;
+
 @Component
 public class SightingMapper {
 
@@ -49,10 +51,10 @@ public class SightingMapper {
             return null;
         }
 
+        UUID theftReportId = sighting.getTheftReport().getId();
+
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/images/sightings/")
-                .path(sighting.getTheftReport().getId().toString())
-                .path("/")
+                .path("/images/theft-reports/" + theftReportId + "/sightings/")
                 .path(sighting.getImageName())
                 .toUriString();
     }
