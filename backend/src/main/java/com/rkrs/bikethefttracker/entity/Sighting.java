@@ -2,6 +2,8 @@ package com.rkrs.bikethefttracker.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ public class Sighting {
 
     @JoinColumn(name = "theft_report_id")
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private TheftReport theftReport;
 
     @JoinColumn(name = "user_id")

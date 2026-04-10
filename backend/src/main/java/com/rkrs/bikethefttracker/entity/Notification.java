@@ -2,6 +2,8 @@ package com.rkrs.bikethefttracker.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,6 +28,7 @@ public class Notification {
 
     @JoinColumn(name = "theft_report_id")
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private TheftReport theftReport;
 
     @Column(nullable = false)

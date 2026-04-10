@@ -84,6 +84,7 @@ paths:
         "200":
           description: "OK"
           content: {}
+
   /theft-reports:
     get:
       tags:
@@ -212,6 +213,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TheftReportResponse"
+
+    delete:
+      security:
+        - access-token: [ ]
+      tags:
+        - TheftReports
+      summary: "Delete logged-in user's TheftReport"
+      operationId: "deleteTheftReport"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "204":
+          description: "NO CONTENT"
+          content: {}
   /theft-reports/me:
     get:
       tags:

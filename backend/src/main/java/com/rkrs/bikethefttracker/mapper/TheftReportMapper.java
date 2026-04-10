@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class TheftReportMapper {
@@ -24,7 +25,7 @@ public class TheftReportMapper {
     public TheftReportResponse toTheftReportResponse(TheftReport theftReport) {
         GeoPoint location = geoPointMapper.toGeoPoint(theftReport.getLocation());
         BikeResponse bike = bikeMapper.toBikeResponse(theftReport);
-        List<String> images = this.imagePaths(theftReport.getBike().getImages());
+        List<String> images = this.imagePaths(theftReport.getBike().getImages(), theftReport.getId());
 
         return new TheftReportResponse(
                 theftReport.getId(),
@@ -65,19 +66,17 @@ public class TheftReportMapper {
         );
     }
 
-    private List<String> imagePaths(List<BikeImage> bikeImages) {
+    private List<String> imagePaths(List<BikeImage> bikeImages, UUID theftReportId) {
         if (bikeImages == null || bikeImages.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return bikeImages.stream().map(this::buildImageUrl).toList();
+        return bikeImages.stream().map(image -> this.buildImageUrl(image, theftReportId)).toList();
     }
 
-    private String buildImageUrl(BikeImage bikeImage) {
+    private String buildImageUrl(BikeImage bikeImage, UUID id) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/images/bikes/")
-                .path(bikeImage.getBike().getId().toString())
-                .path("/")
+                .path("/images/theft-reports/" + id + "/bike/")
                 .path(bikeImage.getImageName())
                 .toUriString();
     }

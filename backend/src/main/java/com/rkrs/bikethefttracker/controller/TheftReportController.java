@@ -94,4 +94,14 @@ public class TheftReportController {
 
         return new ResponseEntity<>(updatedTheftReport, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheftReport(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable UUID id
+    ) {
+        theftReportService.deleteTheftReport(id, customUserDetails.getUserEntity());
+
+        return ResponseEntity.noContent().build();
+    }
 }
