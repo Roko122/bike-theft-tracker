@@ -216,11 +216,15 @@ export default function App() {
                   </>
                 )}
 
-              {currentUser && (
-                <div style={{ marginTop: 'auto', paddingTop: 10 }}>
-                  <button onClick={handleLogout}>Kirjaudu ulos</button>
-                </div>
-              )}
+              {currentUser &&
+                !showForm &&
+                !selectedReportId &&
+                !showLogin &&
+                !showRegister && (
+                  <div style={{ marginTop: 'auto', paddingTop: 10 }}>
+                    <button onClick={handleLogout}>Kirjaudu ulos</button>
+                  </div>
+                )}
             </div>
           </div>
         )}
