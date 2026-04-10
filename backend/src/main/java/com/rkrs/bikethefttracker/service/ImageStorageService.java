@@ -4,6 +4,7 @@ import com.rkrs.bikethefttracker.exception.InvalidImageException;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -37,6 +38,11 @@ public class ImageStorageService {
         File folder = this.createFolder(folderName, id);
 
         return handleImages(images, folder);
+    }
+
+    public boolean deleteImages(UUID id) {
+        File file = new File(PROJECT_ROOT + "/images/theft-reports/" + id);
+        return FileSystemUtils.deleteRecursively(file);
     }
 
     private List<String> handleImages(List<MultipartFile> images, File folder) {
