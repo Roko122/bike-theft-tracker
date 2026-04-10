@@ -79,7 +79,7 @@ public class ImageStorageService {
     }
 
     private File createFolder(String folderName, UUID id) {
-        Path bikeFolderPath = Paths.get(PROJECT_ROOT, "images", folderName, id.toString());
+        Path bikeFolderPath = Paths.get(PROJECT_ROOT, "images", "theft-reports", id.toString(), folderName);
         File dir = bikeFolderPath.toFile();
         if (!dir.exists()) {
             dir.mkdirs();
