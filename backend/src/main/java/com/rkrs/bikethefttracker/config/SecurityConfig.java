@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/theft-reports/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/theft-reports/{id}").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/theft-reports/{id}/status").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/theft-reports/{theftReportId}/sightings").authenticated()
