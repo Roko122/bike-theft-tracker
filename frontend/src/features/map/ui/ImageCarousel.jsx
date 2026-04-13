@@ -23,7 +23,9 @@ export default function ImageCarousel({
   const hasMany = imageUrls.length > 1;
   const currentImageUrl = imageUrls[activeIndex] ?? imageUrls[0];
   const objectFitClass =
-    fit === 'contain' ? 'image-carousel__image--contain' : 'image-carousel__image--cover';
+    fit === 'contain'
+      ? 'image-carousel__image--contain'
+      : 'image-carousel__image--cover';
 
   const showPrevious = () => {
     setActiveIndex((current) =>
@@ -38,12 +40,15 @@ export default function ImageCarousel({
   };
 
   return (
-    <div className="image-carousel" style={{ '--carousel-height': `${height}px` }}>
+    <div
+      className="image-carousel"
+      style={{ '--carousel-height': height + 'px' }}
+    >
       <img
         src={currentImageUrl}
-        alt={`${altPrefix} ${activeIndex + 1}`}
+        alt={altPrefix + ' ' + (activeIndex + 1)}
         loading="lazy"
-        className={`image-carousel__image ${objectFitClass}`}
+        className={'image-carousel__image ' + objectFitClass}
       />
 
       {hasMany && (
@@ -80,7 +85,7 @@ export default function ImageCarousel({
                     : 'image-carousel__dot'
                 }
                 onClick={() => setActiveIndex(index)}
-                aria-label={`Näytä kuva ${index + 1}`}
+                aria-label={'Näytä kuva ' + (index + 1)}
               />
             ))}
           </div>
@@ -89,3 +94,4 @@ export default function ImageCarousel({
     </div>
   );
 }
+//käytetty ai apua en olis osannu tehdä
