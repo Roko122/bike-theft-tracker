@@ -124,4 +124,3 @@ export default function ImageCarousel({
     </div>
   );
 }
-//käytetty ai apua en olis osannu tehdä carussellia täysin yksin
