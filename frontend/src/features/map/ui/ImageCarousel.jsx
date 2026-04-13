@@ -11,7 +11,7 @@ export default function ImageCarousel({
     [images]
   );
   const [activeIndex, setActiveIndex] = useState(0);
-
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const imagesKey = useMemo(() => imageUrls.join('|'), [imageUrls]);
 
   useEffect(() => {
@@ -45,12 +45,13 @@ export default function ImageCarousel({
       style={{ '--carousel-height': height + 'px' }}
     >
       <img
+        onClick={() => setIsLightboxOpen(true)}
+        style={{ cursor: 'zoom-in' }}
         src={currentImageUrl}
         alt={altPrefix + ' ' + (activeIndex + 1)}
         loading="lazy"
         className={'image-carousel__image ' + objectFitClass}
       />
-
       {hasMany && (
         <>
           <button
@@ -91,7 +92,36 @@ export default function ImageCarousel({
           </div>
         </>
       )}
+      {isLightboxOpen && (
+        <div
+          className="image-carousel__lightbox"
+          onClick={() => setIsLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Kuvan esikatselu"
+        >
+          <div
+            className="image-carousel__lightbox-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="image-carousel__lightbox-close"
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Sulje kuva"
+            >
+              ✕
+            </button>
+
+            <img
+              src={currentImageUrl}
+              alt={altPrefix + ' ' + (activeIndex + 1)}
+              className="image-carousel__lightbox-image"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-//käytetty ai apua en olis osannu tehdä
+//käytetty ai apua en olis osannu tehdä carussellia täysin yksin
