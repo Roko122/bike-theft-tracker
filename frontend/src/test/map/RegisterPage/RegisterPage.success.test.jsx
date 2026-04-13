@@ -73,3 +73,4 @@ describe('RegisterPage – onnistunut rekisteröinti', () => {
     });
   });
 });
+//testaus kurssille jte
