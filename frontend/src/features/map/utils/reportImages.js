@@ -23,7 +23,5 @@ function readImageUrl(item) {
   return '';
 }
 export function getReportImageUrls(images) {
-  return (Array.isArray(images) ? images : [])
-    .filter(Boolean)
-    .map((s) => String(s));
+  return Array.isArray(images) ? images.filter(Boolean) : [];
 }
