@@ -1,6 +1,13 @@
 import { resolveApiAssetUrl } from '../../api/theftReportApi.js';
 
-const IMAGE_URL_KEYS = ['url', 'imageUrl', 'downloadUrl', 'href', 'path', 'src'];
+const IMAGE_URL_KEYS = [
+  'url',
+  'imageUrl',
+  'downloadUrl',
+  'href',
+  'path',
+  'src'
+];
 
 function readImageUrl(item) {
   if (typeof item === 'string') return item;
@@ -11,18 +18,12 @@ function readImageUrl(item) {
     if (typeof value === 'string' && value.trim() !== '') {
       return value;
     }
-  }
+  } //KAto jos aikaa.....  java scrib obj suoraan kuva json. koto läpi.
 
   return '';
 }
-
 export function getReportImageUrls(images) {
-  const list = Array.isArray(images) ? images : images ? [images] : [];
-
-  const urls = list
-    .map((item) => readImageUrl(item).trim())
-    .filter((url) => url.length > 0)
-    .map((url) => resolveApiAssetUrl(url));
-
-  return [...new Set(urls)];
+  return (Array.isArray(images) ? images : [])
+    .filter(Boolean)
+    .map((s) => String(s));
 }
