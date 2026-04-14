@@ -1,7 +1,9 @@
 package com.rkrs.bikethefttracker.service;
 
+import com.rkrs.bikethefttracker.dto.TheftReportResponse;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.exception.NotFoundException;
+import com.rkrs.bikethefttracker.mapper.GeoPointMapper;
 import com.rkrs.bikethefttracker.mapper.TheftReportMapper;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -11,12 +13,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TheftReportServiceTest {
@@ -31,31 +37,33 @@ class TheftReportServiceTest {
     private BikeService bikeService;
 
     @Mock
-    private UserService userService;
+    private ImageStorageService imageStorageService;
+
+    @Mock
+    private GeoPointMapper geoPointMapper;
 
     @InjectMocks
     private TheftReportService theftReportService;
 
-    //not up to date
-//    @Test
-//    @DisplayName("Palauttaa TheftReportResponse-olion kun raportti loytyy repositorysta")
-//    void getTheftReportResponse_whenReportExists_returnsTheftReportResponse() {
-//        UUID id = UUID.fromString("6b4027a2-2c19-4f67-88b0-1f1c05f2f4c3");
-//        TheftReport theftReport = TheftReport.builder().id(id).build();
-//        TheftReportResponse expectedResponse = new TheftReportResponse(id, null, null, null, null, null, null, null);
-//
-//        when(theftReportRepository.findById(id)).thenReturn(Optional.of(theftReport));
-//        when(theftReportMapper.toTheftReportResponse(theftReport)).thenReturn(expectedResponse);
-//
-//        TheftReportResponse actualResponse = theftReportService.getTheftReportResponse(id);
-//
-//        assertEquals(id, actualResponse.id());
-//        verify(theftReportRepository).findById(id);
-//        verify(theftReportMapper).toTheftReportResponse(theftReport);
-//    }
+    @Test
+    @DisplayName("Palauttaa TheftReportResponse-olion kun raportti loytyy repositorysta")
+    void getTheftReportResponse_whenReportExists_returnsTheftReportResponse() {
+        UUID id = UUID.fromString("6b4027a2-2c19-4f67-88b0-1f1c05f2f4c3");
+        TheftReport theftReport = TheftReport.builder().id(id).build();
+        TheftReportResponse expectedResponse = new TheftReportResponse(id, null, null, null, null, null, null, null, List.of());
+
+        when(theftReportRepository.findById(id)).thenReturn(Optional.of(theftReport));
+        when(theftReportMapper.toTheftReportResponse(theftReport)).thenReturn(expectedResponse);
+
+        TheftReportResponse actualResponse = theftReportService.getTheftReportResponse(id);
+
+        assertEquals(id, actualResponse.id());
+        verify(theftReportRepository).findById(id);
+        verify(theftReportMapper).toTheftReportResponse(theftReport);
+    }
 
     @Test
-    @DisplayName("Heittää NotFoundExceptionin kun raporttia ei loydy repositorysta")
+    @DisplayName("Heittaa NotFoundExceptionin kun raporttia ei loydy repositorysta")
     void getTheftReportResponse_whenReportDoesNotExist_throwsNotFoundException() {
         UUID missingId = UUID.fromString("b2f0e9d1-0bc9-4c8b-8c1a-6b4c2d246f0c");
         when(theftReportRepository.findById(missingId)).thenReturn(Optional.empty());

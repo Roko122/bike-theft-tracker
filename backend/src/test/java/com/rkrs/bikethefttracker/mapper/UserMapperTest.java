@@ -1,10 +1,15 @@
 package com.rkrs.bikethefttracker.mapper;
 
+import com.rkrs.bikethefttracker.dto.UserDetailsResponse;
 import com.rkrs.bikethefttracker.dto.UserResponse;
+import com.rkrs.bikethefttracker.entity.Role;
+import com.rkrs.bikethefttracker.entity.RoleType;
 import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.security.CustomUserDetails;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,15 +33,22 @@ class UserMapperTest {
         assertEquals(user.getUsername(), response.username());
     }
 
-    //not up to date
-//    @Test
-//    @DisplayName("toUser asettaa username- ja email-kentät oikein")
-//    void toUser_mapsUsernameAndEmail() {
-//        CreateUserRequest request = new CreateUserRequest("teemu", "teemu@example.com");
-//
-//        User user = userMapper.toUser(request);
-//
-//        assertEquals(request.username(), user.getUsername());
-//        assertEquals(request.email(), user.getEmail());
-//    }
+    @Test
+    @DisplayName("toUserDetailsResponse palauttaa kirjautuneen kayttajan perustiedot ja roolit")
+    void toUserDetailsResponse_mapsUserAndAuthorities() {
+        UUID userId = UUID.fromString("5f091d4b-f4a4-4f5d-a645-5163dfa1e958");
+        User user = User.builder()
+                .id(userId)
+                .username("teemu")
+                .password("secret")
+                .roles(Set.of(new Role(RoleType.ROLE_USER), new Role(RoleType.ROLE_ADMIN)))
+                .build();
+
+        UserDetailsResponse response = userMapper.toUserDetailsResponse(new CustomUserDetails(user));
+
+        assertEquals(userId, response.id());
+        assertEquals("teemu", response.username());
+        assertEquals(2, response.roles().size());
+        assertEquals(Set.of("ROLE_USER", "ROLE_ADMIN"), Set.copyOf(response.roles()));
+    }
 }

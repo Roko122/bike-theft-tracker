@@ -5,7 +5,6 @@ import com.rkrs.bikethefttracker.entity.Bike;
 import com.rkrs.bikethefttracker.entity.Status;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -35,7 +34,7 @@ class TheftReportRepositoryQueryTest {
     private TestEntityManager entityManager;
 
     @Test
-    @DisplayName("findAllTheftReportMapItems palauttaa kaikki karttanäkymän tiedot")
+    @DisplayName("findAllTheftReportMapItems palauttaa kaikki karttanakyman tiedot")
     void findAllTheftReportMapItems_returnsAllProjectedFieldsWithoutOrderAssumption() {
         PersistedReport first = persistReport(
                 "user-one",
@@ -80,7 +79,7 @@ class TheftReportRepositoryQueryTest {
     }
 
     @Test
-    @DisplayName("findAllVisibleTheftReportMapItems palauttaa vain näkyvissä olevat varkausilmoitukset")
+    @DisplayName("findAllVisibleTheftReportMapItems palauttaa vain nakyvissa olevat varkausilmoitukset")
     void findAllVisibleTheftReportMapItems_returnsOnlyItemsInsideBoundingBox() {
         PersistedReport inside = persistReport(
                 "inside-user",
@@ -127,6 +126,7 @@ class TheftReportRepositoryQueryTest {
                                           LocalDateTime theftTime) {
         User user = User.builder()
                 .username(username)
+                .password("secret")
                 .email(email)
                 .build();
         entityManager.persist(user);
@@ -138,7 +138,6 @@ class TheftReportRepositoryQueryTest {
                 .color(color)
                 .serialNumber(serialNumber)
                 .description("Test bike " + serialNumber)
-                .user(user)
                 .build();
         entityManager.persist(bike);
 
@@ -148,6 +147,7 @@ class TheftReportRepositoryQueryTest {
                 .theftAddress("Test address")
                 .location(location)
                 .status(status)
+                .user(user)
                 .bike(bike)
                 .build();
         entityManager.persist(report);

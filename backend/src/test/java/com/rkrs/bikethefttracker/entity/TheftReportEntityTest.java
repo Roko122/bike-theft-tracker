@@ -12,7 +12,9 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 class TheftReportEntityTest {
@@ -24,6 +26,7 @@ class TheftReportEntityTest {
     void prePersist_setsDefaults() {
         User owner = User.builder()
                 .username("user")
+                .password("secret")
                 .email("user@example.com")
                 .build();
         entityManager.persist(owner);
@@ -35,7 +38,6 @@ class TheftReportEntityTest {
                 .color("Red")
                 .serialNumber("SN-123")
                 .description("Fast bike")
-                .user(owner)
                 .build();
         entityManager.persist(bike);
 
@@ -47,6 +49,7 @@ class TheftReportEntityTest {
                 .theftTime(LocalDateTime.of(2026, 2, 1, 10, 30))
                 .theftAddress("Central Station")
                 .location(location)
+                .user(owner)
                 .bike(bike)
                 .build();
 
@@ -61,6 +64,7 @@ class TheftReportEntityTest {
     void prePersist_overridesProvidedStatus() {
         User owner = User.builder()
                 .username("owner2")
+                .password("secret")
                 .email("owner2@example.com")
                 .build();
         entityManager.persist(owner);
@@ -72,7 +76,6 @@ class TheftReportEntityTest {
                 .color("Blue")
                 .serialNumber("SN-456")
                 .description("Endurance bike")
-                .user(owner)
                 .build();
         entityManager.persist(bike);
 
@@ -85,6 +88,7 @@ class TheftReportEntityTest {
                 .theftAddress("Market Square")
                 .location(location)
                 .status(Status.CLOSED)
+                .user(owner)
                 .bike(bike)
                 .build();
 
@@ -127,5 +131,4 @@ class TheftReportEntityTest {
         second.setTheftAddress("Different address");
         assertNotEquals(first, second);
     }
-
 }

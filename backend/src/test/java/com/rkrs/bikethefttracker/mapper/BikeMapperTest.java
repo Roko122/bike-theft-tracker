@@ -1,8 +1,10 @@
 package com.rkrs.bikethefttracker.mapper;
 
 import com.rkrs.bikethefttracker.dto.BikeResponse;
+import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
 import com.rkrs.bikethefttracker.dto.UserResponse;
 import com.rkrs.bikethefttracker.entity.Bike;
+import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,13 +46,16 @@ class BikeMapperTest {
                 .color("Green")
                 .serialNumber("SN-12345")
                 .description("Lime tape")
+                .build();
+        TheftReport theftReport = TheftReport.builder()
+                .bike(bike)
                 .user(user)
                 .build();
         UserResponse mappedUserResponse = new UserResponse(userId, "teemu");
 
-        when(userMapper.toUserResponse(bike.getUser())).thenReturn(mappedUserResponse);
+        when(userMapper.toUserResponse(theftReport.getUser())).thenReturn(mappedUserResponse);
 
-        BikeResponse response = bikeMapper.toBikeResponse(bike);
+        BikeResponse response = bikeMapper.toBikeResponse(theftReport);
 
         assertEquals(bike.getId(), response.id());
         assertEquals(bike.getBrand(), response.brand());
@@ -61,30 +66,28 @@ class BikeMapperTest {
         assertEquals(bike.getDescription(), response.description());
         assertEquals(mappedUserResponse, response.user());
 
-        verify(userMapper).toUserResponse(bike.getUser());
+        verify(userMapper).toUserResponse(theftReport.getUser());
     }
 
-    //not up to date
-//    @Test
-//    @DisplayName("toBike asettaa brand-, model-, type-, color-, serialNumber- ja description-kentät oikein")
-//    void toBike_mapsCreateBikeRequestFields() {
-//        CreateBikeRequest request = new CreateBikeRequest(
-//                "Cube",
-//                "Nuroad",
-//                "Gravel",
-//                "Green",
-//                "SN-12345",
-//                "Lime tape",
-//                new CreateUserRequest("teemu", "teemu@example.com")
-//        );
-//
-//        Bike bike = bikeMapper.toBike(request);
-//
-//        assertEquals(request.brand(), bike.getBrand());
-//        assertEquals(request.model(), bike.getModel());
-//        assertEquals(request.type(), bike.getType());
-//        assertEquals(request.color(), bike.getColor());
-//        assertEquals(request.serialNumber(), bike.getSerialNumber());
-//        assertEquals(request.description(), bike.getDescription());
-//    }
+    @Test
+    @DisplayName("toBike asettaa brand-, model-, type-, color-, serialNumber- ja description-kentat oikein")
+    void toBike_mapsCreateBikeRequestFields() {
+        CreateBikeRequest request = new CreateBikeRequest(
+                "Cube",
+                "Nuroad",
+                "Gravel",
+                "Green",
+                "SN-12345",
+                "Lime tape"
+        );
+
+        Bike bike = bikeMapper.toBike(request);
+
+        assertEquals(request.brand(), bike.getBrand());
+        assertEquals(request.model(), bike.getModel());
+        assertEquals(request.type(), bike.getType());
+        assertEquals(request.color(), bike.getColor());
+        assertEquals(request.serialNumber(), bike.getSerialNumber());
+        assertEquals(request.description(), bike.getDescription());
+    }
 }
