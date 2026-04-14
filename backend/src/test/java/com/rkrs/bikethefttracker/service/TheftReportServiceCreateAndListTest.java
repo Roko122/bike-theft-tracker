@@ -1,24 +1,37 @@
 package com.rkrs.bikethefttracker.service;
 
+import com.rkrs.bikethefttracker.dto.CreateBikeRequest;
+import com.rkrs.bikethefttracker.dto.CreateTheftReportRequest;
 import com.rkrs.bikethefttracker.dto.GeoPoint;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemData;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
+import com.rkrs.bikethefttracker.dto.TheftReportResponse;
+import com.rkrs.bikethefttracker.entity.Bike;
 import com.rkrs.bikethefttracker.entity.Status;
+import com.rkrs.bikethefttracker.entity.TheftReport;
+import com.rkrs.bikethefttracker.entity.User;
+import com.rkrs.bikethefttracker.mapper.GeoPointMapper;
 import com.rkrs.bikethefttracker.mapper.TheftReportMapper;
 import com.rkrs.bikethefttracker.repository.TheftReportRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TheftReportServiceCreateAndListTest {
@@ -33,13 +46,16 @@ class TheftReportServiceCreateAndListTest {
     private BikeService bikeService;
 
     @Mock
-    private UserService userService;
+    private ImageStorageService imageStorageService;
+
+    @Mock
+    private GeoPointMapper geoPointMapper;
 
     @InjectMocks
     private TheftReportService theftReportService;
 
     @Test
-    @DisplayName("getAllTheftReportMapItems palauttaa mapitetut arvot oikeassa järjestyksessä")
+    @DisplayName("getAllTheftReportMapItems palauttaa mapitetut arvot oikeassa jarjestyksessa")
     void getAllTheftReportMapItems_returnsMappedValuesInCorrectOrder() {
         TheftReportMapItemData firstData = new TheftReportMapItemData(
                 UUID.fromString("8e2f3f11-e23b-4ae6-a2a4-1c3f08bd3c9d"),
@@ -94,12 +110,12 @@ class TheftReportServiceCreateAndListTest {
         verify(theftReportRepository).findAllTheftReportMapItems();
         verify(theftReportMapper).toTheftReportMapItemResponse(firstData);
         verify(theftReportMapper).toTheftReportMapItemResponse(secondData);
-        verifyNoInteractions(bikeService, userService);
+        verifyNoInteractions(bikeService, imageStorageService, geoPointMapper);
         verifyNoMoreInteractions(theftReportRepository, theftReportMapper);
     }
 
     @Test
-    @DisplayName("getAllVisibleTheftReportMapItems käyttää bbox-parametreja ja palauttaa mapitetut arvot")
+    @DisplayName("getAllVisibleTheftReportMapItems kayttaa bbox-parametreja ja palauttaa mapitetut arvot")
     void getAllVisibleTheftReportMapItems_withBoundingBox_returnsMappedValues() {
         double minLon = 24.80;
         double minLat = 60.10;
@@ -160,62 +176,128 @@ class TheftReportServiceCreateAndListTest {
         verify(theftReportRepository).findAllVisibleTheftReportMapItems(minLon, minLat, maxLon, maxLat);
         verify(theftReportMapper).toTheftReportMapItemResponse(firstData);
         verify(theftReportMapper).toTheftReportMapItemResponse(secondData);
-        verifyNoInteractions(bikeService, userService);
+        verifyNoInteractions(bikeService, imageStorageService, geoPointMapper);
         verifyNoMoreInteractions(theftReportRepository, theftReportMapper);
     }
-// not up to date
-//    @Test
-//    @DisplayName("createTheftReport luo käyttäjän ja pyörän, asettaa pyörän raporttiin ja palauttaa response-olion")
-//    void createTheftReport_createsDependenciesSavesReportAndReturnsMappedResponse() {
-//        CreateTheftReportRequest request = mock(CreateTheftReportRequest.class);
-//        CreateBikeRequest bikeRequest = mock(CreateBikeRequest.class);
-//        CreateUserRequest userRequest = mock(CreateUserRequest.class);
-//
-//        User createdUser = User.builder().id(UUID.fromString("34c35d8d-3d9a-47cb-b7b7-5850cddf338f")).build();
-//        Bike createdBike = Bike.builder().id(UUID.fromString("7dad6703-51d6-4c54-9742-89202099253e")).build();
-//        TheftReport theftReportToSave = TheftReport.builder()
-//                .description("Bike stolen near station")
-//                .theftAddress("Mannerheimintie 1")
-//                .build();
-//        TheftReport savedTheftReport = TheftReport.builder()
-//                .id(UUID.fromString("0f01601f-79f6-4bd2-8ce5-d6d4b3839d14"))
-//                .bike(createdBike)
-//                .build();
-//        TheftReportResponse expectedResponse = new TheftReportResponse(
-//                savedTheftReport.getId(),
-//                "Bike stolen near station",
-//                null,
-//                "Mannerheimintie 1",
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        when(request.bike()).thenReturn(bikeRequest);
-//        when(bikeRequest.user()).thenReturn(userRequest);
-//        when(userService.createUser(userRequest)).thenReturn(createdUser);
-//        when(bikeService.createBike(bikeRequest, createdUser)).thenReturn(createdBike);
-//        when(theftReportMapper.toTheftReport(request)).thenReturn(theftReportToSave);
-//        when(theftReportRepository.save(theftReportToSave)).thenAnswer(invocation -> {
-//            TheftReport argument = invocation.getArgument(0, TheftReport.class);
-//            assertSame(theftReportToSave, argument);
-//            assertSame(createdBike, argument.getBike());
-//            return savedTheftReport;
-//        });
-//        when(theftReportMapper.toTheftReportResponse(savedTheftReport)).thenReturn(expectedResponse);
-//
-//        TheftReportResponse actual = theftReportService.createTheftReport(request);
-//
-//        assertEquals(expectedResponse, actual);
-//
-//        verify(request, times(2)).bike();
-//        verify(bikeRequest).user();
-//        verify(userService).createUser(userRequest);
-//        verify(bikeService).createBike(bikeRequest, createdUser);
-//        verify(theftReportMapper).toTheftReport(request);
-//        verify(theftReportRepository).save(theftReportToSave);
-//        verify(theftReportMapper).toTheftReportResponse(savedTheftReport);
-//        verifyNoMoreInteractions(request, bikeRequest, userService, bikeService, theftReportRepository, theftReportMapper);
-//    }
+
+    @Test
+    @DisplayName("createTheftReport luo raportin, pyoran ja kuvat seka palauttaa response-olion")
+    void createTheftReport_createsDependenciesSavesReportAndReturnsMappedResponse() {
+        CreateBikeRequest bikeRequest = new CreateBikeRequest(
+                "Cube",
+                "Nuroad",
+                "Gravel",
+                "Green",
+                "SN-12345",
+                "Lime tape"
+        );
+        CreateTheftReportRequest request = new CreateTheftReportRequest(
+                "Bike stolen near station",
+                LocalDateTime.of(2024, 3, 4, 5, 6, 7),
+                "Mannerheimintie 1",
+                new GeoPoint(24.9384, 60.1699),
+                bikeRequest
+        );
+        User user = User.builder().id(UUID.fromString("34c35d8d-3d9a-47cb-b7b7-5850cddf338f")).build();
+        MultipartFile firstImage = org.mockito.Mockito.mock(MultipartFile.class);
+        MultipartFile secondImage = org.mockito.Mockito.mock(MultipartFile.class);
+        List<MultipartFile> images = List.of(firstImage, secondImage);
+
+        TheftReport theftReportToSave = TheftReport.builder()
+                .description("Bike stolen near station")
+                .theftAddress("Mannerheimintie 1")
+                .build();
+        TheftReport createdTheftReport = TheftReport.builder()
+                .id(UUID.fromString("0f01601f-79f6-4bd2-8ce5-d6d4b3839d14"))
+                .description("Bike stolen near station")
+                .theftAddress("Mannerheimintie 1")
+                .user(user)
+                .build();
+        Bike createdBike = Bike.builder()
+                .id(UUID.fromString("7dad6703-51d6-4c54-9742-89202099253e"))
+                .build();
+        TheftReportResponse expectedResponse = new TheftReportResponse(
+                createdTheftReport.getId(),
+                "Bike stolen near station",
+                request.theftTime(),
+                "Mannerheimintie 1",
+                request.location(),
+                null,
+                null,
+                null,
+                List.of("first.jpeg", "second.jpeg")
+        );
+
+        when(theftReportMapper.toTheftReport(request)).thenReturn(theftReportToSave);
+        when(theftReportRepository.save(theftReportToSave)).thenReturn(createdTheftReport);
+        when(bikeService.createBike(bikeRequest)).thenReturn(createdBike);
+        when(imageStorageService.saveImages(images, "bike", createdTheftReport.getId()))
+                .thenReturn(List.of("first.jpeg", "second.jpeg"));
+        when(theftReportRepository.save(createdTheftReport)).thenReturn(createdTheftReport);
+        when(theftReportMapper.toTheftReportResponse(createdTheftReport)).thenReturn(expectedResponse);
+
+        TheftReportResponse actual = theftReportService.createTheftReport(request, user, images);
+
+        assertEquals(expectedResponse, actual);
+        assertSame(user, theftReportToSave.getUser());
+        assertSame(createdBike, createdTheftReport.getBike());
+
+        verify(theftReportMapper).toTheftReport(request);
+        verify(theftReportRepository).save(theftReportToSave);
+        verify(bikeService).createBike(bikeRequest);
+        verify(imageStorageService).saveImages(images, "bike", createdTheftReport.getId());
+        verify(bikeService).addImages(createdBike, List.of("first.jpeg", "second.jpeg"));
+        verify(theftReportRepository).save(createdTheftReport);
+        verify(theftReportMapper).toTheftReportResponse(createdTheftReport);
+        verifyNoInteractions(geoPointMapper);
+        verifyNoMoreInteractions(theftReportRepository, theftReportMapper, bikeService, imageStorageService);
+    }
+
+    @Test
+    @DisplayName("createTheftReport ohittaa kuvatallennuksen kun kuvia ei anneta")
+    void createTheftReport_withoutImages_skipsImageStorage() {
+        CreateBikeRequest bikeRequest = new CreateBikeRequest(
+                "Cube",
+                "Nuroad",
+                "Gravel",
+                "Green",
+                "SN-12345",
+                "Lime tape"
+        );
+        CreateTheftReportRequest request = new CreateTheftReportRequest(
+                "Bike stolen near station",
+                LocalDateTime.of(2024, 3, 4, 5, 6, 7),
+                "Mannerheimintie 1",
+                new GeoPoint(24.9384, 60.1699),
+                bikeRequest
+        );
+        User user = User.builder().id(UUID.fromString("b0a7f4f0-faf0-455c-aeb5-7e35726925a6")).build();
+        TheftReport theftReportToSave = TheftReport.builder().build();
+        TheftReport createdTheftReport = TheftReport.builder()
+                .id(UUID.fromString("a992f68f-5a48-4540-84f2-b1f2f6243657"))
+                .build();
+        Bike createdBike = Bike.builder().id(UUID.fromString("f146b706-5d12-4adc-ab24-8de6ed5d3d20")).build();
+        TheftReportResponse expectedResponse = new TheftReportResponse(
+                createdTheftReport.getId(), null, null, null, null, null, null, null, List.of()
+        );
+
+        when(theftReportMapper.toTheftReport(request)).thenReturn(theftReportToSave);
+        when(theftReportRepository.save(theftReportToSave)).thenReturn(createdTheftReport);
+        when(bikeService.createBike(bikeRequest)).thenReturn(createdBike);
+        when(theftReportRepository.save(createdTheftReport)).thenReturn(createdTheftReport);
+        when(theftReportMapper.toTheftReportResponse(createdTheftReport)).thenReturn(expectedResponse);
+
+        TheftReportResponse actual = theftReportService.createTheftReport(request, user, null);
+
+        assertEquals(expectedResponse, actual);
+        assertSame(createdBike, createdTheftReport.getBike());
+
+        verify(theftReportMapper).toTheftReport(request);
+        verify(theftReportRepository).save(theftReportToSave);
+        verify(bikeService).createBike(bikeRequest);
+        verify(theftReportRepository).save(createdTheftReport);
+        verify(theftReportMapper).toTheftReportResponse(createdTheftReport);
+        verifyNoInteractions(imageStorageService, geoPointMapper);
+        verifyNoMoreInteractions(theftReportRepository, theftReportMapper, bikeService);
+    }
 }

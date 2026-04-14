@@ -3,11 +3,14 @@ package com.rkrs.bikethefttracker.controller;
 import com.rkrs.bikethefttracker.entity.Status;
 import com.rkrs.bikethefttracker.dto.GeoPoint;
 import com.rkrs.bikethefttracker.dto.TheftReportMapItemResponse;
+import com.rkrs.bikethefttracker.properties.JwtProperties;
+import com.rkrs.bikethefttracker.security.JwtService;
 import com.rkrs.bikethefttracker.service.TheftReportService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +34,15 @@ class TheftReportControllerGetVisibleTest {
 
     @MockitoBean
     private TheftReportService theftReportService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private JwtProperties jwtProperties;
 
     @Test
     @DisplayName("Palauttaa 200 OK kun kaikki bounding box -parametrit annetaan.")
