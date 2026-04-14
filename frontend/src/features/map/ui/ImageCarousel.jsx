@@ -124,3 +124,4 @@ export default function ImageCarousel({
     </div>
   );
 }
+//Nyt ok
