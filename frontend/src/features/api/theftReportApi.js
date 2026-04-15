@@ -126,9 +126,7 @@ async function requestFormData(method, formData) {
     body: formData
   };
 
-  const res = await authorizedFetch(buildUrl(), fetchOptions, {
-    authRequired: true
-  });
+  const res = await authorizedFetch(buildUrl(), fetchOptions);
 
   return parseJsonOrThrow(res);
 }
