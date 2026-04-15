@@ -1,13 +1,19 @@
 import { logoutUser, refreshUser } from './authApi.js';
 
-export async function authorizedFetch(requestUrl, options = {}) {
-  const requestOptions = {
-    credentials: 'include',
-    ...options
-  };
+export async function authorizedFetch(
+  requestUrl,
+  options = {},
+  { authRequired = false } = {}
+) {
+  const requestOptions = authRequired
+    ? { ...options, credentials: 'include' }
+    : { ...options, credentials: 'omit' };
 
   let response = await fetch(requestUrl, requestOptions);
-  if (response.status !== 401) return response;
+
+  if (!authRequired || response.status !== 401) {
+    return response;
+  }
 
   try {
     await refreshUser();

@@ -22,7 +22,10 @@ export function resolveApiAssetUrl(pathOrUrl) {
   if (typeof pathOrUrl !== 'string' || pathOrUrl.trim() === '') return '';
 
   try {
-    return new URL(pathOrUrl, `${getApiBaseUrl().replace(/\/+$/, '')}/`).toString();
+    return new URL(
+      pathOrUrl,
+      `${getApiBaseUrl().replace(/\/+$/, '')}/`
+    ).toString();
   } catch {
     return pathOrUrl;
   }
@@ -57,7 +60,7 @@ async function parseJsonOrThrow(res) {
  * GET http://localhost:8080/api/v1/theft-reports
  */
 export async function getTheftReports({ signal } = {}) {
-  const res = await authorizedFetch(buildUrl(''), {
+  const res = await fetch(buildUrl(''), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -71,7 +74,7 @@ export async function getTheftReports({ signal } = {}) {
  */
 export async function getTheftReportById(id, { signal } = {}) {
   if (!id) throw new Error('id is required');
-  const res = await authorizedFetch(buildUrl(`/${encodeURIComponent(id)}`), {
+  const res = await fetch(buildUrl(`/${encodeURIComponent(id)}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -105,7 +108,7 @@ export async function fetchTheftReportMapItemsByBounds(
     maxLat: String(maxLat)
   });
 
-  const res = await authorizedFetch(buildUrl(`?${params.toString()}`), {
+  const res = await fetch(buildUrl(`?${params.toString()}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -123,7 +126,9 @@ async function requestFormData(method, formData) {
     body: formData
   };
 
-  const res = await authorizedFetch(buildUrl(), fetchOptions);
+  const res = await authorizedFetch(buildUrl(), fetchOptions, {
+    authRequired: true
+  });
 
   return parseJsonOrThrow(res);
 }
@@ -141,3 +146,4 @@ export function createTheftReport(payload, images = []) {
 
   return requestFormData('POST', formData);
 }
+//Käytetty tekoäly ongrlmirn takia...
