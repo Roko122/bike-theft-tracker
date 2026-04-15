@@ -1,3 +1,5 @@
+import { authorizedFetch } from './authorizedFetch.js';
+
 // frontend/src/features/theftReports/theftReportApi.js
 
 const DEFAULT_BASE_URL = 'http://localhost:8080';
@@ -55,7 +57,7 @@ async function parseJsonOrThrow(res) {
  * GET http://localhost:8080/api/v1/theft-reports
  */
 export async function getTheftReports({ signal } = {}) {
-  const res = await fetch(buildUrl(''), {
+  const res = await authorizedFetch(buildUrl(''), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -69,7 +71,7 @@ export async function getTheftReports({ signal } = {}) {
  */
 export async function getTheftReportById(id, { signal } = {}) {
   if (!id) throw new Error('id is required');
-  const res = await fetch(buildUrl(`/${encodeURIComponent(id)}`), {
+  const res = await authorizedFetch(buildUrl(`/${encodeURIComponent(id)}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -103,7 +105,7 @@ export async function fetchTheftReportMapItemsByBounds(
     maxLat: String(maxLat)
   });
 
-  const res = await fetch(buildUrl(`?${params.toString()}`), {
+  const res = await authorizedFetch(buildUrl(`?${params.toString()}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal
@@ -118,11 +120,10 @@ async function requestFormData(method, formData) {
     headers: {
       Accept: 'application/json'
     },
-    body: formData,
-    credentials: 'include'
+    body: formData
   };
 
-  const res = await fetch(buildUrl(), fetchOptions);
+  const res = await authorizedFetch(buildUrl(), fetchOptions);
 
   return parseJsonOrThrow(res);
 }

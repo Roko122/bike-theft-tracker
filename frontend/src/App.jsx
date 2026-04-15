@@ -4,7 +4,10 @@ import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
-import { getCurrentUser, logoutUser, refreshUser } from './features/api/authApi.js';
+import {
+  getCurrentUser,
+  logoutUser
+} from './features/api/authApi.js';
 import { ArrowLeft, Cat, Menu, X } from 'lucide-react';
 
 export default function App() {
@@ -40,18 +43,23 @@ export default function App() {
       active = false;
     };
   }, []);
-  useEffect(() => {
-    if (!currentUser) return;
 
-    const intervalId = window.setInterval(() => {
-      refreshUser().catch((error) => {
-        console.error('Session uusiminen meni pieleen, kirjaudu uudestaan:', error);
-        setCurrentUser(null);
-        setShowLogin(true);
-      });
-    }, 14 * 60 * 1000);
-    return () => clearInterval(intervalId);
-  }, [currentUser]);
+  useEffect(() => {
+    const onSessionExpired = () => {
+      setCurrentUser(null);
+      setShowLogin(true);
+      setShowRegister(false);
+      setShowForm(false);
+      setSelectedReportId(null);
+      setIsPickingLocation(false);
+      setOpen(false);
+    };
+
+    window.addEventListener('auth:session-expired', onSessionExpired);
+    return () => {
+      window.removeEventListener('auth:session-expired', onSessionExpired);
+    };
+  }, []);
 
   async function handleLogout() {
     try {
