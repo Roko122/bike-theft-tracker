@@ -1,25 +1,24 @@
-import {
-  CircleMarker,
-  MapContainer,
-  Marker,
-  Popup,
-  TileLayer,
-  useMap,
-  useMapEvents
-} from 'react-leaflet';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
+import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
+import { useRef } from 'react';
 import L from 'leaflet';
-import MapControls from './ui/MapControls';
+import MapControls from './ui/MapControls.jsx';
 import {
-  fetchTheftReportMapItemsByBounds,
-  getTheftReports
-} from '../api/theftReportApi.js';
+  AutoCenterToUser,
+  MapClickPicker,
+  MapRefBinder,
+  VisibleTheftsLoader
+} from './components/MapEffects.jsx';
+import TheftMarkersLayer from './components/TheftMarkersLayer.jsx';
+import {
+  MapPickHint,
+  MapSuccessOverlay
+} from './components/MapStatusOverlay.jsx';
+import MapLegend from './components/MapLegend.jsx';
+import { useVisibleThefts } from './hooks/useVisibleThefts.js';
+import { useMapSuccessMessage } from './hooks/useMapSuccessMessage.js';
+import { useUserLocationMarker } from './hooks/useUserLocationMarker.js';
+import { FALLBACK_CENTER, INITIAL_ZOOM } from './constants.js';
 
-const fallbackCenter = [62.601, 29.7636]; // Joensuu
-const initialZoom = 11;
-
-// Leaflet marker icon fix (bundlereissa ikonipolut usein hajoaa)
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
 import marker1x from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -31,313 +30,37 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow
 });
 
-function formatDate(iso) {
-  if (!iso) return '-';
-
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return String(iso);
-
-  // +2 tuntia millisekunteina
-  const adjusted = new Date(d.getTime() + 2 * 60 * 60 * 1000);
-
-  return adjusted.toLocaleString();
-}
-
-//BTT 95 uusi funktio
-function getBoundsParams(map) {
-  const bounds = map.getBounds();
-
-  return {
-    minLon: bounds.getWest(),
-    minLat: bounds.getSouth(),
-    maxLon: bounds.getEast(),
-    maxLat: bounds.getNorth()
-  };
-}
-
-const FIELD_LABELS_FI = {
-  id: 'id',
-  brand: 'Merkki',
-  model: 'Malli',
-  type: 'Tyyppi',
-  color: 'Väri',
-  status: 'Tila',
-  theftTime: 'Tapahtuma aika',
-  description: 'Lisäkuvaus'
-};
-
-function labelFi(key) {
-  return FIELD_LABELS_FI[key] ?? key; // jos ei löydy käännöstä, näytetään alkuperäinen
-}
-
-// uusi funktio btt43
-function renderValue(v) {
-  if (v == null) return '-';
-  return typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v);
-}
-//päättyy
-
-function MapRefBinder({ mapRef }) {
-  const map = useMap();
-
-  useEffect(() => {
-    mapRef.current = map;
-    console.log('mapRef asetettu:', map);
-  }, [map, mapRef]);
-
-  return null;
-}
-
-// tähän koodia BTT28(ehkä jo vähän btt 79)
-/**
- * Kuuntelee kartan klikkauksia ja ilmoittaa parentille valitun sijainnin.
- * Tämä ei renderöi mitään (return null).
- */
-function MapClickPicker({ enabled, onPick }) {
-  useMapEvents({
-    click(e) {
-      if (!enabled) return;
-
-      const loc = { latitude: e.latlng.lat, longitude: e.latlng.lng };
-      onPick?.(loc);
-    }
-  });
-
-  return null;
-}
-
-// BTT 28/79 koodi päättyy tähän
-
-//BTT 95 funktio
-function VisibleTheftsLoader({ onLoad }) {
-  const map = useMapEvents({
-    moveend() {
-      onLoad?.(map);
-    }
-  });
-
-  useEffect(() => {
-    onLoad?.(map);
-  }, [map, onLoad]);
-
-  return null;
-}
-
-//BTT156 funktio
-function AutoCenterToUser({
-  fallbackCenter,
-  fallbackZoom = 11,
-  userZoom = 13
-}) {
-  const map = useMap();
-  const hasCenteredRef = useRef(false);
-
-  useEffect(() => {
-    if (hasCenteredRef.current) return;
-
-    hasCenteredRef.current = true;
-
-    if (!('geolocation' in navigator)) {
-      map.setView(fallbackCenter, fallbackZoom);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        map.setView([latitude, longitude], userZoom);
-      },
-      () => {
-        map.setView(fallbackCenter, fallbackZoom);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  }, [map, fallbackCenter, fallbackZoom, userZoom]);
-
-  return null;
-}
-
 export default function MapPage({
   refreshKey,
   isMenuOpen,
   onLocationSelected,
   isPickingLocation,
-  onReportSelected, //  BTT-26: ilmoitetaan parentille valittu ilmoitus
+  onReportSelected,
   selectedLocation
 }) {
-  // react-leaflet v4: käytetään refiä (ei whenCreated)
-  // react-leaflet v4: käytetään refiä (ei whenCreated)
   const mapRef = useRef(null);
-
-  // BTT-27: data + tila
-  const [thefts, setThefts] = useState([]);
-  const [showThefts, setShowThefts] = useState(true);
-  const [loadingThefts, setLoadingThefts] = useState(true);
-  const [theftsError, setTheftsError] = useState(null);
-  const [showMapSuccess, setShowMapSuccess] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
-
-  // const fallbackCenter = [62.601, 29.7636]; // Joensuu
-  // const initialZoom = 11;
-
-  //BTT 95
-  const loadVisibleThefts = useCallback(async (map) => {
-    if (!map) return;
-
-    try {
-      setLoadingThefts(true);
-      setTheftsError(null);
-
-      const boundsParams = getBoundsParams(map);
-      const data = await fetchTheftReportMapItemsByBounds(boundsParams);
-
-      const valid = (data ?? []).filter(
-        (r) => r?.location?.latitude != null && r?.location?.longitude != null
-      );
-
-      setThefts(valid);
-
-      console.log('BTT-95 näkyvän alueen ilmoitukset:', valid);
-    } catch (e) {
-      setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
-    } finally {
-      setLoadingThefts(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    loadVisibleThefts(map);
-  }, [refreshKey, loadVisibleThefts]);
-
-  // BTT-27: hae data backendistä kerran sivun latauksessa
-  useEffect(() => {
-    let alive = true;
-
-    (async () => {
-      try {
-        setLoadingThefts(true);
-        setTheftsError(null);
-
-        //const data = await getTheftReports();
-        //if (alive) setThefts(data);
-        // uutta btt43
-
-        const valid = (data ?? []).filter(
-          (r) => r?.location?.latitude != null && r?.location?.longitude != null
-        );
-
-        if (alive) setThefts(valid);
-
-        //päättyy43
-
-        console.log('BTT-27 theft reports:', data);
-      } catch (e) {
-        if (alive) setTheftsError(e?.message ?? 'Ilmoitusten haku epäonnistui');
-      } finally {
-        if (alive) setLoadingThefts(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // lisätään onnistumisviesti
-  useEffect(() => {
-    const shouldShow = sessionStorage.getItem('showMapSuccess');
-
-    if (shouldShow === 'true') {
-      setShowMapSuccess(true);
-      sessionStorage.removeItem('showMapSuccess');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!showMapSuccess) return;
-
-    const timer = setTimeout(() => {
-      setShowMapSuccess(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [showMapSuccess]);
-
-  // BTT-77: keskitä käyttäjän sijaintiin
-  const onCenterToUser = useCallback(() => {
-    const map = mapRef.current;
-    console.log('CENTER CLICKED');
-
-    if (!map) {
-      console.warn('Kartta ei ole vielä valmis.');
-      return;
-    }
-
-    if (!('geolocation' in navigator)) {
-      console.warn('Selaimessa ei ole geolocation-tukea.');
-      return;
-    }
-
-    console.log('Pyydetään sijaintia.');
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        console.log('SAIN SIJAINNIN:', latitude, longitude);
-
-        setUserLocation({ latitude, longitude });
-        map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.2 });
-      },
-      (err) => {
-        console.warn('Sijainnin haku epäonnistui:', err.code, err.message);
-      },
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 0 }
-    );
-  }, []);
-  // tässä oli
+  const showMapSuccess = useMapSuccessMessage();
+  const { thefts, loadVisibleThefts } = useVisibleThefts({
+    mapRef,
+    refreshKey
+  });
+  const { userLocation, centerToUser, zoomIn, zoomOut } =
+    useUserLocationMarker(mapRef);
 
   return (
     <div className="map-wrap" style={{ position: 'relative' }}>
-      {showMapSuccess && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 2000,
-            backgroundColor: '#198754',
-            color: 'white',
-            padding: '10px 16px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-            fontWeight: 600
-          }}
-        >
-          Ilmoitus tallennettu!
-        </div>
-      )}
+      {showMapSuccess && <MapSuccessOverlay />}
 
-      <MapContainer center={fallbackCenter} zoom={initialZoom} scrollWheelZoom>
+      <MapContainer
+        center={FALLBACK_CENTER}
+        zoom={INITIAL_ZOOM}
+        scrollWheelZoom
+        zoomControl={false}
+      >
         <MapRefBinder mapRef={mapRef} />
-        <AutoCenterToUser fallbackCenter={fallbackCenter} />
-
+        <AutoCenterToUser fallbackCenter={FALLBACK_CENTER} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
-
-        {/* UUSI: karttaklikki -> onLocationSelected */}
-        <MapClickPicker
-          enabled={isPickingLocation}
-          onPick={(loc) => {
-            onLocationSelected?.(loc);
-          }}
-        />
+        <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
 
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
@@ -368,76 +91,24 @@ export default function MapPage({
           />
         )}
 
-        {showThefts &&
-          !isPickingLocation &&
-          thefts.map((t) => (
-            <Marker
-              key={t.id}
-              position={[t.location.latitude, t.location.longitude]} // [lat, lng]
-            >
-              <Popup>
-                <div style={{ minWidth: 260, maxWidth: 320 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                    {t.brand ?? ''} {t.model ?? ''}
-                  </div>
-
-                  {/* Näyttää kaikki avain-arvo parit */}
-                  <div style={{ display: 'grid', gap: 4 }}>
-                    {/* tähän alle kirjaa jos haluaa rajoittaa näkyvyttä popupissa */}
-                    {Object.entries(t)
-                      .filter(([key]) => key !== 'location' && key !== 'images')
-                      .map(([key, value]) => (
-                        <div
-                          key={key}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '90px 1fr',
-                            gap: 8
-                          }}
-                        >
-                          <div style={{ opacity: 0.7, fontSize: 12 }}>
-                            {labelFi(key)}
-                          </div>
-
-                          {/* location näytetään nätisti, muut perusmuodossa */}
-                          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
-                            {key === 'theftTime'
-                              ? formatDate(value)
-                              : renderValue(value)}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                  {/* Alapainike */}
-                  <div style={{ marginTop: 12 }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onReportSelected?.(t.id);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '6px 8px',
-                        fontWeight: 600,
-                        cursor: 'default'
-                      }}
-                    >
-                      Näytä tiedot
-                    </button>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+        <TheftMarkersLayer
+          reports={thefts}
+          isPickingLocation={isPickingLocation}
+          onReportSelected={onReportSelected}
+        />
       </MapContainer>
 
-      {isPickingLocation && (
-        <div className="map-pick-hint">
-          Klikkaa karttaa valitaksesi sijainti
-        </div>
-      )}
+      {isPickingLocation && <MapPickHint />}
 
-      {!isMenuOpen && <MapControls onCenterToUser={onCenterToUser} />}
+      {!isMenuOpen && <MapLegend />}
+
+      {!isMenuOpen && (
+        <MapControls
+          onCenterToUser={centerToUser}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+        />
+      )}
     </div>
   );
 }

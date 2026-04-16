@@ -17,8 +17,8 @@ describe('App - valikko sulkeutuu', () => {
   test('piilottaa valikon kun sulkupainiketta klikataan', () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText('☰'));
-    fireEvent.click(screen.getByText('✕'));
+    fireEvent.click(screen.getByRole('button', { name: 'Avaa valikko' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sulje valikko' }));
 
     expect(screen.queryByText('varkausilmoitus')).not.toBeInTheDocument();
   });

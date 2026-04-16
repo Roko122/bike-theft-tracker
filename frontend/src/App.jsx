@@ -1,334 +1,155 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Bike, LogIn, LogOut, Menu, X } from 'lucide-react';
 import MapPage from './features/map/MapPage.jsx';
-import { useEffect, useState } from 'react';
-import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
-import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
-import SightingReportPage from './features/map/ui/SightingReportPage.jsx';
-import LoginPage from './features/map/ui/loginPage.jsx';
-import RegisterPage from './features/map/ui/RegisterPage.jsx';
-import { getCurrentUser, logoutUser } from './features/api/authApi.js';
-import { ArrowLeft, Cat, Menu, X } from 'lucide-react';
+import AppSidebar from './features/app/ui/AppSidebar.jsx';
+import AuthDialog from './features/app/ui/AuthDialog.jsx';
+import { useAuthSession } from './features/app/hooks/useAuthSession.js';
+import { AuthProvider } from './features/app/auth/AuthContext.jsx';
+import { useAppViewState } from './features/app/hooks/useAppViewState.js';
 
-export default function App() {
-  const [open, setOpen] = useState(false);
-  // tämä lisätty Btt-28
-  const [showForm, setShowForm] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  //tämä valitse kartalla
-  const [isPickingLocation, setIsPickingLocation] = useState(false);
-  const [selectedReportId, setSelectedReportId] = useState(null);
-  const [showSightingPage, setShowSightingPage] = useState(false);
-  const [selectedSightingReport, setSelectedSightingReport] = useState(null);
+function UserBadge({ user }) {
+  const label = user?.username ?? 'Käyttäjä';
+  const initials = label.slice(0, 2).toUpperCase();
 
-  const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  // lisätään BTT155
+  return (
+    <div className="header-user-badge" title={label}>
+      <div className="header-user-badge__avatar">{initials}</div>
+      <div className="header-user-badge__content">
+        <span className="header-user-badge__label">Kirjautunut</span>
+        <strong>{label}</strong>
+      </div>
+    </div>
+  );
+}
+
+function AppContent() {
+  const viewState = useAppViewState();
   const [refreshKey, setRefreshKey] = useState(0);
-  const handleReportCreated = () => {
-    setRefreshKey((prev) => prev + 1);
-  };
+  const { currentUser, sessionExpiredVersion, setCurrentUser, logout } =
+    useAuthSession();
 
   useEffect(() => {
-    let active = true;
-
-    getCurrentUser()
-      .then((user) => {
-        if (active) setCurrentUser(user);
-      })
-      .catch(() => {
-        if (active) setCurrentUser(null);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const onSessionExpired = () => {
-      setCurrentUser(null);
-      setShowLogin(true);
-      setShowRegister(false);
-      setShowForm(false);
-      setSelectedReportId(null);
-      setIsPickingLocation(false);
-      setShowSightingPage(false);
-      setSelectedSightingReport(null);
-      setOpen(false);
-    };
-
-    window.addEventListener('auth:session-expired', onSessionExpired);
-    return () => {
-      window.removeEventListener('auth:session-expired', onSessionExpired);
-    };
-  }, []);
-
-  async function handleLogout() {
-    try {
-      await logoutUser();
-    } catch (error) {
-      console.error('Uloskirjautuminen epäonnistui:', error);
-    } finally {
-      setCurrentUser(null);
-      setShowLogin(false);
-      setShowRegister(false);
-      setShowForm(false);
-      setSelectedReportId(null);
-      setIsPickingLocation(false);
-      setShowSightingPage(false);
-      setSelectedSightingReport(null);
+    if (sessionExpiredVersion > 0) {
+      viewState.handleSessionExpired();
     }
-  }
+  }, [sessionExpiredVersion, viewState.handleSessionExpired]);
+
+  const handleReportCreated = useCallback(() => {
+    setRefreshKey((previous) => previous + 1);
+    viewState.resetAfterSubmit();
+  }, [viewState.resetAfterSubmit]);
+
+  const handleLoginSuccess = useCallback(
+    (user) => {
+      setCurrentUser(user);
+      viewState.closeLogin();
+    },
+    [setCurrentUser, viewState.closeLogin]
+  );
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    viewState.openBaseMenu();
+  }, [logout, viewState.openBaseMenu]);
 
   return (
     <div className="app-shell">
       <header className="header">
-        <button className="menu-btn" onClick={() => setOpen((v) => !v)}>
-          {open ? <X /> : <Menu />}
+        <button
+          className="menu-btn"
+          onClick={
+            viewState.isMenuOpen ? viewState.openBaseMenu : viewState.toggleMenu
+          }
+        >
+          <span className="visually-hidden">
+            {viewState.isMenuOpen ? 'Sulje valikko' : 'Avaa valikko'}
+          </span>
+          {viewState.isMenuOpen ? <X /> : <Menu />}
         </button>
 
         <div className="title">
-          <strong> Bike Tracker</strong>
+          <Bike size={20} />
+          <strong>Bike Theft Tracker</strong>
         </div>
-        <div className="speacer"></div>
 
-        {open && (
-          <div
-            className="map-menu"
-            onClick={() => {
-              setOpen(false);
-              setShowForm(false);
-              //log in
-              setShowLogin(false);
-              setShowRegister(false);
-              // BTT26
-              setIsPickingLocation(false);
-              setShowSightingPage(false);
-              setSelectedSightingReport(null);
-              setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
-            }}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="d-flex flex-column gap-2"
-              style={{ minHeight: '100%' }}
+        <div className="header-actions">
+          {currentUser ? (
+            <>
+              <UserBadge user={currentUser} />
+              <button
+                type="button"
+                className="app-btn app-btn--secondary"
+                onClick={handleLogout}
+              >
+                <LogOut size={18} />
+                <span>Kirjaudu ulos</span>
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="app-btn app-btn--secondary"
+              onClick={viewState.openLogin}
             >
-              {/* ✅ 1) BTT-26: Detail-näkymä */}
-              {showSightingPage &&
-                selectedReportId &&
-                !showForm &&
-                !showLogin &&
-                !showRegister && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setIsPickingLocation(false);
-                        setShowSightingPage(false);
-                        setSelectedSightingReport(null);
-                      }}
-                    >
-                      <ArrowLeft />
-                      <span>Takaisin</span>
-                    </button>
-                    <SightingReportPage
-                      report={selectedSightingReport}
-                      reportId={selectedSightingReport?.id ?? selectedReportId}
-                      defaultLocation={selectedLocation}
-                      onStartPickFromMap={() => setIsPickingLocation(true)}
-                      onStopPickFromMap={() => setIsPickingLocation(false)}
-                    />
-                  </>
-                )}
+              <LogIn size={18} />
+              <span>Kirjaudu tai rekisteröidy</span>
+            </button>
+          )}
+        </div>
 
-              {selectedReportId &&
-                !showSightingPage &&
-                !showForm &&
-                !showLogin &&
-                !showRegister && (
-                <>
-                  <button
-                    onClick={() => {
-                      // paluu perusvalikkoon (menu pysyy auki)
-                      setShowSightingPage(false);
-                      setSelectedSightingReport(null);
-                      setSelectedReportId(null);
-                    }}
-                  >
-                    <ArrowLeft />
-                    <span>Takaisin</span>
-                  </button>
-                  <TheftReportDetailsSidebar
-                    reportId={selectedReportId}
-                    onClose={() => {
-                      // Palataan perusvalikkoon (menu pysyy auki)
-                      setShowSightingPage(false);
-                      setSelectedSightingReport(null);
-                      setSelectedReportId(null);
-                    }}
-                    onCreateSighting={(report) => {
-                      setSelectedSightingReport(report ?? null);
-                      setSelectedReportId(report?.id ?? selectedReportId);
-                      setIsPickingLocation(false);
-                      setShowSightingPage(true);
-                    }}
-                  />
-                </>
-              )}
-
-              {/* 2) BTT-28: Lomake */}
-              {showForm && !selectedReportId && !showLogin && !showRegister && (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowForm(false);
-                      setIsPickingLocation(false);
-                    }}
-                  >
-                    <ArrowLeft />
-                    <span>Takaisin</span>
-                  </button>
-
-                  <TheftReportForm
-                    defaultLocation={selectedLocation}
-                    onLocationSelected={setSelectedLocation}
-                    onStartPickFromMap={() => setIsPickingLocation(true)}
-                    onStopPickFromMap={() => setIsPickingLocation(false)}
-                    // tätä muutettu BTT155
-                    onCreated={() => {
-                      handleReportCreated();
-
-                      // suljetaan menu
-                      setOpen(false);
-                      setShowForm(false);
-                      setIsPickingLocation(false);
-                      setSelectedLocation(null);
-                    }}
-                  />
-                </>
-              )}
-
-              {showLogin && !showForm && !selectedReportId && !showRegister && (
-                <>
-                  <button onClick={() => setShowLogin(false)}>
-                    <ArrowLeft />
-                    <span>Takaisin</span>
-                  </button>
-                  <LoginPage
-                    onLoginSuccess={(user) => {
-                      setCurrentUser(user);
-                      setShowLogin(false);
-                    }}
-                    onFirstTime={() => {
-                      setShowLogin(false);
-                      setShowRegister(true);
-                    }}
-                  />
-                </>
-              )}
-
-              {showRegister && !showForm && !selectedReportId && !showLogin && (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowRegister(false);
-                      setShowLogin(true);
-                    }}
-                  >
-                    <ArrowLeft />
-                    <span>Takaisin</span>
-                  </button>
-                  <RegisterPage onRegistered={() => setShowRegister(false)} />
-                </>
-              )}
-
-              {/* 3) Perusvalikko */}
-              {!showForm &&
-                !selectedReportId &&
-                !showLogin &&
-                !showRegister && (
-                  <>
-                    <button>
-                      <Cat />
-                      <span> heloo world </span>
-                      <Cat />
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setShowForm(true);
-                        setShowLogin(false);
-                        setShowRegister(false);
-                        setShowSightingPage(false);
-                        setSelectedSightingReport(null);
-                        setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
-                      }}
-                    >
-                      varkausilmoitus
-                    </button>
-                    {currentUser ? (
-                      <button disabled>
-                        Kirjautunut: {currentUser.username}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setShowLogin(true);
-                          setShowRegister(false);
-                          setShowForm(false);
-                          setShowSightingPage(false);
-                          setSelectedSightingReport(null);
-                          setSelectedReportId(null);
-                        }}
-                      >
-                        Kirjaudu
-                      </button>
-                    )}
-                  </>
-                )}
-
-              {currentUser &&
-                !showForm &&
-                !selectedReportId &&
-                !showSightingPage &&
-                !showLogin &&
-                !showRegister && (
-                  <div style={{ marginTop: 'auto', paddingTop: 10 }}>
-                    <button onClick={handleLogout}>Kirjaudu ulos</button>
-                  </div>
-                )}
-            </div>
-          </div>
+        {viewState.isMenuOpen && (
+          <AppSidebar
+            currentUser={currentUser}
+            selectedReportId={viewState.selectedReportId}
+            selectedLocation={viewState.selectedLocation}
+            showForm={viewState.showForm}
+            showSighting={viewState.showSighting}
+            onCloseMenu={viewState.openBaseMenu}
+            onOpenForm={viewState.openForm}
+            onCloseForm={viewState.closeForm}
+            onCloseSighting={viewState.closeSighting}
+            onOpenLogin={viewState.openLogin}
+            onOpenSighting={viewState.openSighting}
+            onStartPickFromMap={viewState.startMapPicking}
+            onStopPickFromMap={viewState.stopMapPicking}
+            onClearPickedLocation={viewState.clearSelectedLocation}
+            onReportCreated={handleReportCreated}
+            onReportDetailsClose={viewState.clearSelectedReport}
+          />
         )}
       </header>
 
-      <main className={open ? 'main main--dimmed' : 'main'}>
+      <main className={viewState.isMenuOpen ? 'main main--dimmed' : 'main'}>
         <MapPage
           refreshKey={refreshKey}
-          isMenuOpen={open}
-          selectedLocation={selectedLocation}
-          isPickingLocation={isPickingLocation}
-          onLocationSelected={(loc) => {
-            // BTT-28: käyttäjä valitsi pisteen kartalta lomakkeelle
-            setSelectedLocation(loc);
-            setIsPickingLocation(false);
-          }}
-          /**
-           *BTT-26: MapPage ilmoittaa, että käyttäjä valitsi ilmoituksen (marker/lista/popup)
-           * - Avataan menu automaattisesti ja näytetään detailit.
-           * - Suljetaan lomake, jos se oli auki (ettei tule päällekkäisyyksiä).
-           */
-          onReportSelected={(reportId) => {
-            setSelectedReportId(reportId);
-            setOpen(true); // avaa sivupalkki automaattisesti
-            setShowForm(false);
-            setShowLogin(false);
-            setShowRegister(false);
-            setIsPickingLocation(false);
-            setShowSightingPage(false);
-            setSelectedSightingReport(null);
-          }}
+          isMenuOpen={viewState.isMenuOpen}
+          selectedLocation={viewState.selectedLocation}
+          isPickingLocation={viewState.isPickingLocation}
+          onLocationSelected={viewState.selectLocation}
+          onReportSelected={viewState.showReportDetails}
         />
       </main>
+
+      {(viewState.showLogin || viewState.showRegister) && (
+        <AuthDialog
+          mode={viewState.showRegister ? 'register' : 'login'}
+          onClose={
+            viewState.showRegister ? viewState.closeRegister : viewState.closeLogin
+          }
+          onLoginSuccess={handleLoginSuccess}
+          onOpenRegister={viewState.openRegister}
+          onBackToLogin={viewState.backToLogin}
+          onRegisterSuccess={viewState.closeRegister}
+        />
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

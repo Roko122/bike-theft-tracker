@@ -1,123 +1,82 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Binoculars } from 'lucide-react';
 import { getTheftReportById } from '../../api/theftReportApi.js';
 import ImageCarousel from './ImageCarousel.jsx';
 import { getReportImageUrls } from '../utils/reportImages.js';
+import { formatReportDate } from '../utils/reportFormatters.js';
 
-// Yksittäinen “label + value” rivi sivupalkkiin
+const STATUS_LABELS = {
+  ACTIVE: 'Aktiivinen ilmoitus',
+  SIGHTED: 'Havainto tehty',
+  RECOVERED: 'Pyörä palautunut',
+  CLOSED: 'Ilmoitus suljettu'
+};
+
+const STATUS_TONE_CLASS = {
+  ACTIVE: 'details-status details-status--danger',
+  SIGHTED: 'details-status details-status--warning',
+  RECOVERED: 'details-status details-status--success',
+  CLOSED: 'details-status details-status--neutral'
+};
+
 function Row({ label, value }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '110px 1fr',
-        gap: 10,
-        alignItems: 'start'
-      }}
-    >
-      <div style={{ opacity: 0.75, fontSize: 12 }}>{label}</div>
-      <div style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
+    <div className="details-row">
+      <div className="details-row__label">{label}</div>
+      <div className="details-row__value">
         {value == null || value === '' ? '-' : String(value)}
       </div>
     </div>
   );
 }
 
+function getStatusLabel(status) {
+  return STATUS_LABELS[status] ?? 'Tila tuntematon';
+}
+
+function getStatusToneClass(status) {
+  return STATUS_TONE_CLASS[status] ?? STATUS_TONE_CLASS.CLOSED;
+}
+
 export default function TheftReportDetailsSidebar({
   reportId,
   onClose,
-  onCreateSighting
+  onCreateSighting,
+  canCreateSighting = false
 }) {
-  // Haettu ilmoitus
   const [report, setReport] = useState(null);
-
-  // UI-tilat
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  /**
-   * Kenttien labelit suomeksi.
-   * Laajenna listaa sitä mukaan kun DTO tarkentuu.
-   */
-  const labelFi = useMemo(() => {
-    const labels = {
-      id: 'ID',
-      brand: 'Merkki',
-      model: 'Malli',
-      type: 'Tyyppi',
-      color: 'Väri',
-      status: 'Tila',
-      theftTime: 'Tapahtuma-aika',
-      description: 'Kuvaus',
-      serialNumber: 'Sarjanumero',
-      address: 'Osoite',
-      city: 'Kunta / kaupunki',
-      createdAt: 'Luotu',
-      updatedAt: 'Päivitetty',
-      location: 'Sijainti',
-      reporterName: 'Ilmoittaja',
-      email: 'Sähköposti'
-    };
-
-    return (key) => labels[key] ?? key;
-  }, []);
-
-  /**
-   * Päivämäärän muotoilu:
-   * - Jos arvo ei ole validi date, näytetään sellaisenaan.
-   */
-  function formatDateTime(iso) {
-    if (!iso) return '-';
-
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return String(iso);
-
-    // Sama logiikka kuin MapPage.jsx popupissa: +2 tuntia
-    const adjusted = new Date(d.getTime() + 2 * 60 * 60 * 1000);
-
-    return adjusted.toLocaleString();
-  }
-
-  /**
-   * Arvon renderöinti:
-   * - null/undefined => "-"
-   * - object => pretty JSON
-   * - muut => String()
-   */
-  function renderValue(value) {
-    if (value == null) return '-';
-    if (typeof value === 'object') return JSON.stringify(value, null, 2);
-    return String(value);
-  }
-
-  /**
-   * Datahaku reportId:n muuttuessa.
-   */
   useEffect(() => {
-    if (!reportId) return;
+    if (!reportId) {
+      return;
+    }
 
     let cancelled = false;
 
-    async function load() {
+    async function loadReport() {
       try {
         setLoading(true);
         setError('');
         setReport(null);
 
         const data = await getTheftReportById(reportId);
-
         if (!cancelled) {
           setReport(data);
         }
-      } catch (e) {
+      } catch (loadError) {
         if (!cancelled) {
-          setError(e?.message ?? 'Ilmoituksen haku epäonnistui.');
+          setError(loadError?.message ?? 'Ilmoituksen haku epäonnistui.');
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    load();
+    loadReport();
 
     return () => {
       cancelled = true;
@@ -131,23 +90,8 @@ export default function TheftReportDetailsSidebar({
 
   return (
     <div className="details">
-      <div className="details-header">
-        <h3 style={{ margin: 0 }}>Varkausilmoitus</h3>
-
-        <button
-          type="button"
-          onClick={() => onClose?.()}
-          aria-label="Sulje"
-          title="Sulje"
-        >
-          ✕
-        </button>
-      </div>
-
-      {/* Lataus */}
       {loading && <p style={{ marginTop: 12 }}>Ladataan...</p>}
 
-      {/* Virhe */}
       {!loading && error && (
         <div style={{ marginTop: 12 }}>
           <div style={{ fontWeight: 700, marginBottom: 6 }}>
@@ -157,41 +101,42 @@ export default function TheftReportDetailsSidebar({
         </div>
       )}
 
-      {/* Data */}
       {!loading && !error && report && (
-        <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
-          {/* Pieni “otsikko” */}
-          <div style={{ fontWeight: 700 }}>
-            {report.brand ?? ''} {report.model ?? ''}
+        <div className="details-body">
+          <div className="details-header details-header--summary">
+            <div className="details-header__content">
+              <div className="details-header__topline">
+                <div className="details-header__eyebrow">Varkausilmoitus</div>
+                <div className={getStatusToneClass(report.status)}>
+                  {getStatusLabel(report.status)}
+                </div>
+              </div>
+              <h3 className="details-header__title">
+                {report?.brand ?? ''} {report?.model ?? ''}
+              </h3>
+              {report?.id && (
+                <div className="details-header__meta">ID #{report.id}</div>
+              )}
+            </div>
           </div>
 
           {imageUrls.length > 0 && (
-            <div style={{ display: 'grid', gap: 6 }}>
-              <h4 style={{ margin: '12px 0 4px' }}>Kuvat</h4>
+            <div className="details-section">
+              <h4 className="details-section__title">Kuvat</h4>
               <ImageCarousel images={imageUrls} height={220} fit="contain" />
             </div>
           )}
 
-          {/* Perustiedot */}
-          <div style={{ display: 'grid', gap: 6 }}>
-            <h4 style={{ margin: '12px 0 4px' }}>Perustiedot</h4>
+          <div className="details-section details-section--rows">
+            <h4 className="details-section__title">Perustiedot</h4>
 
-            <Row label="ID" value={report.id} />
             <Row label="Kuvaus" value={report.description} />
-            <Row
-              label="Tapahtuma-aika"
-              value={report.theftTime ? formatDateTime(report.theftTime) : '-'}
-            />
-            <Row label="Tila" value={report.status} />
+            <Row label="Tapahtuma-aika" value={formatReportDate(report.theftTime)} />
 
-            {/* Sijainti */}
-            <h4 style={{ margin: '12px 0 4px' }}>Sijainti</h4>
-
+            <h4 className="details-section__title">Sijainti</h4>
             <Row label="Osoite" value={report.theftAddress ?? report.address} />
 
-            {/* Pyörän tiedot (bike voi olla objekti) */}
-            <h4 style={{ margin: '12px 0 4px' }}>Pyörän tiedot</h4>
-
+            <h4 className="details-section__title">Pyörän tiedot</h4>
             <Row label="Merkki" value={report.bike?.brand ?? report.brand} />
             <Row label="Malli" value={report.bike?.model ?? report.model} />
             <Row label="Tyyppi" value={report.bike?.type ?? report.type} />
@@ -202,13 +147,17 @@ export default function TheftReportDetailsSidebar({
             />
             <Row label="Lisäkuvaus" value={report.bike?.description} />
           </div>
-          <button
-            type="button"
-            onClick={() => onCreateSighting?.(report)}
-            style={{ marginTop: 12 }}
-          >
-            Tee havaintoilmoitus
-          </button>
+
+          {canCreateSighting && (
+            <button
+              type="button"
+              className="app-btn app-btn--secondary"
+              onClick={() => onCreateSighting?.(report)}
+            >
+              <Binoculars size={18} />
+              <span>Tee havaintoilmoitus</span>
+            </button>
+          )}
         </div>
       )}
     </div>

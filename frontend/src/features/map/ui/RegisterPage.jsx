@@ -1,8 +1,21 @@
 import { useState } from 'react';
-import { Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
+import { Eye, EyeOff, Mail, ShieldCheck, UserRound, X } from 'lucide-react';
 import { registerUser } from '../../api/authApi.js';
 import { passwordsMatch, validatePassword } from './passwordValidation.js';
-import { Eye, EyeOff, X } from 'lucide-react';
+
+function PasswordToggleButton({ visible, onClick }) {
+  return (
+    <button
+      type="button"
+      className="auth-input__toggle"
+      onClick={onClick}
+      aria-label={visible ? 'Piilota salasana' : 'Näytä salasana'}
+    >
+      {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+      <span>{visible ? 'Piilota' : 'Näytä'}</span>
+    </button>
+  );
+}
 
 export default function RegisterPage({ onRegistered }) {
   const [username, setUsername] = useState('');
@@ -21,8 +34,8 @@ export default function RegisterPage({ onRegistered }) {
   const isPasswordMatch = passwordsMatch(password, confirmPassword);
   const showPasswordMismatch = confirmPassword.length > 0 && !isPasswordMatch;
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError('');
 
     if (!isPasswordValid) {
@@ -39,112 +52,121 @@ export default function RegisterPage({ onRegistered }) {
       setLoading(true);
       const result = await registerUser({ username, email, password });
       onRegistered?.(result);
-    } catch (err) {
-      setError(err.message || 'Rekisteröinti epäonnistui');
+    } catch (submitError) {
+      setError(submitError.message || 'Rekisteröinti epäonnistui');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Card className="border-0 shadow-none" style={{ maxWidth: 420 }}>
-      <Card.Body>
-        <Card.Title>Luo tunnus</Card.Title>
+    <section className="auth-card auth-card--wide">
+      <div className="auth-card__hero">
+        <div className="auth-card__icon">
+          <ShieldCheck size={20} />
+        </div>
+        <div className="auth-card__hero-copy">
+          <p className="auth-card__eyebrow">Uusi käyttäjä</p>
+          <h2 className="auth-card__title">Luo tunnus</h2>
+          <p className="auth-card__subtitle">
+            Rekisteröidy, jotta voit lisätä omia ilmoituksia ja hallita niitä.
+          </p>
+        </div>
+      </div>
 
-        {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="auth-alert auth-alert--danger">{error}</div>}
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Käyttäjätunnus</Form.Label>
-            <Form.Control
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <label className="auth-field">
+          <span className="auth-field__label">Käyttäjätunnus</span>
+          <div className="auth-input-wrap">
+            <UserRound size={16} className="auth-input-wrap__icon" />
+            <input
+              className="auth-input auth-input--with-leading-icon"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(event) => setUsername(event.target.value)}
               required
             />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Sähköposti</Form.Label>
-            <Form.Control
+          </div>
+        </label>
+
+        <label className="auth-field">
+          <span className="auth-field__label">Sähköposti</span>
+          <div className="auth-input-wrap">
+            <Mail size={16} className="auth-input-wrap__icon" />
+            <input
+              className="auth-input auth-input--with-leading-icon"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
               required
             />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Salasana</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <Button
-                type="button"
-                variant="outline-secondary"
-                onClick={() => setShowPassword((v) => !v)}
-              >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  {showPassword ? 'Piilota' : 'Näytä'}
-                </span>
-              </Button>
-            </InputGroup>
-            <div style={{ marginTop: 6 }}>
+          </div>
+        </label>
+
+        <label className="auth-field">
+          <span className="auth-field__label">Salasana</span>
+          <div className="auth-input-wrap">
+            <input
+              className="auth-input auth-input--with-trailing-action"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+            <PasswordToggleButton
+              visible={showPassword}
+              onClick={() => setShowPassword((value) => !value)}
+            />
+          </div>
+          {unmetPasswordRules.length > 0 && (
+            <div className="auth-helper-list">
               {unmetPasswordRules.map((rule) => (
-                <Form.Text key={rule.key} className="text-danger d-block">
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6
-                    }}
-                  >
-                    <X size={14} />
-                    {rule.label}
-                  </span>
-                </Form.Text>
+                <div key={rule.key} className="auth-helper-list__item">
+                  <X size={14} />
+                  <span>{rule.label}</span>
+                </div>
               ))}
             </div>
-          </Form.Group>
+          )}
+        </label>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Salasana uudelleen</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <Button
-                type="button"
-                variant="outline-secondary"
-                onClick={() => setShowConfirmPassword((v) => !v)}
-              >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  {showConfirmPassword ? 'Piilota' : 'Näytä'}
-                </span>
-              </Button>
-            </InputGroup>
-            {showPasswordMismatch && (
-              <Form.Text className="text-danger d-block">
-                Salasanat eivät ole samat
-              </Form.Text>
-            )}
-          </Form.Group>
+        <label className="auth-field">
+          <span className="auth-field__label">Salasana uudelleen</span>
+          <div className="auth-input-wrap">
+            <input
+              className="auth-input auth-input--with-trailing-action"
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              required
+            />
+            <PasswordToggleButton
+              visible={showConfirmPassword}
+              onClick={() => setShowConfirmPassword((value) => !value)}
+            />
+          </div>
+          {showPasswordMismatch && (
+            <div className="auth-helper-list">
+              <div className="auth-helper-list__item">
+                <X size={14} />
+                <span>Salasanat eivät ole samat</span>
+              </div>
+            </div>
+          )}
+        </label>
 
-          <Button
+        <div className="auth-actions">
+          <button
             type="submit"
+            className="app-btn app-btn--primary app-btn--wide"
             disabled={loading || !isPasswordValid || !isPasswordMatch}
           >
-            {loading ? 'Luodaan tiliä...' : 'Luo tili'}
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+            <span>{loading ? 'Luodaan tiliä...' : 'Luo tili'}</span>
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }

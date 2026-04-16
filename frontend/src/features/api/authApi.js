@@ -1,59 +1,75 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
-const API_PREFIX = '/api/v1';
+import { buildApiUrl } from './apiConfig.js';
+import {
+  sessionFetch,
+  sessionFetchWithoutRefresh
+} from './authorizedFetch.js';
 
-function url(path) {
-  return `${BASE_URL}${API_PREFIX}${path}`;
+async function parseJsonResponse(response, { method, path }) {
+  const text = await response.text().catch(() => '');
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const message =
+      (data && (data.message || data.error)) ||
+      text ||
+      `${method} ${path} failed: ${response.status}`;
+    const error = new Error(message);
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 }
 
-async function requestCred(method, path, body, includeCredentials) {
-  const fetchOptions = {
+function buildJsonRequestOptions(method, body, includeBody = true) {
+  const requestOptions = {
     method,
     headers: {
       Accept: 'application/json'
     }
   };
 
-  if (includeCredentials) {
-    fetchOptions.credentials = 'include';
-  } else {
-    fetchOptions.credentials = 'omit';
+  if (includeBody && body) {
+    requestOptions.headers['Content-Type'] = 'application/json';
+    requestOptions.body = JSON.stringify(body);
   }
 
-  if (body) {
-    fetchOptions.headers['Content-Type'] = 'application/json';
-    fetchOptions.body = JSON.stringify(body);
-  }
-
-  const res = await fetch(url(path), fetchOptions);
-
-  const text = await res.text().catch(() => '');
-  let data = null;
-
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    // ignore non-json body
-  }
-
-  if (!res.ok) {
-    const message =
-      (data && (data.message || data.error)) ||
-      text ||
-      `${method} ${path} failed: ${res.status}`;
-    const err = new Error(message);
-    err.status = res.status;
-    err.data = data;
-    throw err;
-  }
-  return data;
+  return requestOptions;
 }
 
-function requestPublic(method, path, body) {
-  return requestCred(method, path, body, false);
+async function requestPublic(method, path, body) {
+  const response = await fetch(buildApiUrl(path), buildJsonRequestOptions(method, body));
+  return parseJsonResponse(response, { method, path });
 }
 
-function requestAuth(method, path, body) {
-  return requestCred(method, path, body, true);
+async function requestSessionEndpoint(method, path) {
+  const response = await sessionFetchWithoutRefresh(
+    path,
+    buildJsonRequestOptions(method, null, false)
+  );
+
+  return parseJsonResponse(response, { method, path });
+}
+
+async function requestCredentialed(method, path, body) {
+  const response = await sessionFetchWithoutRefresh(
+    path,
+    buildJsonRequestOptions(method, body)
+  );
+
+  return parseJsonResponse(response, { method, path });
+}
+
+async function requestAuthenticated(method, path, body) {
+  const response = await sessionFetch(path, buildJsonRequestOptions(method, body));
+  return parseJsonResponse(response, { method, path });
 }
 
 export function registerUser(payload) {
@@ -61,17 +77,17 @@ export function registerUser(payload) {
 }
 
 export function loginUser(payload) {
-  return requestAuth('POST', '/auth/login', payload);
+  return requestCredentialed('POST', '/auth/login', payload);
 }
 
 export function getCurrentUser() {
-  return requestAuth('GET', '/auth/me', null);
+  return requestAuthenticated('GET', '/auth/me', null);
 }
 
 export function logoutUser() {
-  return requestAuth('POST', '/auth/logout', null);
+  return requestAuthenticated('POST', '/auth/logout', null);
 }
 
 export function refreshUser() {
-  return requestAuth('POST', '/auth/refresh', null);
+  return requestSessionEndpoint('POST', '/auth/refresh');
 }

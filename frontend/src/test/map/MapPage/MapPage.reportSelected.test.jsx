@@ -1,28 +1,45 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
-import MapPage from '../../features/map/MapPage';
+import MapPage from '../../../features/map/MapPage.jsx';
 
-vi.mock('../../features/theftReports/api', () => ({
-  getTheftReports: vi.fn(() =>
+vi.mock('../../../features/api/theftReportApi.js', () => ({
+  fetchTheftReportMapItemsByBounds: vi.fn(() =>
     Promise.resolve([
       {
         id: 'abc123',
         brand: 'Trek',
         model: 'FX3',
+        status: 'ACTIVE',
         location: { latitude: 62.601, longitude: 29.7636 }
       }
     ])
   )
 }));
 
-vi.mock('../../features/map/ui/MapControls', () => ({
+vi.mock('../../../features/map/hooks/useVisibleThefts.js', () => ({
+  useVisibleThefts: () => ({
+    thefts: [
+      {
+        id: 'abc123',
+        brand: 'Trek',
+        model: 'FX3',
+        status: 'ACTIVE',
+        location: { latitude: 62.601, longitude: 29.7636 }
+      }
+    ],
+    loadVisibleThefts: vi.fn()
+  })
+}));
+
+vi.mock('../../../features/map/ui/MapControls.jsx', () => ({
   default: () => null
 }));
 
 vi.mock('leaflet', () => ({
   __esModule: true,
   default: {
+    divIcon: vi.fn(() => ({})),
     Icon: {
       Default: {
         prototype: {},
@@ -60,10 +77,10 @@ describe('MapPage - Näytä tiedot -painike', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Näytä tiedot')).toBeInTheDocument();
+      expect(screen.getByText('Avaa ilmoitus')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Näytä tiedot'));
+    fireEvent.click(screen.getByText('Avaa ilmoitus'));
 
     expect(onReportSelectedMock).toHaveBeenCalledTimes(1);
     expect(onReportSelectedMock).toHaveBeenCalledWith('abc123');

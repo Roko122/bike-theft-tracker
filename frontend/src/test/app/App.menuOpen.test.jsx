@@ -17,8 +17,8 @@ describe('App - valikko avautuu', () => {
   test('näyttää valikon kun menu-nappia klikataan', () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText('☰'));
+    fireEvent.click(screen.getByRole('button', { name: 'Avaa valikko' }));
 
-    expect(screen.getByText('varkausilmoitus')).toBeInTheDocument();
+    expect(screen.getByText('Uusi varkausilmoitus')).toBeInTheDocument();
   });
 });
