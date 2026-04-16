@@ -1474,9 +1474,9 @@ body {
 }
 
 .popup-card {
-  width: clamp(280px, 32vw, 420px);
+  width: clamp(280px, 32vw, 350px);
   min-width: 280px;
-  max-width: 420px;
+  max-width: 350px;
   padding: 18px 16px 16px;
   display: grid;
   gap: 14px;
@@ -1546,13 +1546,13 @@ body {
 .popup-card__footer {
   padding-top: 2px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .popup-card__action {
   min-height: 40px;
   padding-inline: 14px;
-  width: auto;
+  width: 100%;
   min-width: 150px;
 }
 
