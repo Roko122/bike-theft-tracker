@@ -19,6 +19,7 @@ export default function SightingReportPage({
 }) {
   const effectiveReportId = report?.id ?? reportId;
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState(null);
   const [latitude, setLatitude] = useState(defaultLocation?.latitude ?? '');
   const [longitude, setLongitude] = useState(defaultLocation?.longitude ?? '');
   const [locationSource, setLocationSource] = useState(
@@ -88,7 +89,9 @@ export default function SightingReportPage({
     setSuccessMsg('');
 
     if (!effectiveReportId) {
-      setError('Valitun ilmoituksen tunniste puuttuu. Avaa havainto ilmoituksen kautta.');
+      setError(
+        'Valitun ilmoituksen tunniste puuttuu. Avaa havainto ilmoituksen kautta.'
+      );
       return;
     }
 
@@ -127,7 +130,7 @@ export default function SightingReportPage({
 
     try {
       setLoading(true);
-      await createSightingForReport(effectiveReportId, payload);
+      await createSightingForReport(effectiveReportId, payload, image);
       setSuccessMsg('Havaintoilmoitus tallennettu.');
     } catch (err) {
       setError(err?.message || 'Havaintoilmoituksen tallennus epäonnistui.');
@@ -172,12 +175,20 @@ export default function SightingReportPage({
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Kuvaile havainto..."
+              placeholder="Kuvaile havainto"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Label>Kuva (valinnainen, max 1)</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+            />
+          </Form.Group>
           {effectiveReportId && (
             <div className="small text-muted mb-3">
               Liittyy varkausilmoitukseen: <strong>{effectiveReportId}</strong>
