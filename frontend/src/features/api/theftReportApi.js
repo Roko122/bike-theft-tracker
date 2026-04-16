@@ -1,3 +1,5 @@
+import { authorizedFetch } from './authorizedFetch.js';
+
 // frontend/src/features/theftReports/theftReportApi.js
 
 const DEFAULT_BASE_URL = 'http://localhost:8080';
@@ -20,7 +22,10 @@ export function resolveApiAssetUrl(pathOrUrl) {
   if (typeof pathOrUrl !== 'string' || pathOrUrl.trim() === '') return '';
 
   try {
-    return new URL(pathOrUrl, `${getApiBaseUrl().replace(/\/+$/, '')}/`).toString();
+    return new URL(
+      pathOrUrl,
+      `${getApiBaseUrl().replace(/\/+$/, '')}/`
+    ).toString();
   } catch {
     return pathOrUrl;
   }
@@ -118,11 +123,10 @@ async function requestFormData(method, formData) {
     headers: {
       Accept: 'application/json'
     },
-    body: formData,
-    credentials: 'include'
+    body: formData
   };
 
-  const res = await fetch(buildUrl(), fetchOptions);
+  const res = await authorizedFetch(buildUrl(), fetchOptions);
 
   return parseJsonOrThrow(res);
 }
@@ -140,3 +144,4 @@ export function createTheftReport(payload, images = []) {
 
   return requestFormData('POST', formData);
 }
+//Käytetty tekoäly ongrlmirn takia...

@@ -15,6 +15,8 @@ async function requestCred(method, path, body, includeCredentials) {
 
   if (includeCredentials) {
     fetchOptions.credentials = 'include';
+  } else {
+    fetchOptions.credentials = 'omit';
   }
 
   if (body) {
@@ -38,31 +40,38 @@ async function requestCred(method, path, body, includeCredentials) {
       (data && (data.message || data.error)) ||
       text ||
       `${method} ${path} failed: ${res.status}`;
-    throw new Error(message);
+    const err = new Error(message);
+    err.status = res.status;
+    err.data = data;
+    throw err;
   }
   return data;
 }
 
-function request(method, path, body) {
+function requestPublic(method, path, body) {
   return requestCred(method, path, body, false);
 }
 
+function requestAuth(method, path, body) {
+  return requestCred(method, path, body, true);
+}
+
 export function registerUser(payload) {
-  return request('POST', '/auth/register', payload);
+  return requestPublic('POST', '/auth/register', payload);
 }
 
 export function loginUser(payload) {
-  return requestCred('POST', '/auth/login', payload, true);
+  return requestAuth('POST', '/auth/login', payload);
 }
 
 export function getCurrentUser() {
-  return requestCred('GET', '/auth/me', null, true);
+  return requestAuth('GET', '/auth/me', null);
 }
 
 export function logoutUser() {
-  return requestCred('POST', '/auth/logout', null, true);
+  return requestAuth('POST', '/auth/logout', null);
 }
 
 export function refreshUser() {
-  return requestCred('POST', '/auth/refresh', null, true);
+  return requestAuth('POST', '/auth/refresh', null);
 }
