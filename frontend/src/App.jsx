@@ -2,12 +2,10 @@ import MapPage from './features/map/MapPage.jsx';
 import { useEffect, useState } from 'react';
 import TheftReportForm from './features/map/ui/TheftReportForm.jsx';
 import TheftReportDetailsSidebar from './features/map/ui/TheftReportDetailsSidebar';
+import SightingReportPage from './features/map/ui/SightingReportPage.jsx';
 import LoginPage from './features/map/ui/loginPage.jsx';
 import RegisterPage from './features/map/ui/RegisterPage.jsx';
-import {
-  getCurrentUser,
-  logoutUser
-} from './features/api/authApi.js';
+import { getCurrentUser, logoutUser } from './features/api/authApi.js';
 import { ArrowLeft, Cat, Menu, X } from 'lucide-react';
 
 export default function App() {
@@ -18,6 +16,8 @@ export default function App() {
   //tämä valitse kartalla
   const [isPickingLocation, setIsPickingLocation] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
+  const [showSightingPage, setShowSightingPage] = useState(false);
+  const [selectedSightingReport, setSelectedSightingReport] = useState(null);
 
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -52,6 +52,8 @@ export default function App() {
       setShowForm(false);
       setSelectedReportId(null);
       setIsPickingLocation(false);
+      setShowSightingPage(false);
+      setSelectedSightingReport(null);
       setOpen(false);
     };
 
@@ -73,6 +75,8 @@ export default function App() {
       setShowForm(false);
       setSelectedReportId(null);
       setIsPickingLocation(false);
+      setShowSightingPage(false);
+      setSelectedSightingReport(null);
     }
   }
 
@@ -99,6 +103,8 @@ export default function App() {
               setShowRegister(false);
               // BTT26
               setIsPickingLocation(false);
+              setShowSightingPage(false);
+              setSelectedSightingReport(null);
               setSelectedReportId(null); //  BTT-26: poistetaan detail-valinta
             }}
           >
@@ -108,11 +114,43 @@ export default function App() {
               style={{ minHeight: '100%' }}
             >
               {/* ✅ 1) BTT-26: Detail-näkymä */}
-              {selectedReportId && !showForm && !showLogin && !showRegister && (
+              {showSightingPage &&
+                selectedReportId &&
+                !showForm &&
+                !showLogin &&
+                !showRegister && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsPickingLocation(false);
+                        setShowSightingPage(false);
+                        setSelectedSightingReport(null);
+                      }}
+                    >
+                      <ArrowLeft />
+                      <span>Takaisin</span>
+                    </button>
+                    <SightingReportPage
+                      report={selectedSightingReport}
+                      reportId={selectedSightingReport?.id ?? selectedReportId}
+                      defaultLocation={selectedLocation}
+                      onStartPickFromMap={() => setIsPickingLocation(true)}
+                      onStopPickFromMap={() => setIsPickingLocation(false)}
+                    />
+                  </>
+                )}
+
+              {selectedReportId &&
+                !showSightingPage &&
+                !showForm &&
+                !showLogin &&
+                !showRegister && (
                 <>
                   <button
                     onClick={() => {
                       // paluu perusvalikkoon (menu pysyy auki)
+                      setShowSightingPage(false);
+                      setSelectedSightingReport(null);
                       setSelectedReportId(null);
                     }}
                   >
@@ -123,7 +161,15 @@ export default function App() {
                     reportId={selectedReportId}
                     onClose={() => {
                       // Palataan perusvalikkoon (menu pysyy auki)
+                      setShowSightingPage(false);
+                      setSelectedSightingReport(null);
                       setSelectedReportId(null);
+                    }}
+                    onCreateSighting={(report) => {
+                      setSelectedSightingReport(report ?? null);
+                      setSelectedReportId(report?.id ?? selectedReportId);
+                      setIsPickingLocation(false);
+                      setShowSightingPage(true);
                     }}
                   />
                 </>
@@ -212,6 +258,8 @@ export default function App() {
                         setShowForm(true);
                         setShowLogin(false);
                         setShowRegister(false);
+                        setShowSightingPage(false);
+                        setSelectedSightingReport(null);
                         setSelectedReportId(null); // varmistus: ei detail-näkymää samaan aikaan
                       }}
                     >
@@ -227,6 +275,8 @@ export default function App() {
                           setShowLogin(true);
                           setShowRegister(false);
                           setShowForm(false);
+                          setShowSightingPage(false);
+                          setSelectedSightingReport(null);
                           setSelectedReportId(null);
                         }}
                       >
@@ -239,6 +289,7 @@ export default function App() {
               {currentUser &&
                 !showForm &&
                 !selectedReportId &&
+                !showSightingPage &&
                 !showLogin &&
                 !showRegister && (
                   <div style={{ marginTop: 'auto', paddingTop: 10 }}>
@@ -273,6 +324,8 @@ export default function App() {
             setShowLogin(false);
             setShowRegister(false);
             setIsPickingLocation(false);
+            setShowSightingPage(false);
+            setSelectedSightingReport(null);
           }}
         />
       </main>

@@ -144,4 +144,30 @@ export function createTheftReport(payload, images = []) {
 
   return requestFormData('POST', formData);
 }
+
+export async function createSightingForReport(reportId, payload, image = null) {
+  if (!reportId) throw new Error('reportId is required');
+
+  const formData = new FormData();
+  formData.append(
+    'sighting',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
+  if (image) {
+    formData.append('image', image);
+  }
+
+  const res = await authorizedFetch(
+    buildUrl(`/${encodeURIComponent(reportId)}/sightings`),
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json'
+      },
+      body: formData
+    }
+  );
+
+  return parseJsonOrThrow(res);
+}
 //Käytetty tekoäly ongrlmirn takia...
