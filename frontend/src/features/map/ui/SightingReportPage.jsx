@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  Button,
-  Card,
-  Form,
-  OverlayTrigger,
-  Tooltip
-} from 'react-bootstrap';
-import { Info } from 'lucide-react';
+  Binoculars,
+  Camera,
+  Crosshair,
+  MapPin,
+  Send,
+  Trash2
+} from 'lucide-react';
 import { createSightingForReport } from '../../api/theftReportApi.js';
+
+function Message({ tone, children }) {
+  return <div className={`sighting-alert sighting-alert--${tone}`}>{children}</div>;
+}
 
 export default function SightingReportPage({
   report,
   reportId,
   defaultLocation,
   onStartPickFromMap,
-  onStopPickFromMap
+  onStopPickFromMap,
+  onClearPickedLocation
 }) {
   const effectiveReportId = report?.id ?? reportId;
   const [description, setDescription] = useState('');
@@ -40,17 +44,21 @@ export default function SightingReportPage({
     setLocationError('');
 
     if (!navigator.geolocation) {
-      setLocationError('Selaimesi ei tue sijainnin hakua (geolocation).');
+      setLocationError('Selaimesi ei tue sijainnin hakua.');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation(pos.coords.latitude, pos.coords.longitude, 'gps');
+      (position) => {
+        setLocation(
+          position.coords.latitude,
+          position.coords.longitude,
+          'gps'
+        );
       },
-      (err) => {
+      (positionError) => {
         setLocationError(
-          err.message || 'Sijainnin haku epäonnistui. Tarkista selaimen luvat.'
+          positionError.message || 'Sijainnin haku epäonnistui. Tarkista luvat.'
         );
       },
       {
@@ -68,14 +76,6 @@ export default function SightingReportPage({
     setLocationError('');
   }
 
-  function renderTooltip(id, text) {
-    return (
-      <Tooltip id={id} style={{ zIndex: 9999 }}>
-        {text}
-      </Tooltip>
-    );
-  }
-
   useEffect(() => {
     if (defaultLocation?.latitude && defaultLocation?.longitude) {
       setLocation(defaultLocation.latitude, defaultLocation.longitude, 'map');
@@ -83,8 +83,8 @@ export default function SightingReportPage({
     }
   }, [defaultLocation]);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError('');
     setSuccessMsg('');
 
@@ -114,9 +114,12 @@ export default function SightingReportPage({
     }
 
     if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
-      setError(
-        'Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).'
-      );
+      setError('Sijainti ei ole kelvollinen.');
+      return;
+    }
+
+    if (image && image.size > 5 * 1024 * 1024) {
+      setError('Kuvan enimmäiskoko on 5 MB.');
       return;
     }
 
@@ -132,145 +135,141 @@ export default function SightingReportPage({
       setLoading(true);
       await createSightingForReport(effectiveReportId, payload, image);
       setSuccessMsg('Havaintoilmoitus tallennettu.');
-    } catch (err) {
-      setError(err?.message || 'Havaintoilmoituksen tallennus epäonnistui.');
+      setDescription('');
+      setImage(null);
+    } catch (submitError) {
+      setError(
+        submitError?.message || 'Havaintoilmoituksen tallennus epäonnistui.'
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Card className="shadow-sm" style={{ maxWidth: 900 }}>
-      <Card.Body>
-        <Card.Title>Havaintoilmoitus</Card.Title>
+    <section className="sighting-card">
+      <div className="sighting-card__hero">
+        <div className="sighting-card__icon">
+          <Binoculars size={20} />
+        </div>
+        <div className="sighting-card__hero-copy">
+          <p className="sighting-card__eyebrow">Uusi havainto</p>
+          <h2 className="sighting-card__title">Havaintoilmoitus</h2>
+          <p className="sighting-card__subtitle">
+            Kirjaa missä pyörä havaittiin ja lisää kuva, jos sellainen on.
+          </p>
+        </div>
+      </div>
 
-        {error && <Alert variant="danger">{error}</Alert>}
-        {successMsg && <Alert variant="success">{successMsg}</Alert>}
+      {error && <Message tone="danger">{error}</Message>}
+      {successMsg && <Message tone="success">{successMsg}</Message>}
+      {locationError && <Message tone="warning">{locationError}</Message>}
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label className="d-flex align-items-center gap-1">
-              Kuvaus
-              <OverlayTrigger
-                trigger={['hover', 'focus']}
-                placement="right"
-                container={document.body}
-                overlay={renderTooltip(
-                  'tooltip-sighting-description',
-                  'Kuvaile mahdollisimman tarkasti, mitä havaitsit.'
-                )}
-              >
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    cursor: 'pointer'
-                  }}
-                  tabIndex={0}
-                >
-                  <Info size={16} color="#6c757d" />
-                </span>
-              </OverlayTrigger>
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Kuvaile havainto"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </Form.Group>
+      <form className="sighting-form" onSubmit={handleSubmit}>
+        <label className="sighting-field">
+          <span className="sighting-field__label">Mitä havaitsit?</span>
+          <textarea
+            className="sighting-textarea"
+            rows={5}
+            placeholder="Kuvaile mahdollisimman tarkasti mitä näit, milloin ja missä tilanteessa."
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </label>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Kuva (valinnainen, max 1)</Form.Label>
-            <Form.Control
-              type="file"
-              accept="image/png,image/jpeg"
-              onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-            />
-          </Form.Group>
-          {effectiveReportId && (
-            <div className="small text-muted mb-3">
-              Liittyy varkausilmoitukseen: <strong>{effectiveReportId}</strong>
+        <div className="sighting-grid">
+          <div className="sighting-section">
+            <div className="sighting-section__header">
+              <Camera size={16} />
+              <span>Kuva</span>
             </div>
-          )}
-
-          <h6 className="d-flex align-items-center gap-1">
-            Sijainti
-            <OverlayTrigger
-              trigger={['hover', 'focus']}
-              placement="right"
-              container={document.body}
-              overlay={renderTooltip(
-                'tooltip-sighting-location',
-                'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.'
-              )}
-            >
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  cursor: 'pointer'
-                }}
-                tabIndex={0}
-              >
-                <Info size={16} color="#6c757d" />
+            <label className="sighting-file">
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={(event) => setImage(event.target.files?.[0] ?? null)}
+              />
+              <span className="sighting-file__title">
+                {image ? image.name : 'Valitse kuva'}
               </span>
-            </OverlayTrigger>
-          </h6>
-
-          {locationError && <Alert variant="warning">{locationError}</Alert>}
-
-          <div className="d-flex gap-2 flex-wrap mb-2">
-            <Button
-              type="button"
-              variant="outline-primary"
-              onClick={useMyLocation}
-            >
-              Käytä omaa sijaintia
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline-secondary"
-              onClick={() => {
-                setLocationError('');
-                setLocationSource('map');
-                onStartPickFromMap?.();
-              }}
-            >
-              Valitse kartalta
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline-danger"
-              onClick={() => {
-                clearLocation();
-                onStopPickFromMap?.();
-              }}
-            >
-              Tyhjennä sijainti
-            </Button>
+              <span className="sighting-file__hint">
+                Enintään 1 kuva. PNG, JPG tai JPEG. Maksimikoko 5 MB.
+              </span>
+            </label>
           </div>
 
-          <div className="small text-muted mb-3">
-            {latitude && longitude ? (
-              <>
-                Valittu sijainti: <strong>{latitude}</strong>,{' '}
-                <strong>{longitude}</strong> (
-                {locationSource === 'gps' ? 'oma sijainti' : 'kartta'})
-              </>
-            ) : (
-              'Valitse sijainti: käytä omaa sijaintia tai klikkaa karttaa.'
-            )}
-          </div>
+          <div className="sighting-section">
+            <div className="sighting-section__header">
+              <MapPin size={16} />
+              <span>Sijainti</span>
+            </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Tallennetaan...' : 'Lähetä havaintoilmoitus'}
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+            <div className="sighting-location-actions">
+              <button
+                type="button"
+                className="app-btn app-btn--secondary"
+                onClick={useMyLocation}
+              >
+                <Crosshair size={16} />
+                <span>Käytä omaa sijaintia</span>
+              </button>
+
+              <button
+                type="button"
+                className="app-btn app-btn--secondary"
+                onClick={() => {
+                  setLocationError('');
+                  setLocationSource('map');
+                  onStartPickFromMap?.();
+                }}
+              >
+                <MapPin size={16} />
+                <span>Valitse kartalta</span>
+              </button>
+
+              <button
+                type="button"
+                className="app-btn app-btn--ghost"
+                onClick={() => {
+                  clearLocation();
+                  onStopPickFromMap?.();
+                  onClearPickedLocation?.();
+                }}
+              >
+                <Trash2 size={16} />
+                <span>Tyhjennä sijainti</span>
+              </button>
+            </div>
+
+            <div className="sighting-location-meta">
+              {latitude && longitude ? (
+                <>
+                  <strong>{latitude}</strong>
+                  <strong>{longitude}</strong>
+                  <span>
+                    {locationSource === 'gps'
+                      ? 'Oma sijainti'
+                      : 'Valittu kartalta'}
+                  </span>
+                </>
+              ) : (
+                <span>Valitse sijainti käyttämällä omaa sijaintia tai karttaa.</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="sighting-actions">
+          <button
+            type="submit"
+            className="app-btn app-btn--primary"
+            disabled={loading}
+          >
+            <Send size={18} />
+            <span>{loading ? 'Tallennetaan...' : 'Lähetä havaintoilmoitus'}</span>
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }

@@ -1,47 +1,47 @@
-import { Form } from 'react-bootstrap';
 import InfoLabel from './InfoLabel.jsx';
 import { BIKE_FIELDS, FORM_TOOLTIPS } from './formOptions.js';
 
 export default function BikeDetailsSection({ values, onChange }) {
   return (
-    <>
-      <hr />
-
-      <h6>
+    <div className="report-section">
+      <div className="report-section__title">
         <InfoLabel
           label="Pyörän tiedot"
           tooltipId="tooltip-bike-section"
           tooltipText={FORM_TOOLTIPS.bike}
         />
-      </h6>
+      </div>
 
-      {BIKE_FIELDS.map((field) => (
-        <Form.Group key={field.name} className="mb-3">
-          <Form.Label>{field.label}</Form.Label>
-          <Form.Control
-            placeholder={field.placeholder}
-            value={values[field.name]}
-            onChange={(event) => onChange(field.name, event.target.value)}
-          />
-        </Form.Group>
-      ))}
+      <div className="report-grid">
+        {BIKE_FIELDS.map((field) => (
+          <label key={field.name} className="report-field">
+            <span className="report-field__label">{field.label}</span>
+            <input
+              className="report-input"
+              placeholder={field.placeholder}
+              value={values[field.name]}
+              onChange={(event) => onChange(field.name, event.target.value)}
+            />
+          </label>
+        ))}
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>
+      <label className="report-field">
+        <span className="report-field__label">
           <InfoLabel
             label="Lisäkuvaus pyörästä"
             tooltipId="tooltip-bike-description"
             tooltipText={FORM_TOOLTIPS.bikeDescription}
           />
-        </Form.Label>
-        <Form.Control
+        </span>
+        <textarea
+          className="report-textarea report-textarea--compact"
+          rows={3}
           placeholder="Ruosteinen mutta hyvässä kunnossa. Etukori, tarakka ja harmaat renkaat."
-          as="textarea"
-          rows={2}
           value={values.bikeDescription}
           onChange={(event) => onChange('bikeDescription', event.target.value)}
         />
-      </Form.Group>
-    </>
+      </label>
+    </div>
   );
 }

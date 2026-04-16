@@ -20,6 +20,7 @@ const ACTION = {
   CLOSE_REGISTER: 'close_register',
   SHOW_DETAILS: 'show_details',
   CLEAR_DETAILS: 'clear_details',
+  CLEAR_LOCATION: 'clear_location',
   OPEN_SIGHTING: 'open_sighting',
   CLOSE_SIGHTING: 'close_sighting',
   START_MAP_PICKING: 'start_map_picking',
@@ -51,7 +52,8 @@ function appViewReducer(state, action) {
         isMenuOpen: false,
         activePanel: PANEL.BASE,
         isPickingLocation: false,
-        selectedReportId: null
+        selectedReportId: null,
+        selectedLocation: null
       };
 
     case ACTION.OPEN_FORM:
@@ -66,7 +68,8 @@ function appViewReducer(state, action) {
       return {
         ...state,
         activePanel: PANEL.BASE,
-        isPickingLocation: false
+        isPickingLocation: false,
+        selectedLocation: null
       };
 
     case ACTION.OPEN_LOGIN:
@@ -117,6 +120,13 @@ function appViewReducer(state, action) {
         selectedReportId: null
       };
 
+    case ACTION.CLEAR_LOCATION:
+      return {
+        ...state,
+        selectedLocation: null,
+        isPickingLocation: false
+      };
+
     case ACTION.OPEN_SIGHTING:
       return {
         ...state,
@@ -130,7 +140,8 @@ function appViewReducer(state, action) {
       return {
         ...state,
         activePanel: state.selectedReportId ? PANEL.DETAILS : PANEL.BASE,
-        isPickingLocation: false
+        isPickingLocation: false,
+        selectedLocation: null
       };
 
     case ACTION.START_MAP_PICKING:
@@ -225,6 +236,10 @@ export function useAppViewState() {
     dispatch({ type: ACTION.CLEAR_DETAILS });
   }, []);
 
+  const clearSelectedLocation = useCallback(() => {
+    dispatch({ type: ACTION.CLEAR_LOCATION });
+  }, []);
+
   const openSighting = useCallback((reportId) => {
     dispatch({
       type: ACTION.OPEN_SIGHTING,
@@ -284,6 +299,7 @@ export function useAppViewState() {
     closeRegister,
     showReportDetails,
     clearSelectedReport,
+    clearSelectedLocation,
     openSighting,
     closeSighting,
     startMapPicking,

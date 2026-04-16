@@ -1,8 +1,8 @@
 export const FORM_TOOLTIPS = {
   description:
     'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.',
-  theftTime: 'Syötä aika jolloin varkaus tapahtui.',
-  theftAddress: 'Anna lähin osoite jossa varkaus tapahtui.',
+  theftTime: 'Valitse päivä ja aika, jolloin varkaus tapahtui.',
+  theftAddress: 'Anna lähin osoite, jossa varkaus tapahtui.',
   location:
     'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.',
   bike: 'Täytä pyörän tiedot mahdollisimman tarkasti.',

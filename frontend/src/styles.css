@@ -766,6 +766,550 @@ body {
   color: #64748b;
 }
 
+.report-card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.report-card__hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.report-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--color-accent-soft), rgba(20, 184, 166, 0.18));
+  color: var(--color-accent-dark);
+}
+
+.report-card__hero-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.report-card__eyebrow {
+  margin: 0;
+  color: var(--color-accent-dark);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.report-card__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.report-card__subtitle {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.report-alert {
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.report-alert--danger {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.16);
+}
+
+.report-alert--warning {
+  background: rgba(234, 179, 8, 0.14);
+  color: #a16207;
+  border: 1px solid rgba(234, 179, 8, 0.18);
+}
+
+.report-form {
+  display: grid;
+  gap: 16px;
+}
+
+.report-section {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+}
+
+.report-section__title {
+  color: var(--color-accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.report-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-field {
+  display: grid;
+  gap: 8px;
+}
+
+.report-field__label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.report-input,
+.report-textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-ink);
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.report-textarea {
+  min-height: 140px;
+  padding: 14px;
+  font: inherit;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.report-textarea--compact {
+  min-height: 96px;
+}
+
+.report-input:focus,
+.report-textarea:focus {
+  outline: none;
+  border-color: rgba(15, 118, 110, 0.42);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+  background: white;
+}
+
+.report-location-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.report-location-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.report-location-meta strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.report-file {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px dashed rgba(148, 163, 184, 0.5);
+  background: white;
+}
+
+.report-file input {
+  margin-top: 4px;
+}
+
+.report-file__header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.report-file__hint {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.report-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.info-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-label__hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: #64748b;
+  cursor: help;
+}
+
+.info-label__tooltip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  width: min(240px, 70vw);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  color: white;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+  z-index: 20;
+}
+
+.info-label__hint:hover .info-label__tooltip,
+.info-label__hint:focus-visible .info-label__tooltip {
+  opacity: 1;
+}
+
+.report-date-picker {
+  position: relative;
+}
+
+.report-date-time {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 148px;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.report-date-picker__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 44px 0 14px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-ink);
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.report-date-picker__input:focus {
+  outline: none;
+  border-color: rgba(15, 118, 110, 0.42);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+  background: white;
+}
+
+.report-date-picker__icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+
+.report-date-picker__icon--calendar {
+  right: 14px;
+}
+
+.report-time-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-ink);
+  box-sizing: border-box;
+}
+
+.report-time-select__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 15px;
+}
+
+.report-time-select__input:focus {
+  outline: none;
+}
+
+.react-datepicker {
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.16) !important;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.react-datepicker__header {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-top-left-radius: 18px !important;
+  border-top-right-radius: 18px !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__time-list-item--selected,
+.react-datepicker__day--keyboard-selected {
+  background: var(--color-accent) !important;
+  color: white !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time {
+  border-bottom-right-radius: 18px !important;
+}
+
+.sighting-card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.sighting-card__hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.sighting-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--color-accent-soft), rgba(20, 184, 166, 0.18));
+  color: var(--color-accent-dark);
+}
+
+.sighting-card__hero-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.sighting-card__eyebrow {
+  margin: 0;
+  color: var(--color-accent-dark);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sighting-card__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.sighting-card__subtitle {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sighting-report-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.sighting-report-link__label {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sighting-report-link strong {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sighting-alert {
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sighting-alert--danger {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.16);
+}
+
+.sighting-alert--success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.16);
+}
+
+.sighting-alert--warning {
+  background: rgba(234, 179, 8, 0.14);
+  color: #a16207;
+  border: 1px solid rgba(234, 179, 8, 0.18);
+}
+
+.sighting-form {
+  display: grid;
+  gap: 16px;
+}
+
+.sighting-field {
+  display: grid;
+  gap: 8px;
+}
+
+.sighting-field__label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.sighting-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.96);
+  color: var(--color-ink);
+  font: inherit;
+  line-height: 1.55;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.sighting-textarea:focus {
+  outline: none;
+  border-color: rgba(15, 118, 110, 0.42);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+  background: white;
+}
+
+.sighting-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.sighting-section {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.sighting-section__header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sighting-file {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border: 1px dashed rgba(148, 163, 184, 0.5);
+  border-radius: 18px;
+  background: white;
+}
+
+.sighting-file input {
+  margin-bottom: 8px;
+}
+
+.sighting-file__title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sighting-file__hint {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.sighting-location-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sighting-location-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sighting-location-meta strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.sighting-actions {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
 .map-pick-hint {
   position: absolute;
   top: 16px;
@@ -1116,6 +1660,69 @@ body {
 
   .auth-card__title {
     font-size: 24px;
+  }
+
+  .report-card {
+    padding: 18px;
+  }
+
+  .report-card__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .report-card__title {
+    font-size: 24px;
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-date-time {
+    grid-template-columns: 1fr;
+  }
+
+  .report-location-actions {
+    display: grid;
+  }
+
+  .report-actions {
+    display: block;
+  }
+
+  .report-actions .app-btn {
+    width: 100%;
+  }
+
+  .info-label__tooltip {
+    left: 50%;
+    top: calc(100% + 10px);
+    transform: translateX(-50%);
+    width: min(240px, calc(100vw - 64px));
+  }
+
+  .sighting-card {
+    padding: 18px;
+  }
+
+  .sighting-card__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .sighting-card__title {
+    font-size: 24px;
+  }
+
+  .sighting-location-actions {
+    display: grid;
+  }
+
+  .sighting-actions {
+    display: block;
+  }
+
+  .sighting-actions .app-btn {
+    width: 100%;
   }
 
   .popup-card {

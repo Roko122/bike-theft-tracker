@@ -112,6 +112,7 @@ function AppContent() {
             onOpenSighting={viewState.openSighting}
             onStartPickFromMap={viewState.startMapPicking}
             onStopPickFromMap={viewState.stopMapPicking}
+            onClearPickedLocation={viewState.clearSelectedLocation}
             onReportCreated={handleReportCreated}
             onReportDetailsClose={viewState.clearSelectedReport}
           />

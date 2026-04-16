@@ -1,4 +1,4 @@
-import { Alert, Button } from 'react-bootstrap';
+import { Crosshair, MapPin, Trash2 } from 'lucide-react';
 import InfoLabel from './InfoLabel.jsx';
 import { FORM_TOOLTIPS } from './formOptions.js';
 
@@ -12,48 +12,57 @@ export default function LocationSection({
   onClearLocation
 }) {
   return (
-    <>
-      <hr />
-
-      <h6>
+    <div className="report-section">
+      <div className="report-section__title">
         <InfoLabel
           label="Sijainti"
           tooltipId="tooltip-location"
           tooltipText={FORM_TOOLTIPS.location}
         />
-      </h6>
+      </div>
 
-      {locationError && <Alert variant="warning">{locationError}</Alert>}
+      {locationError && <div className="report-alert report-alert--warning">{locationError}</div>}
 
-      <div className="d-flex gap-2 flex-wrap mb-2">
-        <Button type="button" variant="outline-primary" onClick={onUseMyLocation}>
-          Käytä omaa sijaintia
-        </Button>
-
-        <Button
+      <div className="report-location-actions">
+        <button
           type="button"
-          variant="outline-secondary"
+          className="app-btn app-btn--secondary"
+          onClick={onUseMyLocation}
+        >
+          <Crosshair size={16} />
+          <span>Käytä omaa sijaintia</span>
+        </button>
+
+        <button
+          type="button"
+          className="app-btn app-btn--secondary"
           onClick={onStartPickFromMap}
         >
-          Valitse kartalta
-        </Button>
+          <MapPin size={16} />
+          <span>Valitse kartalta</span>
+        </button>
 
-        <Button type="button" variant="outline-danger" onClick={onClearLocation}>
-          Tyhjennä sijainti
-        </Button>
+        <button
+          type="button"
+          className="app-btn app-btn--ghost"
+          onClick={onClearLocation}
+        >
+          <Trash2 size={16} />
+          <span>Tyhjennä sijainti</span>
+        </button>
       </div>
 
-      <div className="small text-muted mb-3">
+      <div className="report-location-meta">
         {latitude && longitude ? (
           <>
-            Valittu sijainti: <strong>{latitude}</strong>,{' '}
-            <strong>{longitude}</strong> (
-            {locationSource === 'gps' ? 'oma sijainti' : 'kartta'})
+            <strong>{latitude}</strong>
+            <strong>{longitude}</strong>
+            <span>{locationSource === 'gps' ? 'Oma sijainti' : 'Valittu kartalta'}</span>
           </>
         ) : (
-          'Valitse sijainti: käytä omaa sijaintia tai klikkaa karttaa.'
+          <span>Valitse sijainti käyttämällä omaa sijaintia tai karttaa.</span>
         )}
       </div>
-    </>
+    </div>
   );
 }

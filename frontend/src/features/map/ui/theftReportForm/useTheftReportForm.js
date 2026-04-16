@@ -1,25 +1,14 @@
 import { useEffect, useState } from 'react';
 import { createTheftReport } from '../../../api/theftReportApi.js';
 
-function getCurrentDateTimeLocal() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-function toIsoFromDatetimeLocal(value) {
-  return value ? new Date(value).toISOString() : null;
+function toIso(value) {
+  return value instanceof Date ? value.toISOString() : null;
 }
 
 export function useTheftReportForm({ defaultLocation, onCreated }) {
   const [formValues, setFormValues] = useState({
     description: '',
-    theftTime: getCurrentDateTimeLocal(),
+    theftTime: new Date(),
     theftAddress: '',
     latitude: defaultLocation?.latitude ?? '',
     longitude: defaultLocation?.longitude ?? '',
@@ -115,7 +104,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
       return;
     }
 
-    if (!formValues.theftTime) {
+    if (!(formValues.theftTime instanceof Date) || Number.isNaN(formValues.theftTime.getTime())) {
       setError('Varkauden aika on pakollinen.');
       return;
     }
@@ -142,7 +131,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
 
     const payload = {
       description: formValues.description.trim(),
-      theftTime: toIsoFromDatetimeLocal(formValues.theftTime),
+      theftTime: toIso(formValues.theftTime),
       theftAddress: formValues.theftAddress.trim() || null,
       location: { latitude, longitude },
       bike: {
@@ -156,6 +145,11 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
     };
 
     try {
+      if (formValues.images.length > 5) {
+        setError('Voit lisätä enintään 5 kuvaa.');
+        return;
+      }
+
       setLoading(true);
       const createdReport = await createTheftReport(payload, formValues.images);
       onCreated?.(createdReport);

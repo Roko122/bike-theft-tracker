@@ -1,7 +1,7 @@
-import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap';
-import { Send } from 'lucide-react';
+import { Camera, FilePlus2, Send } from 'lucide-react';
 import { useTheftReportForm } from './theftReportForm/useTheftReportForm.js';
 import InfoLabel from './theftReportForm/InfoLabel.jsx';
+import DateTimeField from './theftReportForm/DateTimeField.jsx';
 import LocationSection from './theftReportForm/LocationSection.jsx';
 import BikeDetailsSection from './theftReportForm/BikeDetailsSection.jsx';
 import { FORM_TOOLTIPS } from './theftReportForm/formOptions.js';
@@ -10,7 +10,8 @@ export default function TheftReportForm({
   defaultLocation,
   onCreated,
   onStartPickFromMap,
-  onStopPickFromMap
+  onStopPickFromMap,
+  onClearPickedLocation
 }) {
   const {
     formValues,
@@ -24,103 +25,119 @@ export default function TheftReportForm({
   } = useTheftReportForm({ defaultLocation, onCreated });
 
   return (
-    <Card className="shadow-sm" style={{ maxWidth: 900 }}>
-      <Card.Body>
-        <Card.Title>Varkausilmoitus</Card.Title>
+    <section className="report-card">
+      <div className="report-card__hero">
+        <div className="report-card__icon">
+          <FilePlus2 size={20} />
+        </div>
+        <div className="report-card__hero-copy">
+          <p className="report-card__eyebrow">Uusi ilmoitus</p>
+          <h2 className="report-card__title">Varkausilmoitus</h2>
+          <p className="report-card__subtitle">
+            Lisää pyörän tiedot, tapahtuma-aika ja sijainti mahdollisimman tarkasti.
+          </p>
+        </div>
+      </div>
 
-        {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="report-alert report-alert--danger">{error}</div>}
 
-        <Form onSubmit={submit}>
-          <Form.Group className="mb-3">
-            <Form.Label>
+      <form className="report-form" onSubmit={submit}>
+        <div className="report-section">
+          <label className="report-field">
+            <span className="report-field__label">
               <InfoLabel
                 label="Kuvaus"
                 tooltipId="tooltip-description"
                 tooltipText={FORM_TOOLTIPS.description}
               />
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Simon pyörä varastettiin kaupan edestä lukittuna noin klo 14-14.30"
+            </span>
+            <textarea
+              className="report-textarea"
+              rows={5}
+              placeholder="Pyörä varastettiin kaupan edestä lukittuna noin klo 14.00-14.30."
               value={formValues.description}
               onChange={(event) => updateField('description', event.target.value)}
             />
-          </Form.Group>
+          </label>
 
-          <Form.Group className="mb-3">
-            <Form.Label>
-              <InfoLabel
-                label="Tapahtuma-aika"
-                tooltipId="tooltip-theft-time"
-                tooltipText={FORM_TOOLTIPS.theftTime}
-              />
-            </Form.Label>
-            <Form.Control
-              type="datetime-local"
-              value={formValues.theftTime}
-              onChange={(event) => updateField('theftTime', event.target.value)}
-            />
-          </Form.Group>
+          <DateTimeField
+            value={formValues.theftTime}
+            onChange={(value) => updateField('theftTime', value)}
+          />
 
-          <Form.Group className="mb-3">
-            <Form.Label>
+          <label className="report-field">
+            <span className="report-field__label">
               <InfoLabel
                 label="Osoite"
                 tooltipId="tooltip-address"
                 tooltipText={FORM_TOOLTIPS.theftAddress}
               />
-            </Form.Label>
-            <Form.Control
+            </span>
+            <input
+              className="report-input"
               placeholder="Kauppakatu 29"
               value={formValues.theftAddress}
               onChange={(event) => updateField('theftAddress', event.target.value)}
             />
-          </Form.Group>
+          </label>
+        </div>
 
-          <LocationSection
-            latitude={formValues.latitude}
-            longitude={formValues.longitude}
-            locationSource={formValues.locationSource}
-            locationError={locationError}
-            onUseMyLocation={useMyLocation}
-            onStartPickFromMap={() => {
-              updateField('locationSource', 'map');
-              onStartPickFromMap?.();
-            }}
-            onClearLocation={() => {
-              clearLocation();
-              onStopPickFromMap?.();
-            }}
-          />
+        <LocationSection
+          latitude={formValues.latitude}
+          longitude={formValues.longitude}
+          locationSource={formValues.locationSource}
+          locationError={locationError}
+          onUseMyLocation={useMyLocation}
+          onStartPickFromMap={() => {
+            updateField('locationSource', 'map');
+            onStartPickFromMap?.();
+          }}
+          onClearLocation={() => {
+            clearLocation();
+            onStopPickFromMap?.();
+            onClearPickedLocation?.();
+          }}
+        />
 
-          <BikeDetailsSection values={formValues} onChange={updateField} />
+        <BikeDetailsSection values={formValues} onChange={updateField} />
 
-          <hr />
+        <div className="report-section">
+          <div className="report-section__title">
+            <span className="info-label">
+              <span>Kuvat</span>
+            </span>
+          </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Kuvat</Form.Label>
-            <Form.Control
+          <label className="report-file">
+            <div className="report-file__header">
+              <Camera size={16} />
+              <span>Lisää kuvia pyörästä</span>
+            </div>
+            <input
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg"
               multiple
               onChange={(event) =>
                 updateField('images', Array.from(event.target.files ?? []))
               }
             />
-          </Form.Group>
+            <span className="report-file__hint">
+              PNG, JPG tai JPEG. Voit lisätä enintään 5 kuvaa.
+            </span>
+          </label>
+        </div>
 
-          <Button
+        <div className="report-actions">
+          <button
             type="submit"
-            variant="primary"
+            className="app-btn app-btn--primary"
             disabled={loading}
-            className="d-flex align-items-center gap-2"
           >
-            {loading ? <Spinner size="sm" /> : <Send size={18} />}
-            Lähetä ilmoitus
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+            <Send size={18} />
+            <span>{loading ? 'Lähetetään...' : 'Lähetä ilmoitus'}</span>
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }
