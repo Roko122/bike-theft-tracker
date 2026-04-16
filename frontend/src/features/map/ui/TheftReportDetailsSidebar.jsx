@@ -22,7 +22,11 @@ function Row({ label, value }) {
   );
 }
 
-export default function TheftReportDetailsSidebar({ reportId, onClose }) {
+export default function TheftReportDetailsSidebar({
+  reportId,
+  onClose,
+  onCreateSighting
+}) {
   // Haettu ilmoitus
   const [report, setReport] = useState(null);
 
@@ -198,6 +202,13 @@ export default function TheftReportDetailsSidebar({ reportId, onClose }) {
             />
             <Row label="Lisäkuvaus" value={report.bike?.description} />
           </div>
+          <button
+            type="button"
+            onClick={() => onCreateSighting?.(report)}
+            style={{ marginTop: 12 }}
+          >
+            Tee havaintoilmoitus
+          </button>
         </div>
       )}
     </div>
