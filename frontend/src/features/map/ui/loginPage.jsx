@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Form, Button, Alert } from 'react-bootstrap';
+import { LogIn, UserRound } from 'lucide-react';
 import { loginUser } from '../../api/authApi.js';
 
 export default function LoginPage({ onLoginSuccess, onFirstTime }) {
@@ -8,63 +8,80 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError('');
 
     try {
       setLoading(true);
       const user = await loginUser({ username, password });
       onLoginSuccess?.(user);
-    } catch (err) {
-      setError(err.message || 'Kirjautuminen epäonnistui');
+    } catch (submitError) {
+      setError(submitError.message || 'Kirjautuminen epäonnistui');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Card className="border-0 shadow-none" style={{ maxWidth: 420 }}>
-      <Card.Body>
-        <Card.Title>Kirjaudu sisään</Card.Title>
+    <section className="auth-card">
+      <div className="auth-card__hero">
+        <div className="auth-card__icon">
+          <UserRound size={20} />
+        </div>
+        <div className="auth-card__hero-copy">
+          <p className="auth-card__eyebrow">Tervetuloa takaisin</p>
+          <h2 className="auth-card__title">Kirjaudu sisään</h2>
+          <p className="auth-card__subtitle">
+            Hallitse ilmoituksia ja lisää uusia varkauksia kartalle.
+          </p>
+        </div>
+      </div>
 
-        {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="auth-alert auth-alert--danger">{error}</div>}
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Käyttäjänimi</Form.Label>
-            <Form.Control
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </Form.Group>
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <label className="auth-field">
+          <span className="auth-field__label">Käyttäjänimi</span>
+          <input
+            className="auth-input"
+            type="text"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            required
+          />
+        </label>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Salasana</Form.Label>
-            <Form.Control
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Form.Group>
+        <label className="auth-field">
+          <span className="auth-field__label">Salasana</span>
+          <input
+            className="auth-input"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+        </label>
 
-          <Button type="submit" className="w-100" disabled={loading}>
-            {loading ? 'Kirjaudutaan...' : 'Kirjaudu'}
-          </Button>
+        <div className="auth-actions">
+          <button
+            type="submit"
+            className="app-btn app-btn--primary app-btn--wide"
+            disabled={loading}
+          >
+            <LogIn size={18} />
+            <span>{loading ? 'Kirjaudutaan...' : 'Kirjaudu'}</span>
+          </button>
 
-          <Button
+          <button
             type="button"
-            variant="secondary"
-            className="w-100 mt-2"
+            className="app-btn app-btn--secondary app-btn--wide"
             onClick={() => onFirstTime?.()}
           >
-            Luo tunnus
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+            <span>Luo tunnus</span>
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }

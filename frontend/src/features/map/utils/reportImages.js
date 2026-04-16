@@ -10,18 +10,31 @@ const IMAGE_URL_KEYS = [
 ];
 
 function readImageUrl(item) {
-  if (typeof item === 'string') return item;
-  if (!item || typeof item !== 'object') return '';
+  if (typeof item === 'string') {
+    return item;
+  }
+
+  if (!item || typeof item !== 'object') {
+    return '';
+  }
 
   for (const key of IMAGE_URL_KEYS) {
     const value = item[key];
     if (typeof value === 'string' && value.trim() !== '') {
       return value;
     }
-  } //KAto jos aikaa.....  java scrib obj suoraan kuva json. koto läpi.
+  }
 
   return '';
 }
+
 export function getReportImageUrls(images) {
-  return Array.isArray(images) ? images : [];
+  if (!Array.isArray(images)) {
+    return [];
+  }
+
+  return images
+    .map(readImageUrl)
+    .filter(Boolean)
+    .map(resolveApiAssetUrl);
 }

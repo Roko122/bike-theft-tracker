@@ -1,8 +1,8 @@
+import { getApiBaseUrl as getConfiguredApiBaseUrl } from './apiConfig.js';
 import { authorizedFetch } from './authorizedFetch.js';
 
 // frontend/src/features/theftReports/theftReportApi.js
 
-const DEFAULT_BASE_URL = 'http://localhost:8080';
 const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
 
 /**
@@ -11,7 +11,7 @@ const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
  * esim. .env.frontend: VITE_API_BASE_URL=http://localhost:8080
  */
 export function getApiBaseUrl() {
-  return import.meta?.env?.VITE_API_BASE_URL || DEFAULT_BASE_URL;
+  return getConfiguredApiBaseUrl();
 }
 
 function buildUrl(path = '') {

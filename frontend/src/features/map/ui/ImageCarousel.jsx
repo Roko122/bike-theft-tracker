@@ -1,4 +1,6 @@
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function ImageCarousel({
   images,
@@ -18,7 +20,9 @@ export default function ImageCarousel({
     setActiveIndex(0);
   }, [imagesKey]);
 
-  if (imageUrls.length === 0) return null;
+  if (imageUrls.length === 0) {
+    return null;
+  }
 
   const hasMany = imageUrls.length > 1;
   const currentImageUrl = imageUrls[activeIndex] ?? imageUrls[0];
@@ -52,6 +56,7 @@ export default function ImageCarousel({
         loading="lazy"
         className={'image-carousel__image ' + objectFitClass}
       />
+
       {hasMany && (
         <>
           <button
@@ -60,15 +65,16 @@ export default function ImageCarousel({
             aria-label="Edellinen kuva"
             onClick={showPrevious}
           >
-            ‹
+            <ChevronLeft size={20} />
           </button>
+
           <button
             type="button"
             className="image-carousel__nav image-carousel__nav--next"
             aria-label="Seuraava kuva"
             onClick={showNext}
           >
-            ›
+            <ChevronRight size={20} />
           </button>
 
           <div className="image-carousel__counter">
@@ -92,36 +98,38 @@ export default function ImageCarousel({
           </div>
         </>
       )}
-      {isLightboxOpen && (
-        <div
-          className="image-carousel__lightbox"
-          onClick={() => setIsLightboxOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Kuvan esikatselu"
-        >
-          <div
-            className="image-carousel__lightbox-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="image-carousel__lightbox-close"
-              onClick={() => setIsLightboxOpen(false)}
-              aria-label="Sulje kuva"
-            >
-              ✕
-            </button>
 
-            <img
-              src={currentImageUrl}
-              alt={altPrefix + ' ' + (activeIndex + 1)}
-              className="image-carousel__lightbox-image"
-            />
-          </div>
-        </div>
-      )}
+      {isLightboxOpen &&
+        createPortal(
+          <div
+            className="image-carousel__lightbox"
+            onClick={() => setIsLightboxOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Kuvan esikatselu"
+          >
+            <div
+              className="image-carousel__lightbox-content"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="image-carousel__lightbox-close"
+                onClick={() => setIsLightboxOpen(false)}
+                aria-label="Sulje kuva"
+              >
+                <X size={18} />
+              </button>
+
+              <img
+                src={currentImageUrl}
+                alt={altPrefix + ' ' + (activeIndex + 1)}
+                className="image-carousel__lightbox-image"
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
-//Nyt ok
