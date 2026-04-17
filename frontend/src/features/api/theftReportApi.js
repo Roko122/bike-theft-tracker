@@ -1,4 +1,4 @@
-import { getApiBaseUrl as getConfiguredApiBaseUrl } from './apiConfig.js';
+import { getApiBaseUrl } from './apiConfig.js';
 import { authorizedFetch } from './authorizedFetch.js';
 
 // frontend/src/features/theftReports/theftReportApi.js
@@ -10,10 +10,6 @@ const DEFAULT_API_PREFIX = '/api/v1/theft-reports';
  * Voit halutessasi määrittää Vite-muuttujan: VITE_API_BASE_URL
  * esim. .env.frontend: VITE_API_BASE_URL=http://localhost:8080
  */
-export function getApiBaseUrl() {
-  return getConfiguredApiBaseUrl();
-}
-
 function buildUrl(path = '') {
   return `${getApiBaseUrl()}${DEFAULT_API_PREFIX}${path}`;
 }

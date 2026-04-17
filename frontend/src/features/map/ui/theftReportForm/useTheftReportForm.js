@@ -16,6 +16,7 @@ function getErrorText(language, key) {
 export function useTheftReportForm({
   defaultLocation,
   onCreated,
+  onLocationSelected,
   language = 'fi'
 }) {
   const [formValues, setFormValues] = useState({
@@ -65,6 +66,7 @@ export function useTheftReportForm({
       longitude: String(longitude),
       locationSource
     }));
+    onLocationSelected?.({ latitude, longitude });
   };
 
   const clearLocation = () => {

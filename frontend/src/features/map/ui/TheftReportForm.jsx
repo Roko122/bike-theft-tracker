@@ -12,7 +12,8 @@ export default function TheftReportForm({
   onCreated,
   onStartPickFromMap,
   onStopPickFromMap,
-  onClearPickedLocation
+  onClearPickedLocation,
+  onLocationSelected
 }) {
   const { language, t } = useI18n();
   const formTooltips = getFormTooltips(t);
@@ -28,6 +29,7 @@ export default function TheftReportForm({
   } = useTheftReportForm({
     defaultLocation,
     onCreated,
+    onLocationSelected,
     language
   });
 
@@ -92,7 +94,10 @@ export default function TheftReportForm({
           longitude={formValues.longitude}
           locationSource={formValues.locationSource}
           locationError={locationError}
-          onUseMyLocation={useMyLocation}
+          onUseMyLocation={() => {
+            onStopPickFromMap?.();
+            useMyLocation();
+          }}
           onStartPickFromMap={() => {
             updateField('locationSource', 'map');
             onStartPickFromMap?.();

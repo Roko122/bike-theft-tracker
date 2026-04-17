@@ -73,6 +73,7 @@ export default function AppSidebar({
   onStartPickFromMap,
   onStopPickFromMap,
   onClearPickedLocation,
+  onLocationSelected,
   onReportCreated,
   onSightingCreated,
   onReportDetailsClose
@@ -115,6 +116,7 @@ export default function AppSidebar({
               onStartPickFromMap={onStartPickFromMap}
               onStopPickFromMap={onStopPickFromMap}
               onClearPickedLocation={onClearPickedLocation}
+              onLocationSelected={onLocationSelected}
               onCreated={onReportCreated}
             />
           </>

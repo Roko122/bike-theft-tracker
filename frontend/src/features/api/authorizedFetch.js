@@ -13,7 +13,8 @@ function createSessionExpiredError() {
 }
 
 function withCredentials(options = {}) {
-  const { suppressSessionExpired, ...fetchOptions } = options;
+  const fetchOptions = { ...options };
+  delete fetchOptions.suppressSessionExpired;
 
   return {
     ...fetchOptions,

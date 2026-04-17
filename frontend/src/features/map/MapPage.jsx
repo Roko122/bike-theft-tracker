@@ -1,10 +1,11 @@
-import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
-import { useRef } from 'react';
+import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { useMemo, useRef } from 'react';
 import L from 'leaflet';
 import MapControls from './ui/MapControls.jsx';
 import {
   AutoCenterToUser,
   MapClickPicker,
+  MapInteractionLock,
   MapRefBinder,
   VisibleTheftsLoader
 } from './components/MapEffects.jsx';
@@ -30,9 +31,33 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow
 });
 
+function createSelectedLocationIcon() {
+  return L.divIcon({
+    className: 'selected-location-marker',
+    html: `
+      <span class="selected-location-marker__dot"></span>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+}
+
+function createUserLocationIcon() {
+  return L.divIcon({
+    className: 'user-location-marker',
+    html: `
+      <span class="user-location-marker__pulse"></span>
+      <span class="user-location-marker__dot"></span>
+    `,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+}
+
 export default function MapPage({
   refreshKey,
   isMenuOpen,
+  isInteractionLocked = false,
   onLocationSelected,
   isPickingLocation,
   onReportSelected,
@@ -46,9 +71,14 @@ export default function MapPage({
   });
   const { userLocation, centerToUser, zoomIn, zoomOut } =
     useUserLocationMarker(mapRef);
+  const selectedLocationIcon = useMemo(() => createSelectedLocationIcon(), []);
+  const userLocationIcon = useMemo(() => createUserLocationIcon(), []);
 
   return (
-    <div className="map-wrap" style={{ position: 'relative' }}>
+    <div
+      className={isInteractionLocked ? 'map-wrap map-wrap--locked' : 'map-wrap'}
+      style={{ position: 'relative' }}
+    >
       {showMapSuccess && <MapSuccessOverlay />}
 
       <MapContainer
@@ -58,6 +88,7 @@ export default function MapPage({
         zoomControl={false}
       >
         <MapRefBinder mapRef={mapRef} />
+        <MapInteractionLock locked={isInteractionLocked} />
         <AutoCenterToUser fallbackCenter={FALLBACK_CENTER} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
         <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
@@ -68,26 +99,20 @@ export default function MapPage({
         />
 
         {selectedLocation && (
-          <CircleMarker
-            center={[selectedLocation.latitude, selectedLocation.longitude]}
-            radius={8}
-            pathOptions={{
-              color: 'red',
-              fillColor: 'red',
-              fillOpacity: 1
-            }}
+          <Marker
+            position={[selectedLocation.latitude, selectedLocation.longitude]}
+            icon={selectedLocationIcon}
+            interactive={false}
+            zIndexOffset={900}
           />
         )}
 
         {userLocation && (
-          <CircleMarker
-            center={[userLocation.latitude, userLocation.longitude]}
-            radius={8}
-            pathOptions={{
-              color: '#0d6efd',
-              fillColor: '#0d6efd',
-              fillOpacity: 1
-            }}
+          <Marker
+            position={[userLocation.latitude, userLocation.longitude]}
+            icon={userLocationIcon}
+            interactive={false}
+            zIndexOffset={850}
           />
         )}
 
@@ -98,11 +123,13 @@ export default function MapPage({
         />
       </MapContainer>
 
+      {isInteractionLocked && <div className="map-lock-overlay" aria-hidden="true" />}
+
       {isPickingLocation && <MapPickHint />}
 
-      {!isMenuOpen && <MapLegend />}
+      {!isMenuOpen && !isInteractionLocked && <MapLegend />}
 
-      {!isMenuOpen && (
+      {!isMenuOpen && !isInteractionLocked && (
         <MapControls
           onCenterToUser={centerToUser}
           onZoomIn={zoomIn}

@@ -19,7 +19,6 @@ function Row({ label, value }) {
 
 export default function TheftReportDetailsSidebar({
   reportId,
-  onClose,
   onCreateSighting,
   canCreateSighting = false
 }) {

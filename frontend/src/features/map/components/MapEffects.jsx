@@ -88,3 +88,39 @@ export function AutoCenterToUser({
 
   return null;
 }
+
+export function MapInteractionLock({ locked }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) {
+      return undefined;
+    }
+
+    const handlers = [
+      map.dragging,
+      map.touchZoom,
+      map.doubleClickZoom,
+      map.scrollWheelZoom,
+      map.boxZoom,
+      map.keyboard,
+      map.tap
+    ].filter(Boolean);
+
+    handlers.forEach((handler) => {
+      if (locked) {
+        handler.disable();
+      } else {
+        handler.enable();
+      }
+    });
+
+    return () => {
+      handlers.forEach((handler) => {
+        handler.enable();
+      });
+    };
+  }, [locked, map]);
+
+  return null;
+}

@@ -108,6 +108,12 @@ function AppContent() {
     showSuccessMessage(t('flash.logoutSuccess'));
   }, [logout, showSuccessMessage, t, viewState.openBaseMenu]);
 
+  const isMapLocked =
+    viewState.showLogin ||
+    viewState.showRegister ||
+    (viewState.isMenuOpen && !viewState.isPickingLocation);
+  const isMapDimmed = viewState.isMenuOpen && !viewState.isPickingLocation;
+
   return (
     <div className="app-shell">
       <AppFlashMessage message={flashMessage} />
@@ -131,7 +137,11 @@ function AppContent() {
         </div>
 
         <div className="header-actions">
-          <div className="language-switch" role="group" aria-label={t('common.language')}>
+          <div
+            className="language-switch"
+            role="group"
+            aria-label={t('common.language')}
+          >
             <button
               type="button"
               className={
@@ -196,6 +206,7 @@ function AppContent() {
             onStartPickFromMap={viewState.startMapPicking}
             onStopPickFromMap={viewState.stopMapPicking}
             onClearPickedLocation={viewState.clearSelectedLocation}
+            onLocationSelected={viewState.selectLocation}
             onReportCreated={handleReportCreated}
             onSightingCreated={handleSightingCreated}
             onReportDetailsClose={viewState.clearSelectedReport}
@@ -203,10 +214,11 @@ function AppContent() {
         )}
       </header>
 
-      <main className={viewState.isMenuOpen ? 'main main--dimmed' : 'main'}>
+      <main className={isMapDimmed ? 'main main--dimmed' : 'main'}>
         <MapPage
           refreshKey={refreshKey}
           isMenuOpen={viewState.isMenuOpen}
+          isInteractionLocked={isMapLocked}
           selectedLocation={viewState.selectedLocation}
           isPickingLocation={viewState.isPickingLocation}
           onLocationSelected={viewState.selectLocation}
@@ -218,7 +230,9 @@ function AppContent() {
         <AuthDialog
           mode={viewState.showRegister ? 'register' : 'login'}
           onClose={
-            viewState.showRegister ? viewState.closeRegister : viewState.closeLogin
+            viewState.showRegister
+              ? viewState.closeRegister
+              : viewState.closeLogin
           }
           onLoginSuccess={handleLoginSuccess}
           onOpenRegister={viewState.openRegister}
@@ -233,7 +247,7 @@ function AppContent() {
           <div className="app-footer__links">
             <a
               className="app-footer__link"
-              href="https://github.com/example/bike-theft-tracker"
+              href="https://github.com/Roko122/bike-theft-tracker"
               target="_blank"
               rel="noreferrer"
             >
@@ -242,7 +256,7 @@ function AppContent() {
             </a>
             <a
               className="app-footer__link"
-              href="https://example.com/bike-theft-tracker-docs"
+              href="http://localhost:5173/docs"
               target="_blank"
               rel="noreferrer"
             >

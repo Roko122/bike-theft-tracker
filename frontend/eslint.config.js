@@ -5,6 +5,9 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
+    ignores: ['dist/**']
+  },
+  {
     files: ['**/*.{js,mjs,cjs,jsx}'],
     languageOptions: {
       globals: globals.browser
@@ -12,10 +15,8 @@ export default defineConfig([
     ...js.configs.recommended
   },
 
-  // React recommended rules
   pluginReact.configs.flat.recommended,
 
-  // Override: React 17+ (Vite) ei vaadi "import React"
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
@@ -26,13 +27,19 @@ export default defineConfig([
       react: { version: 'detect' }
     }
   },
-
-  // Vitest-globaalit testitiedostoille
   {
-    files: ['**/*.test.{js,jsx}'],
-    plugins: { vitest },
+    files: ['src/test/**/*.{js,jsx}', '**/*.test.{js,jsx}'],
     languageOptions: {
-      globals: vitest.environments.env.globals
+      globals: {
+        ...globals.browser,
+        afterEach: 'readonly',
+        beforeEach: 'readonly',
+        describe: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        vi: 'readonly'
+      }
     }
   }
 ]);
