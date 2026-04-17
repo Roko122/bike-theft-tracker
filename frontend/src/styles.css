@@ -1,6 +1,7 @@
 :root {
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
   color-scheme: light;
+  --footer-height: 40px;
   --color-ink: #162033;
   --color-muted: #5f6c85;
   --color-line: rgba(22, 32, 51, 0.12);
@@ -38,6 +39,24 @@ body {
   min-height: 100vh;
 }
 
+.app-flash {
+  position: fixed;
+  top: 87px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12000;
+  min-width: min(420px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(22, 163, 74, 0.96);
+  color: white;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.24);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .header {
   height: 75px;
   padding: 0 16px;
@@ -72,6 +91,10 @@ body {
   transform: translateY(1px);
 }
 
+.menu-btn:hover {
+  cursor: pointer !important;
+}
+
 .title {
   margin-right: auto;
   margin-left: 14px;
@@ -94,6 +117,33 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.language-switch__button {
+  min-width: 42px;
+  min-height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.language-switch__button--active {
+  background: linear-gradient(135deg, var(--color-accent-dark), var(--color-accent));
+  color: white;
 }
 
 .header-user-badge {
@@ -157,6 +207,7 @@ body {
 .app-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+  cursor: pointer !important;
 }
 
 .app-btn--primary {
@@ -189,10 +240,16 @@ body {
   cursor: default !important;
 }
 
+.app-inline-link:hover {
+  text-decoration: underline;
+  cursor: pointer !important;
+}
+
 .main {
   padding: 0;
   position: relative;
   isolation: isolate;
+  padding-bottom: var(--footer-height);
 }
 
 .main::after {
@@ -209,8 +266,54 @@ body {
   background: rgba(0, 0, 0, 0.2);
 }
 
+.app-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  min-height: var(--footer-height);
+  border-top: 1px solid rgba(22, 32, 51, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+}
+
+.app-footer__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+}
+
+.app-footer__brand {
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.app-footer__links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.app-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-footer__link:hover {
+  text-decoration: underline;
+}
+
 .map-wrap {
-  height: calc(100vh - 75px);
+  height: calc(100vh - 75px - var(--footer-height));
   width: 100%;
   position: relative;
 }
@@ -265,6 +368,7 @@ body {
 
 .map-control-btn:hover {
   background: white;
+  cursor: pointer !important;
 }
 
 .map-control-btn:active {
@@ -330,7 +434,7 @@ body {
   position: fixed;
   top: 75px;
   left: 0;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 75px - var(--footer-height));
   width: clamp(320px, 40vw, 560px);
   background: #f7fafc;
   box-shadow: 20px 0 48px rgba(15, 23, 42, 0.18);
@@ -350,6 +454,10 @@ body {
 .map-menu a,
 .map-menu [role='button'] {
   cursor: default !important;
+}
+
+.map-menu:hover button {
+  cursor: pointer !important;
 }
 
 .sidebar-home {
@@ -685,6 +793,74 @@ body {
   font-weight: 600;
 }
 
+.details-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.98);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.details-callout__label {
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.details-callout__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.details-callout__button {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 12px;
+  box-shadow: none;
+}
+
+.details-callout__hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  color: var(--color-muted);
+}
+
+.details-callout__tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(260px, 70vw);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  color: white;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+  z-index: 30;
+}
+
+.details-callout__hint:hover .details-callout__tooltip,
+.details-callout__hint:focus-visible .details-callout__tooltip {
+  opacity: 1;
+}
+
 .details-body {
   display: grid;
   gap: 16px;
@@ -1015,10 +1191,10 @@ body {
 .report-date-picker__input {
   width: 100%;
   min-height: 48px;
-  padding: 0 44px 0 14px;
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   color: var(--color-ink);
   font-size: 15px;
   box-sizing: border-box;
@@ -1026,21 +1202,6 @@ body {
 
 .report-date-picker__input:focus {
   outline: none;
-  border-color: rgba(15, 118, 110, 0.42);
-  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
-  background: white;
-}
-
-.report-date-picker__icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748b;
-  pointer-events: none;
-}
-
-.report-date-picker__icon--calendar {
-  right: 14px;
 }
 
 .report-time-select {
@@ -1055,6 +1216,10 @@ body {
   background: rgba(255, 255, 255, 0.96);
   color: var(--color-ink);
   box-sizing: border-box;
+}
+
+.report-time-select--date .react-datepicker-wrapper {
+  width: 100%;
 }
 
 .report-time-select__input {
@@ -1584,9 +1749,9 @@ body {
   transform: rotate(45deg);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1199.98px) {
   .map-menu {
-    width: min(72vw, 520px);
+    width: min(46vw, 460px);
   }
 
   .header-user-badge__content {
@@ -1594,7 +1759,91 @@ body {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 991.98px) {
+  .map-menu {
+    width: min(68vw, 480px);
+    padding: 14px;
+  }
+
+  .sidebar-panel {
+    padding: 16px;
+  }
+
+  .sidebar-panel--hero,
+  .auth-card__hero,
+  .report-card__hero,
+  .sighting-card__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-hero__content h2,
+  .auth-card__title,
+  .report-card__title,
+  .sighting-card__title,
+  .details-header__title {
+    font-size: 24px;
+  }
+
+  .auth-card,
+  .report-card,
+  .sighting-card {
+    width: 100%;
+    padding: 18px;
+  }
+
+  .report-grid,
+  .report-date-time,
+  .details-row {
+    grid-template-columns: 1fr;
+  }
+
+  .details-row {
+    gap: 4px;
+  }
+
+  .report-location-actions,
+  .sighting-location-actions {
+    display: grid;
+  }
+
+  .report-actions,
+  .sighting-actions {
+    display: block;
+  }
+
+  .report-actions .app-btn,
+  .sighting-actions .app-btn {
+    width: 100%;
+  }
+
+  .details-header__topline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .details-callout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .details-callout__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .details-callout__button {
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .details-callout__tooltip {
+    right: -8px;
+    width: min(240px, calc(100vw - 48px));
+  }
+}
+
+@media (max-width: 767.98px) {
   .header {
     padding: 0 12px;
   }
@@ -1605,6 +1854,10 @@ body {
 
   .header-actions {
     gap: 8px;
+  }
+
+  .language-switch {
+    order: -1;
   }
 
   .header-user-badge {
@@ -1622,21 +1875,14 @@ body {
     min-width: 0;
   }
 
-  .sidebar-panel--hero {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar-hero__content h2 {
-    font-size: 24px;
-  }
-
-  .auth-card {
-    width: 100%;
-    padding: 18px;
-  }
-
   .auth-dialog {
     padding: 12px;
+  }
+
+  .app-flash {
+    top: 83px;
+    min-width: 0;
+    width: calc(100vw - 24px);
   }
 
   .auth-dialog__panel {
@@ -1654,75 +1900,11 @@ body {
     font-size: 24px;
   }
 
-  .auth-card__hero {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-card__title {
-    font-size: 24px;
-  }
-
-  .report-card {
-    padding: 18px;
-  }
-
-  .report-card__hero {
-    grid-template-columns: 1fr;
-  }
-
-  .report-card__title {
-    font-size: 24px;
-  }
-
-  .report-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .report-date-time {
-    grid-template-columns: 1fr;
-  }
-
-  .report-location-actions {
-    display: grid;
-  }
-
-  .report-actions {
-    display: block;
-  }
-
-  .report-actions .app-btn {
-    width: 100%;
-  }
-
   .info-label__tooltip {
     left: 50%;
     top: calc(100% + 10px);
     transform: translateX(-50%);
     width: min(240px, calc(100vw - 64px));
-  }
-
-  .sighting-card {
-    padding: 18px;
-  }
-
-  .sighting-card__hero {
-    grid-template-columns: 1fr;
-  }
-
-  .sighting-card__title {
-    font-size: 24px;
-  }
-
-  .sighting-location-actions {
-    display: grid;
-  }
-
-  .sighting-actions {
-    display: block;
-  }
-
-  .sighting-actions .app-btn {
-    width: 100%;
   }
 
   .popup-card {
@@ -1739,17 +1921,35 @@ body {
     width: 100%;
   }
 
-  .details-header__title {
-    font-size: 24px;
+  .app-footer__content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
   }
 
-  .details-header__topline {
-    flex-direction: column;
-    align-items: flex-start;
+  .app-footer__links {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .map-menu {
+    padding: 12px;
   }
 
-  .details-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
+  .sidebar-panel,
+  .auth-card,
+  .report-card,
+  .sighting-card {
+    padding: 16px;
+  }
+
+  .app-footer__content {
+    padding: 8px 10px;
+  }
+
+  .app-footer__links {
+    gap: 10px;
   }
 }

@@ -1,6 +1,6 @@
-import { REPORT_FIELD_LABELS } from '../constants.js';
+import { translations } from '../../app/i18n/translations.js';
 
-export function formatReportDate(isoValue) {
+export function formatReportDate(isoValue, language = 'fi') {
   if (!isoValue) {
     return '-';
   }
@@ -11,11 +11,15 @@ export function formatReportDate(isoValue) {
   }
 
   const adjustedDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
-  return adjustedDate.toLocaleString();
+  return adjustedDate.toLocaleString(language === 'en' ? 'en-GB' : 'fi-FI');
 }
 
-export function getReportFieldLabel(key) {
-  return REPORT_FIELD_LABELS[key] ?? key;
+export function getReportFieldLabel(key, language = 'fi') {
+  return (
+    translations[language]?.reportFields?.[key] ??
+    translations.fi.reportFields?.[key] ??
+    key
+  );
 }
 
 export function renderReportValue(value) {

@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react';
 import { createTheftReport } from '../../../api/theftReportApi.js';
+import { translations } from '../../../app/i18n/translations.js';
 
 function toIso(value) {
   return value instanceof Date ? value.toISOString() : null;
 }
 
-export function useTheftReportForm({ defaultLocation, onCreated }) {
+function getErrorText(language, key) {
+  return (
+    translations[language]?.theftForm?.errors?.[key] ??
+    translations.fi.theftForm.errors[key]
+  );
+}
+
+export function useTheftReportForm({
+  defaultLocation,
+  onCreated,
+  language = 'fi'
+}) {
   const [formValues, setFormValues] = useState({
     description: '',
     theftTime: new Date(),
@@ -69,7 +81,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
     setLocationError('');
 
     if (!navigator.geolocation) {
-      setLocationError('Selaimesi ei tue sijainnin hakua (geolocation).');
+      setLocationError(getErrorText(language, 'geolocationUnsupported'));
       return;
     }
 
@@ -83,8 +95,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
       },
       (geoError) => {
         setLocationError(
-          geoError.message ||
-            'Sijainnin haku epäonnistui. Tarkista selaimen luvat.'
+          geoError.message || getErrorText(language, 'geolocationFailed')
         );
       },
       {
@@ -100,12 +111,15 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
     setError('');
 
     if (!formValues.description.trim()) {
-      setError('Kuvaus on pakollinen.');
+      setError(getErrorText(language, 'descriptionRequired'));
       return;
     }
 
-    if (!(formValues.theftTime instanceof Date) || Number.isNaN(formValues.theftTime.getTime())) {
-      setError('Varkauden aika on pakollinen.');
+    if (
+      !(formValues.theftTime instanceof Date) ||
+      Number.isNaN(formValues.theftTime.getTime())
+    ) {
+      setError(getErrorText(language, 'theftTimeRequired'));
       return;
     }
 
@@ -118,14 +132,12 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
       Number.isNaN(latitude) ||
       Number.isNaN(longitude)
     ) {
-      setError('Sijainti puuttuu. Valitse oma sijainti tai kartalta.');
+      setError(getErrorText(language, 'locationMissing'));
       return;
     }
 
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-      setError(
-        'Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).'
-      );
+      setError(getErrorText(language, 'invalidLocation'));
       return;
     }
 
@@ -146,7 +158,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
 
     try {
       if (formValues.images.length > 5) {
-        setError('Voit lisätä enintään 5 kuvaa.');
+        setError(getErrorText(language, 'tooManyImages'));
         return;
       }
 
@@ -154,7 +166,7 @@ export function useTheftReportForm({ defaultLocation, onCreated }) {
       const createdReport = await createTheftReport(payload, formValues.images);
       onCreated?.(createdReport);
     } catch (submitError) {
-      setError(submitError.message || 'Tallennus epäonnistui.');
+      setError(submitError.message || getErrorText(language, 'saveFailed'));
     } finally {
       setLoading(false);
     }

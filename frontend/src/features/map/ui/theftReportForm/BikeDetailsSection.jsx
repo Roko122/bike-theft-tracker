@@ -1,19 +1,24 @@
+import { useI18n } from '../../../app/i18n/LanguageContext.jsx';
 import InfoLabel from './InfoLabel.jsx';
-import { BIKE_FIELDS, FORM_TOOLTIPS } from './formOptions.js';
+import { getBikeFields, getFormTooltips } from './formOptions.js';
 
 export default function BikeDetailsSection({ values, onChange }) {
+  const { t } = useI18n();
+  const bikeFields = getBikeFields(t);
+  const formTooltips = getFormTooltips(t);
+
   return (
     <div className="report-section">
       <div className="report-section__title">
         <InfoLabel
-          label="Pyörän tiedot"
+          label={t('theftForm.bikeSection')}
           tooltipId="tooltip-bike-section"
-          tooltipText={FORM_TOOLTIPS.bike}
+          tooltipText={formTooltips.bike}
         />
       </div>
 
       <div className="report-grid">
-        {BIKE_FIELDS.map((field) => (
+        {bikeFields.map((field) => (
           <label key={field.name} className="report-field">
             <span className="report-field__label">{field.label}</span>
             <input
@@ -29,15 +34,15 @@ export default function BikeDetailsSection({ values, onChange }) {
       <label className="report-field">
         <span className="report-field__label">
           <InfoLabel
-            label="Lisäkuvaus pyörästä"
+            label={t('theftForm.bikeDescription')}
             tooltipId="tooltip-bike-description"
-            tooltipText={FORM_TOOLTIPS.bikeDescription}
+            tooltipText={formTooltips.bikeDescription}
           />
         </span>
         <textarea
           className="report-textarea report-textarea--compact"
           rows={3}
-          placeholder="Ruosteinen mutta hyvässä kunnossa. Etukori, tarakka ja harmaat renkaat."
+          placeholder={t('theftForm.bikeDescriptionPlaceholder')}
           value={values.bikeDescription}
           onChange={(event) => onChange('bikeDescription', event.target.value)}
         />

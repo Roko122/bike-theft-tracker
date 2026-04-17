@@ -67,8 +67,11 @@ async function requestCredentialed(method, path, body) {
   return parseJsonResponse(response, { method, path });
 }
 
-async function requestAuthenticated(method, path, body) {
-  const response = await sessionFetch(path, buildJsonRequestOptions(method, body));
+async function requestAuthenticated(method, path, body, options = {}) {
+  const response = await sessionFetch(path, {
+    ...buildJsonRequestOptions(method, body),
+    ...options
+  });
   return parseJsonResponse(response, { method, path });
 }
 
@@ -81,7 +84,9 @@ export function loginUser(payload) {
 }
 
 export function getCurrentUser() {
-  return requestAuthenticated('GET', '/auth/me', null);
+  return requestAuthenticated('GET', '/auth/me', null, {
+    suppressSessionExpired: true
+  });
 }
 
 export function logoutUser() {

@@ -1,19 +1,40 @@
-export const FORM_TOOLTIPS = {
-  description:
-    'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.',
-  theftTime: 'Valitse päivä ja aika, jolloin varkaus tapahtui.',
-  theftAddress: 'Anna lähin osoite, jossa varkaus tapahtui.',
-  location:
-    'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.',
-  bike: 'Täytä pyörän tiedot mahdollisimman tarkasti.',
-  bikeDescription:
-    'Kerro pyörän tuntomerkit, lisävarusteet, tarrat, korit, vauriot tai muut tunnistamista helpottavat tiedot.'
-};
+export function getFormTooltips(t) {
+  return {
+    description: t('theftForm.tooltips.description'),
+    theftTime: t('theftForm.tooltips.theftTime'),
+    theftAddress: t('theftForm.tooltips.theftAddress'),
+    location: t('theftForm.tooltips.location'),
+    bike: t('theftForm.tooltips.bike'),
+    bikeDescription: t('theftForm.tooltips.bikeDescription')
+  };
+}
 
-export const BIKE_FIELDS = [
-  { name: 'brand', label: 'Merkki', placeholder: 'Helkama' },
-  { name: 'model', label: 'Malli', placeholder: 'Trail 7' },
-  { name: 'type', label: 'Tyyppi', placeholder: 'Maastopyörä' },
-  { name: 'color', label: 'Väri', placeholder: 'Sininen' },
-  { name: 'serialNumber', label: 'Sarjanumero', placeholder: '123456789' }
-];
+export function getBikeFields(t) {
+  return [
+    {
+      name: 'brand',
+      label: t('theftForm.bikeFields.brand.label'),
+      placeholder: t('theftForm.bikeFields.brand.placeholder')
+    },
+    {
+      name: 'model',
+      label: t('theftForm.bikeFields.model.label'),
+      placeholder: t('theftForm.bikeFields.model.placeholder')
+    },
+    {
+      name: 'type',
+      label: t('theftForm.bikeFields.type.label'),
+      placeholder: t('theftForm.bikeFields.type.placeholder')
+    },
+    {
+      name: 'color',
+      label: t('theftForm.bikeFields.color.label'),
+      placeholder: t('theftForm.bikeFields.color.placeholder')
+    },
+    {
+      name: 'serialNumber',
+      label: t('theftForm.bikeFields.serialNumber.label'),
+      placeholder: t('theftForm.bikeFields.serialNumber.placeholder')
+    }
+  ];
+}
