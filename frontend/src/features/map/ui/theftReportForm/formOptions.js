@@ -14,27 +14,32 @@ export function getBikeFields(t) {
     {
       name: 'brand',
       label: t('theftForm.bikeFields.brand.label'),
-      placeholder: t('theftForm.bikeFields.brand.placeholder')
+      placeholder: t('theftForm.bikeFields.brand.placeholder'),
+      required: true
     },
     {
       name: 'model',
       label: t('theftForm.bikeFields.model.label'),
-      placeholder: t('theftForm.bikeFields.model.placeholder')
+      placeholder: t('theftForm.bikeFields.model.placeholder'),
+      required: true
     },
     {
       name: 'type',
       label: t('theftForm.bikeFields.type.label'),
-      placeholder: t('theftForm.bikeFields.type.placeholder')
+      placeholder: t('theftForm.bikeFields.type.placeholder'),
+      required: true
     },
     {
       name: 'color',
       label: t('theftForm.bikeFields.color.label'),
-      placeholder: t('theftForm.bikeFields.color.placeholder')
+      placeholder: t('theftForm.bikeFields.color.placeholder'),
+      required: true
     },
     {
       name: 'serialNumber',
       label: t('theftForm.bikeFields.serialNumber.label'),
-      placeholder: t('theftForm.bikeFields.serialNumber.placeholder')
+      placeholder: t('theftForm.bikeFields.serialNumber.placeholder'),
+      required: false
     }
   ];
 }

@@ -46,6 +46,10 @@ export default function TheftReportForm({
         </div>
       </div>
 
+      <div className="report-form__hint" role="note">
+        <span>{t('theftForm.requiredLegend')}</span>
+      </div>
+
       {error && <div className="report-alert report-alert--danger">{error}</div>}
 
       <form className="report-form" onSubmit={submit}>
@@ -56,6 +60,7 @@ export default function TheftReportForm({
                 label={t('theftForm.description')}
                 tooltipId="tooltip-description"
                 tooltipText={formTooltips.description}
+                required
               />
             </span>
             <textarea

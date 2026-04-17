@@ -117,6 +117,31 @@ export function useTheftReportForm({
       return;
     }
 
+    if (!formValues.brand.trim()) {
+      setError(getErrorText(language, 'brandRequired'));
+      return;
+    }
+
+    if (!formValues.model.trim()) {
+      setError(getErrorText(language, 'modelRequired'));
+      return;
+    }
+
+    if (!formValues.type.trim()) {
+      setError(getErrorText(language, 'typeRequired'));
+      return;
+    }
+
+    if (!formValues.color.trim()) {
+      setError(getErrorText(language, 'colorRequired'));
+      return;
+    }
+
+    if (!formValues.bikeDescription.trim()) {
+      setError(getErrorText(language, 'bikeDescriptionRequired'));
+      return;
+    }
+
     if (
       !(formValues.theftTime instanceof Date) ||
       Number.isNaN(formValues.theftTime.getTime())
@@ -149,12 +174,12 @@ export function useTheftReportForm({
       theftAddress: formValues.theftAddress.trim() || null,
       location: { latitude, longitude },
       bike: {
-        brand: formValues.brand,
-        model: formValues.model,
-        type: formValues.type,
-        color: formValues.color,
-        serialNumber: formValues.serialNumber,
-        description: formValues.bikeDescription
+        brand: formValues.brand.trim(),
+        model: formValues.model.trim(),
+        type: formValues.type.trim(),
+        color: formValues.color.trim(),
+        serialNumber: formValues.serialNumber.trim(),
+        description: formValues.bikeDescription.trim()
       }
     };
 

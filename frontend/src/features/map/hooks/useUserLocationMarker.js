@@ -2,6 +2,16 @@ import { useCallback, useState } from 'react';
 
 export function useUserLocationMarker(mapRef) {
   const [userLocation, setUserLocation] = useState(null);
+  const setResolvedUserLocation = useCallback((location) => {
+    if (location?.latitude == null || location?.longitude == null) {
+      return;
+    }
+
+    setUserLocation({
+      latitude: location.latitude,
+      longitude: location.longitude
+    });
+  }, []);
 
   const zoomIn = useCallback(() => {
     const map = mapRef.current;
@@ -30,7 +40,7 @@ export function useUserLocationMarker(mapRef) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        setUserLocation({ latitude, longitude });
+        setResolvedUserLocation({ latitude, longitude });
         map.flyTo([latitude, longitude], 15, {
           animate: true,
           duration: 1.2
@@ -49,6 +59,7 @@ export function useUserLocationMarker(mapRef) {
 
   return {
     userLocation,
+    setResolvedUserLocation,
     centerToUser,
     zoomIn,
     zoomOut

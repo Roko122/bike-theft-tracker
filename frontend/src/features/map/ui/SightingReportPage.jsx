@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import { createSightingForReport } from '../../api/theftReportApi.js';
+import LocationMarkerHint from './LocationMarkerHint.jsx';
 
 function Message({ tone, children }) {
   return <div className={`sighting-alert sighting-alert--${tone}`}>{children}</div>;
@@ -157,9 +158,19 @@ export default function SightingReportPage({
       {error && <Message tone="danger">{error}</Message>}
       {locationError && <Message tone="warning">{locationError}</Message>}
 
+      <div className="report-form__hint" role="note">
+        <span>{t('sighting.requiredLegend')}</span>
+      </div>
+
       <form className="sighting-form" onSubmit={handleSubmit}>
         <label className="sighting-field">
-          <span className="sighting-field__label">{t('sighting.whatDidYouSee')}</span>
+          <span className="sighting-field__label">
+            {t('sighting.whatDidYouSee')}
+            <span className="required-indicator" aria-hidden="true">
+              {' '}
+              *
+            </span>
+          </span>
           <textarea
             className="sighting-textarea"
             rows={5}
@@ -172,26 +183,14 @@ export default function SightingReportPage({
         <div className="sighting-grid">
           <div className="sighting-section">
             <div className="sighting-section__header">
-              <Camera size={16} />
-              <span>{t('sighting.image')}</span>
-            </div>
-            <label className="sighting-file">
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={(event) => setImage(event.target.files?.[0] ?? null)}
-              />
-              <span className="sighting-file__title">
-                {image ? image.name : t('sighting.chooseImage')}
-              </span>
-              <span className="sighting-file__hint">{t('sighting.imageHint')}</span>
-            </label>
-          </div>
-
-          <div className="sighting-section">
-            <div className="sighting-section__header">
               <MapPin size={16} />
-              <span>{t('sighting.location')}</span>
+              <span>
+                {t('sighting.location')}
+                <span className="required-indicator" aria-hidden="true">
+                  {' '}
+                  *
+                </span>
+              </span>
             </div>
 
             <div className="sighting-location-actions">
@@ -233,19 +232,32 @@ export default function SightingReportPage({
 
             <div className="sighting-location-meta">
               {latitude && longitude ? (
-                <>
-                  <strong>{latitude}</strong>
-                  <strong>{longitude}</strong>
-                  <span>
-                    {locationSource === 'gps'
-                      ? t('sighting.myLocation')
-                      : t('sighting.selectedOnMap')}
-                  </span>
-                </>
+                <LocationMarkerHint
+                  text={t('sighting.selectedLocationMapHint')}
+                  markerAriaLabel={t('sighting.selectedLocationMarkerAria')}
+                />
               ) : (
                 <span>{t('sighting.selectLocationHint')}</span>
               )}
             </div>
+          </div>
+
+          <div className="sighting-section">
+            <div className="sighting-section__header">
+              <Camera size={16} />
+              <span>{t('sighting.image')}</span>
+            </div>
+            <label className="sighting-file">
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={(event) => setImage(event.target.files?.[0] ?? null)}
+              />
+              <span className="sighting-file__title">
+                {image ? image.name : t('sighting.chooseImage')}
+              </span>
+              <span className="sighting-file__hint">{t('sighting.imageHint')}</span>
+            </label>
           </div>
         </div>
 

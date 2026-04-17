@@ -16,7 +16,7 @@ export default function AuthDialog({
   const title = isLogin ? t('app.loginOrRegister') : t('auth.createAccount');
 
   return (
-    <div className="auth-dialog" onClick={onClose}>
+    <div className="auth-dialog" role="presentation">
       <div className="auth-dialog__panel" onClick={(event) => event.stopPropagation()}>
         <div className="auth-dialog__header">
           <div>

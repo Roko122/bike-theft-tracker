@@ -2,6 +2,7 @@ import { Crosshair, MapPin, Trash2 } from 'lucide-react';
 import { useI18n } from '../../../app/i18n/LanguageContext.jsx';
 import InfoLabel from './InfoLabel.jsx';
 import { getFormTooltips } from './formOptions.js';
+import LocationMarkerHint from '../LocationMarkerHint.jsx';
 
 export default function LocationSection({
   latitude,
@@ -22,6 +23,7 @@ export default function LocationSection({
           label={t('theftForm.location')}
           tooltipId="tooltip-location"
           tooltipText={formTooltips.location}
+          required
         />
       </div>
 
@@ -58,15 +60,10 @@ export default function LocationSection({
 
       <div className="report-location-meta">
         {latitude && longitude ? (
-          <>
-            <strong>{latitude}</strong>
-            <strong>{longitude}</strong>
-            <span>
-              {locationSource === 'gps'
-                ? t('theftForm.myLocation')
-                : t('theftForm.selectedOnMap')}
-            </span>
-          </>
+          <LocationMarkerHint
+            text={t('theftForm.selectedLocationMapHint')}
+            markerAriaLabel={t('theftForm.selectedLocationMarkerAria')}
+          />
         ) : (
           <span>{t('theftForm.selectLocationHint')}</span>
         )}

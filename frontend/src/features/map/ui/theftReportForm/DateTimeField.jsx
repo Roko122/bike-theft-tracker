@@ -49,6 +49,7 @@ export default function DateTimeField({ value, onChange }) {
           label={t('theftForm.theftTime')}
           tooltipId="tooltip-theft-time"
           tooltipText={formTooltips.theftTime}
+          required
         />
       </span>
 
