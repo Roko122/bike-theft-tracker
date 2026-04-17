@@ -74,7 +74,7 @@ export const translations = {
       subtitle:
         'Lisää pyörän tiedot, tapahtuma-aika ja sijainti mahdollisimman tarkasti.',
       requiredLegend: '* Pakollinen tieto',
-      description: 'Kuvaus',
+      description: 'Kuvaus varkaudesta',
       descriptionPlaceholder:
         'Esim. Pyörä varastettiin kaupan edestä lukittuna noin klo 14.00-14.30.',
       theftTime: 'Tapahtuma-aika',
@@ -83,7 +83,7 @@ export const translations = {
       theftAddressPlaceholder: 'Esim. Kauppakatu 29',
       location: 'Sijainti',
       bikeSection: 'Pyörän tiedot',
-      bikeDescription: 'Lisää kuvaus pyörästä',
+      bikeDescription: 'Kuvaus pyörästä',
       bikeDescriptionPlaceholder:
         'Esim. Ruosteinen mutta hyvässä kunnossa. Etukori, tarakka ja harmaat renkaat.',
       images: 'Kuvat',
@@ -99,6 +99,9 @@ export const translations = {
       selectedOnMap: 'Valittu kartalta',
       selectLocationHint:
         'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
+      selectedLocationMapHint:
+        'Valittu sijainti näkyy kartalla punaisena merkkinä.',
+      selectedLocationMarkerAria: 'Punainen karttamerkki valitulle sijainnille',
       tooltips: {
         description:
           'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.',
@@ -140,6 +143,7 @@ export const translations = {
       title: 'Havaintoilmoitus',
       subtitle:
         'Kirjaa missä pyörä havaittiin ja lisää kuva, jos sellainen on.',
+      requiredLegend: '* Pakollinen tieto',
       whatDidYouSee: 'Mitä havaitsit?',
       descriptionPlaceholder:
         'Kuvaile mahdollisimman tarkasti mitä näit, milloin ja missä tilanteessa.',
@@ -154,6 +158,9 @@ export const translations = {
       selectedOnMap: 'Valittu kartalta',
       selectLocationHint:
         'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
+      selectedLocationMapHint:
+        'Valittu sijainti näkyy kartalla punaisena merkkinä.',
+      selectedLocationMarkerAria: 'Punainen karttamerkki valitulle sijainnille',
       submit: 'Lähetä havaintoilmoitus',
       submitting: 'Tallennetaan...',
       errors: {
@@ -331,6 +338,9 @@ export const translations = {
       selectedOnMap: 'Selected on map',
       selectLocationHint:
         'Choose a location using your own location or the map.',
+      selectedLocationMapHint:
+        'The selected location is shown on the map with a red marker.',
+      selectedLocationMarkerAria: 'Red map marker for the selected location',
       tooltips: {
         description:
           'Describe as accurately as possible what happened and how the theft was noticed.',
@@ -371,6 +381,7 @@ export const translations = {
       eyebrow: 'New sighting',
       title: 'Sighting report',
       subtitle: 'Record where the bike was seen and add an image if available.',
+      requiredLegend: '* Required field',
       whatDidYouSee: 'What did you observe?',
       descriptionPlaceholder:
         'Describe as accurately as possible what you saw, when, and in what situation.',
@@ -385,6 +396,9 @@ export const translations = {
       selectedOnMap: 'Selected on map',
       selectLocationHint:
         'Choose a location using your own location or the map.',
+      selectedLocationMapHint:
+        'The selected location is shown on the map with a red marker.',
+      selectedLocationMarkerAria: 'Red map marker for the selected location',
       submit: 'Submit sighting report',
       submitting: 'Saving...',
       errors: {

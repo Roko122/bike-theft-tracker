@@ -49,7 +49,8 @@ export function VisibleTheftsLoader({ onLoad }) {
 export function AutoCenterToUser({
   fallbackCenter,
   fallbackZoom = 11,
-  userZoom = 13
+  userZoom = 13,
+  onResolvedLocation
 }) {
   const map = useMap();
   const hasCenteredRef = useRef(false);
@@ -73,6 +74,7 @@ export function AutoCenterToUser({
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        onResolvedLocation?.({ latitude, longitude });
         map.setView([latitude, longitude], userZoom);
       },
       () => {
@@ -84,7 +86,7 @@ export function AutoCenterToUser({
         maximumAge: 0
       }
     );
-  }, [fallbackCenter, fallbackZoom, map, userZoom]);
+  }, [fallbackCenter, fallbackZoom, map, onResolvedLocation, userZoom]);
 
   return null;
 }

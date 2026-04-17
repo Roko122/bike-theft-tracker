@@ -98,9 +98,14 @@ function AppContent() {
     [setCurrentUser, showSuccessMessage, t, viewState.closeLogin]
   );
 
-  const handleRegisterSuccess = useCallback(() => {
-    viewState.backToLogin();
-  }, [viewState.backToLogin]);
+  const handleRegisterSuccess = useCallback(
+    (user) => {
+      setCurrentUser(user);
+      viewState.closeRegister();
+      showSuccessMessage(t('flash.loginSuccess'));
+    },
+    [setCurrentUser, showSuccessMessage, t, viewState.closeRegister]
+  );
 
   const handleLogout = useCallback(async () => {
     await logout();

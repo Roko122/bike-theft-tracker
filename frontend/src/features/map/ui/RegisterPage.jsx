@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, ShieldCheck, UserRound, X } from 'lucide-react';
-import { registerUser } from '../../api/authApi.js';
+import { loginUser, registerUser } from '../../api/authApi.js';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import { passwordsMatch, validatePassword } from './passwordValidation.js';
 
@@ -54,8 +54,9 @@ export default function RegisterPage({ onRegistered }) {
 
     try {
       setLoading(true);
-      const result = await registerUser({ username, email, password });
-      onRegistered?.(result);
+      await registerUser({ username, email, password });
+      const loggedInUser = await loginUser({ username, password });
+      onRegistered?.(loggedInUser);
     } catch (submitError) {
       setError(submitError.message || t('register.error'));
     } finally {

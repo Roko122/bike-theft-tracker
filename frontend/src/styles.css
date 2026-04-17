@@ -1260,6 +1260,32 @@ body {
   font-weight: 700;
 }
 
+.location-marker-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-marker-hint__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.location-marker-hint__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #dd1919;
+  border: 1px solid rgb(0 0 0);
+  box-shadow: 0 8px 18px rgba(127, 29, 29, 0.28);
+}
+
 .report-file {
   display: grid;
   gap: 8px;
@@ -1551,6 +1577,11 @@ body {
   border-color: rgba(15, 118, 110, 0.42);
   box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
   background: white;
+}
+
+.sighting-textarea::placeholder {
+  color: #94a3b8;
+  font-style: italic;
 }
 
 .sighting-grid {

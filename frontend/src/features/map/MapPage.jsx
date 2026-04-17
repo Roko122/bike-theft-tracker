@@ -69,7 +69,7 @@ export default function MapPage({
     mapRef,
     refreshKey
   });
-  const { userLocation, centerToUser, zoomIn, zoomOut } =
+  const { userLocation, setResolvedUserLocation, centerToUser, zoomIn, zoomOut } =
     useUserLocationMarker(mapRef);
   const selectedLocationIcon = useMemo(() => createSelectedLocationIcon(), []);
   const userLocationIcon = useMemo(() => createUserLocationIcon(), []);
@@ -89,7 +89,10 @@ export default function MapPage({
       >
         <MapRefBinder mapRef={mapRef} />
         <MapInteractionLock locked={isInteractionLocked} />
-        <AutoCenterToUser fallbackCenter={FALLBACK_CENTER} />
+        <AutoCenterToUser
+          fallbackCenter={FALLBACK_CENTER}
+          onResolvedLocation={setResolvedUserLocation}
+        />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
         <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
 

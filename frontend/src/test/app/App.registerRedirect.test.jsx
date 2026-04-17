@@ -23,7 +23,7 @@ beforeEach(() => {
 });
 
 describe('App - register redirect', () => {
-  it('palaa rekisteroinnin jalkeen kirjautumisnakymaan', async () => {
+  it('kirjaa kayttajan sisaan rekisteroinnin jalkeen', async () => {
     render(<App />);
 
     fireEvent.click(
@@ -41,7 +41,7 @@ describe('App - register redirect', () => {
     fireEvent.click(screen.getByRole('button', { name: /Luo tili/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Kirjaudu' })).toBeInTheDocument();
+      expect(screen.getByText('Kirjautuminen onnistui.')).toBeInTheDocument();
     });
   });
 });

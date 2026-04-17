@@ -27,7 +27,7 @@ describe('SightingReportPage - successful submit', () => {
     });
 
     fireEvent.click(
-      screen.getByRole('button', { name: /Lähetä havaintoilmoitus/i })
+      screen.getByRole('button', { name: /L.het. havaintoilmoitus/i })
     );
 
     await waitFor(() => {
