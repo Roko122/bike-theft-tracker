@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Binoculars, CircleHelp } from 'lucide-react';
+import { Binoculars, CircleHelp, UserRound } from 'lucide-react';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import { getTheftReportById } from '../../api/theftReportApi.js';
 import ImageCarousel from './ImageCarousel.jsx';
@@ -66,6 +66,8 @@ export default function TheftReportDetailsSidebar({
     () => getReportImageUrls(report?.images),
     [report?.images]
   );
+  const reporterName = report?.bike?.user?.username?.trim?.() ?? '';
+  const reporterInitial = reporterName ? reporterName.charAt(0).toUpperCase() : '?';
 
   return (
     <div className="details">
@@ -159,6 +161,20 @@ export default function TheftReportDetailsSidebar({
               label={t('details.fields.bikeDescription')}
               value={report.bike?.description}
             />
+
+            <h4 className="details-section__title details-section__title--spaced">
+              {t('details.fields.username')}
+            </h4>
+            <div className="details-reporter-card details-reporter-card--embedded">
+              <div className="details-reporter-card__avatar" aria-hidden="true">
+                {reporterName ? reporterInitial : <UserRound size={16} />}
+              </div>
+              <div className="details-reporter-card__content">
+                <div className="details-reporter-card__name">
+                  {reporterName || '-'}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -170,6 +170,7 @@ export const translations = {
         model: 'Malli',
         type: 'Tyyppi',
         color: 'Väri',
+        username: 'Ilmoittaja',
         serialNumber: 'Sarjanumero',
         bikeDescription: 'Lisäkuvaus'
       },
@@ -380,6 +381,7 @@ export const translations = {
         model: 'Model',
         type: 'Type',
         color: 'Color',
+        username: 'Reporter',
         serialNumber: 'Serial number',
         bikeDescription: 'Additional details'
       },

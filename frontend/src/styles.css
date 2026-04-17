@@ -949,6 +949,10 @@ body {
   letter-spacing: 0.08em;
 }
 
+.details-section__title--spaced {
+  margin-top: 12px;
+}
+
 .details-status {
   display: inline-flex;
   align-items: center;
@@ -981,6 +985,50 @@ body {
   font-size: 15px;
   line-height: 1.5;
   color: var(--color-ink);
+}
+
+.details-reporter-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(255, 255, 255, 0.96)),
+    rgba(255, 255, 255, 0.92);
+}
+
+.details-reporter-card--embedded {
+  margin-top: 2px;
+}
+
+.details-reporter-card__avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent-dark), var(--color-accent));
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(15, 118, 110, 0.22);
+}
+
+.details-reporter-card__content {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+}
+
+.details-reporter-card__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+  word-break: break-word;
 }
 
 .details-status--danger {
@@ -1551,6 +1599,7 @@ body {
 }
 
 .image-carousel {
+  --carousel-height: 180px;
   position: relative;
   width: 100%;
   border-radius: 10px;
@@ -1858,8 +1907,31 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .details-section--rows {
+    gap: 12px;
+  }
+
   .details-row {
-    gap: 4px;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(247, 250, 252, 0.92);
+    border: 1px solid rgba(22, 32, 51, 0.08);
+  }
+
+  .details-row__label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .details-row__value {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .details-reporter-card {
+    padding: 12px 14px;
   }
 
   .report-location-actions,
@@ -2004,6 +2076,17 @@ body {
   .report-card,
   .sighting-card {
     padding: 16px;
+  }
+
+  .details-header,
+  .details-section {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .details-row {
+    padding: 11px 12px;
+    border-radius: 14px;
   }
 
   .app-footer__content {
