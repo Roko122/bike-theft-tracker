@@ -49,15 +49,6 @@ async function requestPublic(method, path, body) {
   return parseJsonResponse(response, { method, path });
 }
 
-async function requestSessionEndpoint(method, path) {
-  const response = await sessionFetchWithoutRefresh(
-    path,
-    buildJsonRequestOptions(method, null, false)
-  );
-
-  return parseJsonResponse(response, { method, path });
-}
-
 async function requestCredentialed(method, path, body) {
   const response = await sessionFetchWithoutRefresh(
     path,
@@ -67,8 +58,11 @@ async function requestCredentialed(method, path, body) {
   return parseJsonResponse(response, { method, path });
 }
 
-async function requestAuthenticated(method, path, body) {
-  const response = await sessionFetch(path, buildJsonRequestOptions(method, body));
+async function requestAuthenticated(method, path, body, options = {}) {
+  const response = await sessionFetch(path, {
+    ...buildJsonRequestOptions(method, body),
+    ...options
+  });
   return parseJsonResponse(response, { method, path });
 }
 
@@ -81,13 +75,11 @@ export function loginUser(payload) {
 }
 
 export function getCurrentUser() {
-  return requestAuthenticated('GET', '/auth/me', null);
+  return requestAuthenticated('GET', '/auth/me', null, {
+    suppressSessionExpired: true
+  });
 }
 
 export function logoutUser() {
   return requestAuthenticated('POST', '/auth/logout', null);
-}
-
-export function refreshUser() {
-  return requestSessionEndpoint('POST', '/auth/refresh');
 }

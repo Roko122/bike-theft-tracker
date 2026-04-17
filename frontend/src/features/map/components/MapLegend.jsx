@@ -1,3 +1,4 @@
+import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import {
   REPORT_STATUS_COLORS,
   REPORT_STATUS_LABELS
@@ -15,9 +16,11 @@ const LEGEND_ITEMS = [
 }));
 
 export default function MapLegend() {
+  const { t } = useI18n();
+
   return (
-    <aside className="map-legend" aria-label="Karttamerkkien selite">
-      <div className="map-legend__title">Merkintöjen värit</div>
+    <aside className="map-legend" aria-label={t('map.legendAria')}>
+      <div className="map-legend__title">{t('map.legendTitle')}</div>
       <div className="map-legend__items">
         {LEGEND_ITEMS.map((item) => (
           <div key={item.status} className="map-legend__item">
@@ -26,7 +29,9 @@ export default function MapLegend() {
               style={{ '--legend-color': item.color }}
               aria-hidden="true"
             />
-            <span className="map-legend__label">{item.label}</span>
+            <span className="map-legend__label">
+              {t(`details.status.${item.status}`) || item.label}
+            </span>
           </div>
         ))}
       </div>

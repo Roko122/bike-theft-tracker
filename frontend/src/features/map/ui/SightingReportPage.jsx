@@ -7,6 +7,7 @@ import {
   Send,
   Trash2
 } from 'lucide-react';
+import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import { createSightingForReport } from '../../api/theftReportApi.js';
 
 function Message({ tone, children }) {
@@ -19,8 +20,10 @@ export default function SightingReportPage({
   defaultLocation,
   onStartPickFromMap,
   onStopPickFromMap,
-  onClearPickedLocation
+  onClearPickedLocation,
+  onCreated
 }) {
+  const { t } = useI18n();
   const effectiveReportId = report?.id ?? reportId;
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
@@ -31,7 +34,6 @@ export default function SightingReportPage({
   );
   const [locationError, setLocationError] = useState('');
   const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   function setLocation(lat, lon, source) {
@@ -44,7 +46,7 @@ export default function SightingReportPage({
     setLocationError('');
 
     if (!navigator.geolocation) {
-      setLocationError('Selaimesi ei tue sijainnin hakua.');
+      setLocationError(t('sighting.errors.geolocationUnsupported'));
       return;
     }
 
@@ -58,7 +60,7 @@ export default function SightingReportPage({
       },
       (positionError) => {
         setLocationError(
-          positionError.message || 'Sijainnin haku epäonnistui. Tarkista luvat.'
+          positionError.message || t('sighting.errors.geolocationFailed')
         );
       },
       {
@@ -86,17 +88,14 @@ export default function SightingReportPage({
   async function handleSubmit(event) {
     event.preventDefault();
     setError('');
-    setSuccessMsg('');
 
     if (!effectiveReportId) {
-      setError(
-        'Valitun ilmoituksen tunniste puuttuu. Avaa havainto ilmoituksen kautta.'
-      );
+      setError(t('sighting.errors.missingReportId'));
       return;
     }
 
     if (!description.trim()) {
-      setError('Kuvaus on pakollinen.');
+      setError(t('sighting.errors.descriptionRequired'));
       return;
     }
 
@@ -109,17 +108,17 @@ export default function SightingReportPage({
       Number.isNaN(latNum) ||
       Number.isNaN(lonNum)
     ) {
-      setError('Sijainti puuttuu. Valitse oma sijainti tai kartalta.');
+      setError(t('sighting.errors.locationMissing'));
       return;
     }
 
     if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
-      setError('Sijainti ei ole kelvollinen.');
+      setError(t('sighting.errors.invalidLocation'));
       return;
     }
 
     if (image && image.size > 5 * 1024 * 1024) {
-      setError('Kuvan enimmäiskoko on 5 MB.');
+      setError(t('sighting.errors.imageTooLarge'));
       return;
     }
 
@@ -134,13 +133,9 @@ export default function SightingReportPage({
     try {
       setLoading(true);
       await createSightingForReport(effectiveReportId, payload, image);
-      setSuccessMsg('Havaintoilmoitus tallennettu.');
-      setDescription('');
-      setImage(null);
+      onCreated?.();
     } catch (submitError) {
-      setError(
-        submitError?.message || 'Havaintoilmoituksen tallennus epäonnistui.'
-      );
+      setError(submitError?.message || t('sighting.errors.saveFailed'));
     } finally {
       setLoading(false);
     }
@@ -153,25 +148,22 @@ export default function SightingReportPage({
           <Binoculars size={20} />
         </div>
         <div className="sighting-card__hero-copy">
-          <p className="sighting-card__eyebrow">Uusi havainto</p>
-          <h2 className="sighting-card__title">Havaintoilmoitus</h2>
-          <p className="sighting-card__subtitle">
-            Kirjaa missä pyörä havaittiin ja lisää kuva, jos sellainen on.
-          </p>
+          <p className="sighting-card__eyebrow">{t('sighting.eyebrow')}</p>
+          <h2 className="sighting-card__title">{t('sighting.title')}</h2>
+          <p className="sighting-card__subtitle">{t('sighting.subtitle')}</p>
         </div>
       </div>
 
       {error && <Message tone="danger">{error}</Message>}
-      {successMsg && <Message tone="success">{successMsg}</Message>}
       {locationError && <Message tone="warning">{locationError}</Message>}
 
       <form className="sighting-form" onSubmit={handleSubmit}>
         <label className="sighting-field">
-          <span className="sighting-field__label">Mitä havaitsit?</span>
+          <span className="sighting-field__label">{t('sighting.whatDidYouSee')}</span>
           <textarea
             className="sighting-textarea"
             rows={5}
-            placeholder="Kuvaile mahdollisimman tarkasti mitä näit, milloin ja missä tilanteessa."
+            placeholder={t('sighting.descriptionPlaceholder')}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
           />
@@ -181,7 +173,7 @@ export default function SightingReportPage({
           <div className="sighting-section">
             <div className="sighting-section__header">
               <Camera size={16} />
-              <span>Kuva</span>
+              <span>{t('sighting.image')}</span>
             </div>
             <label className="sighting-file">
               <input
@@ -190,18 +182,16 @@ export default function SightingReportPage({
                 onChange={(event) => setImage(event.target.files?.[0] ?? null)}
               />
               <span className="sighting-file__title">
-                {image ? image.name : 'Valitse kuva'}
+                {image ? image.name : t('sighting.chooseImage')}
               </span>
-              <span className="sighting-file__hint">
-                Enintään 1 kuva. PNG, JPG tai JPEG. Maksimikoko 5 MB.
-              </span>
+              <span className="sighting-file__hint">{t('sighting.imageHint')}</span>
             </label>
           </div>
 
           <div className="sighting-section">
             <div className="sighting-section__header">
               <MapPin size={16} />
-              <span>Sijainti</span>
+              <span>{t('sighting.location')}</span>
             </div>
 
             <div className="sighting-location-actions">
@@ -211,7 +201,7 @@ export default function SightingReportPage({
                 onClick={useMyLocation}
               >
                 <Crosshair size={16} />
-                <span>Käytä omaa sijaintia</span>
+                <span>{t('sighting.useMyLocation')}</span>
               </button>
 
               <button
@@ -224,7 +214,7 @@ export default function SightingReportPage({
                 }}
               >
                 <MapPin size={16} />
-                <span>Valitse kartalta</span>
+                <span>{t('sighting.pickFromMap')}</span>
               </button>
 
               <button
@@ -237,7 +227,7 @@ export default function SightingReportPage({
                 }}
               >
                 <Trash2 size={16} />
-                <span>Tyhjennä sijainti</span>
+                <span>{t('sighting.clearLocation')}</span>
               </button>
             </div>
 
@@ -248,12 +238,12 @@ export default function SightingReportPage({
                   <strong>{longitude}</strong>
                   <span>
                     {locationSource === 'gps'
-                      ? 'Oma sijainti'
-                      : 'Valittu kartalta'}
+                      ? t('sighting.myLocation')
+                      : t('sighting.selectedOnMap')}
                   </span>
                 </>
               ) : (
-                <span>Valitse sijainti käyttämällä omaa sijaintia tai karttaa.</span>
+                <span>{t('sighting.selectLocationHint')}</span>
               )}
             </div>
           </div>
@@ -266,7 +256,7 @@ export default function SightingReportPage({
             disabled={loading}
           >
             <Send size={18} />
-            <span>{loading ? 'Tallennetaan...' : 'Lähetä havaintoilmoitus'}</span>
+            <span>{loading ? t('sighting.submitting') : t('sighting.submit')}</span>
           </button>
         </div>
       </form>

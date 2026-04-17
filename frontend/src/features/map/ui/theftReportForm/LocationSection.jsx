@@ -1,6 +1,7 @@
 import { Crosshair, MapPin, Trash2 } from 'lucide-react';
+import { useI18n } from '../../../app/i18n/LanguageContext.jsx';
 import InfoLabel from './InfoLabel.jsx';
-import { FORM_TOOLTIPS } from './formOptions.js';
+import { getFormTooltips } from './formOptions.js';
 
 export default function LocationSection({
   latitude,
@@ -11,13 +12,16 @@ export default function LocationSection({
   onStartPickFromMap,
   onClearLocation
 }) {
+  const { t } = useI18n();
+  const formTooltips = getFormTooltips(t);
+
   return (
     <div className="report-section">
       <div className="report-section__title">
         <InfoLabel
-          label="Sijainti"
+          label={t('theftForm.location')}
           tooltipId="tooltip-location"
-          tooltipText={FORM_TOOLTIPS.location}
+          tooltipText={formTooltips.location}
         />
       </div>
 
@@ -30,7 +34,7 @@ export default function LocationSection({
           onClick={onUseMyLocation}
         >
           <Crosshair size={16} />
-          <span>Käytä omaa sijaintia</span>
+          <span>{t('theftForm.useMyLocation')}</span>
         </button>
 
         <button
@@ -39,7 +43,7 @@ export default function LocationSection({
           onClick={onStartPickFromMap}
         >
           <MapPin size={16} />
-          <span>Valitse kartalta</span>
+          <span>{t('theftForm.pickFromMap')}</span>
         </button>
 
         <button
@@ -48,7 +52,7 @@ export default function LocationSection({
           onClick={onClearLocation}
         >
           <Trash2 size={16} />
-          <span>Tyhjennä sijainti</span>
+          <span>{t('theftForm.clearLocation')}</span>
         </button>
       </div>
 
@@ -57,10 +61,14 @@ export default function LocationSection({
           <>
             <strong>{latitude}</strong>
             <strong>{longitude}</strong>
-            <span>{locationSource === 'gps' ? 'Oma sijainti' : 'Valittu kartalta'}</span>
+            <span>
+              {locationSource === 'gps'
+                ? t('theftForm.myLocation')
+                : t('theftForm.selectedOnMap')}
+            </span>
           </>
         ) : (
-          <span>Valitse sijainti käyttämällä omaa sijaintia tai karttaa.</span>
+          <span>{t('theftForm.selectLocationHint')}</span>
         )}
       </div>
     </div>

@@ -13,8 +13,11 @@ function createSessionExpiredError() {
 }
 
 function withCredentials(options = {}) {
+  const fetchOptions = { ...options };
+  delete fetchOptions.suppressSessionExpired;
+
   return {
-    ...options,
+    ...fetchOptions,
     credentials: 'include'
   };
 }
@@ -51,13 +54,17 @@ async function ensureFreshSession() {
   return refreshRequestPromise;
 }
 
-async function handleExpiredSession() {
-  notifySessionExpired();
+async function handleExpiredSession({ suppressSessionExpired = false } = {}) {
+  if (!suppressSessionExpired) {
+    notifySessionExpired();
+  }
+
   throw createSessionExpiredError();
 }
 
 export async function authorizedFetch(requestUrl, options = {}) {
-  const requestOptions = withCredentials(options);
+  const { suppressSessionExpired = false, ...fetchOptions } = options;
+  const requestOptions = withCredentials(fetchOptions);
   let response = await fetch(requestUrl, requestOptions);
 
   if (response.status !== 401) {
@@ -67,13 +74,13 @@ export async function authorizedFetch(requestUrl, options = {}) {
   try {
     await ensureFreshSession();
   } catch {
-    return handleExpiredSession();
+    return handleExpiredSession({ suppressSessionExpired });
   }
 
   response = await fetch(requestUrl, requestOptions);
 
   if (response.status === 401) {
-    return handleExpiredSession();
+    return handleExpiredSession({ suppressSessionExpired });
   }
 
   return response;

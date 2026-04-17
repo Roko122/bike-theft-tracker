@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { LogIn, UserRound } from 'lucide-react';
 import { loginUser } from '../../api/authApi.js';
+import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 
 export default function LoginPage({ onLoginSuccess, onFirstTime }) {
+  const { t } = useI18n();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
       const user = await loginUser({ username, password });
       onLoginSuccess?.(user);
     } catch (submitError) {
-      setError(submitError.message || 'Kirjautuminen epäonnistui');
+      setError(submitError.message || t('login.error'));
     } finally {
       setLoading(false);
     }
@@ -30,11 +32,9 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
           <UserRound size={20} />
         </div>
         <div className="auth-card__hero-copy">
-          <p className="auth-card__eyebrow">Tervetuloa takaisin</p>
-          <h2 className="auth-card__title">Kirjaudu sisään</h2>
-          <p className="auth-card__subtitle">
-            Hallitse ilmoituksia ja lisää uusia varkauksia kartalle.
-          </p>
+          <p className="auth-card__eyebrow">{t('login.eyebrow')}</p>
+          <h2 className="auth-card__title">{t('login.title')}</h2>
+          <p className="auth-card__subtitle">{t('login.subtitle')}</p>
         </div>
       </div>
 
@@ -42,7 +42,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <label className="auth-field">
-          <span className="auth-field__label">Käyttäjänimi</span>
+          <span className="auth-field__label">{t('login.username')}</span>
           <input
             className="auth-input"
             type="text"
@@ -53,7 +53,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
         </label>
 
         <label className="auth-field">
-          <span className="auth-field__label">Salasana</span>
+          <span className="auth-field__label">{t('login.password')}</span>
           <input
             className="auth-input"
             type="password"
@@ -70,7 +70,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
             disabled={loading}
           >
             <LogIn size={18} />
-            <span>{loading ? 'Kirjaudutaan...' : 'Kirjaudu'}</span>
+            <span>{loading ? t('login.submitting') : t('login.submit')}</span>
           </button>
 
           <button
@@ -78,7 +78,7 @@ export default function LoginPage({ onLoginSuccess, onFirstTime }) {
             className="app-btn app-btn--secondary app-btn--wide"
             onClick={() => onFirstTime?.()}
           >
-            <span>Luo tunnus</span>
+            <span>{t('login.createAccount')}</span>
           </button>
         </div>
       </form>

@@ -2,17 +2,22 @@ import { ArrowLeft, FilePlus2, MapPinned } from 'lucide-react';
 import TheftReportForm from '../../map/ui/TheftReportForm.jsx';
 import SightingReportPage from '../../map/ui/SightingReportPage.jsx';
 import TheftReportDetailsSidebar from '../../map/ui/TheftReportDetailsSidebar.jsx';
+import { useI18n } from '../i18n/LanguageContext.jsx';
 
 function BackButton({ onClick }) {
+  const { t } = useI18n();
+
   return (
     <button type="button" className="app-btn app-btn--ghost" onClick={onClick}>
       <ArrowLeft size={18} />
-      <span>Takaisin</span>
+      <span>{t('sidebar.back')}</span>
     </button>
   );
 }
 
 function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
+  const { t } = useI18n();
+
   return (
     <div className="sidebar-home">
       <div className="sidebar-panel sidebar-panel--hero">
@@ -20,12 +25,9 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
           <MapPinned size={20} />
         </div>
         <div className="sidebar-hero__content">
-          <p className="sidebar-eyebrow">Kartta ja ilmoitukset</p>
-          <h2>Pyörävarkaudet yhdellä näkymällä</h2>
-          <p>
-            Avaa ilmoitus kartalta tai lisää uusi havainto nopeasti nykyiseen
-            sijaintiin.
-          </p>
+          <p className="sidebar-eyebrow">{t('sidebar.eyebrow')}</p>
+          <h2>{t('sidebar.title')}</h2>
+          <p>{t('sidebar.subtitle')}</p>
         </div>
       </div>
 
@@ -36,18 +38,18 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
           onClick={onOpenForm}
         >
           <FilePlus2 size={18} />
-          <span>Uusi varkausilmoitus</span>
+          <span>{t('sidebar.newTheftReport')}</span>
         </button>
 
         {!currentUser && (
           <p className="sidebar-note">
-            Ilmoituksen lähettäminen vaatii kirjautumisen.
+            {t('sidebar.loginRequired')}
             <button
               type="button"
               className="app-inline-link"
               onClick={onOpenLogin}
             >
-              Kirjaudu sisään
+              {t('sidebar.login')}
             </button>
           </p>
         )}
@@ -71,7 +73,9 @@ export default function AppSidebar({
   onStartPickFromMap,
   onStopPickFromMap,
   onClearPickedLocation,
+  onLocationSelected,
   onReportCreated,
+  onSightingCreated,
   onReportDetailsClose
 }) {
   return (
@@ -90,6 +94,7 @@ export default function AppSidebar({
               onStartPickFromMap={onStartPickFromMap}
               onStopPickFromMap={onStopPickFromMap}
               onClearPickedLocation={onClearPickedLocation}
+              onCreated={onSightingCreated}
             />
           </>
         )}
@@ -111,6 +116,7 @@ export default function AppSidebar({
               onStartPickFromMap={onStartPickFromMap}
               onStopPickFromMap={onStopPickFromMap}
               onClearPickedLocation={onClearPickedLocation}
+              onLocationSelected={onLocationSelected}
               onCreated={onReportCreated}
             />
           </>

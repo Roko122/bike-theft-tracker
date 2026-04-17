@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
+import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import {
   formatReportDate,
   getReportFieldLabel,
@@ -28,6 +29,7 @@ function createReportMarkerIcon(status) {
 }
 
 function TheftPopup({ report, onSelect }) {
+  const { language, t } = useI18n();
   const title = [report.brand, report.model].filter(Boolean).join(' ');
 
   return (
@@ -35,8 +37,8 @@ function TheftPopup({ report, onSelect }) {
       <div className="popup-card">
         <div className="popup-card__header">
           <div>
-            <div className="popup-card__eyebrow">Varkausilmoitus</div>
-            <div className="popup-card__title">{title || 'Tuntematon pyörä'}</div>
+            <div className="popup-card__eyebrow">{t('popup.eyebrow')}</div>
+            <div className="popup-card__title">{title || t('popup.unknownBike')}</div>
           </div>
           <div className="popup-card__meta">#{report.id}</div>
         </div>
@@ -53,11 +55,11 @@ function TheftPopup({ report, onSelect }) {
             .map(([key, value]) => (
               <div key={key} className="popup-card__row">
                 <div className="popup-card__label">
-                  {getReportFieldLabel(key)}
+                  {getReportFieldLabel(key, language)}
                 </div>
                 <div className="popup-card__value">
                   {key === 'theftTime'
-                    ? formatReportDate(value)
+                    ? formatReportDate(value, language)
                     : renderReportValue(value)}
                 </div>
               </div>
@@ -70,7 +72,7 @@ function TheftPopup({ report, onSelect }) {
             className="app-btn app-btn--primary popup-card__action"
             onClick={() => onSelect?.(report.id)}
           >
-            Avaa ilmoitus
+            {t('popup.open')}
           </button>
         </div>
       </div>
