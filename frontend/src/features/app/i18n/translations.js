@@ -26,7 +26,8 @@ export const translations = {
       back: 'Takaisin',
       eyebrow: 'Kartta ja ilmoitukset',
       title: 'Pyörävarkaudet yhdellä näkymällä',
-      subtitle: 'Avaa ilmoitus kartalta tai lisää uusi havainto nopeasti nykyiseen sijaintiin.',
+      subtitle:
+        'Avaa ilmoitus kartalta tai lisää uusi havainto nopeasti nykyiseen sijaintiin.',
       newTheftReport: 'Uusi varkausilmoitus',
       loginRequired: 'Ilmoituksen lähettäminen vaatii kirjautumisen.',
       login: 'Kirjaudu sisään'
@@ -50,7 +51,8 @@ export const translations = {
     register: {
       eyebrow: 'Uusi käyttäjä',
       title: 'Luo tunnus',
-      subtitle: 'Rekisteröidy, jotta voit lisätä omia ilmoituksia ja hallita niitä.',
+      subtitle:
+        'Rekisteröidy, jotta voit lisätä omia ilmoituksia ja hallita niitä.',
       username: 'Käyttäjätunnus',
       email: 'Sähköposti',
       password: 'Salasana',
@@ -69,20 +71,25 @@ export const translations = {
     theftForm: {
       eyebrow: 'Uusi ilmoitus',
       title: 'Varkausilmoitus',
-      subtitle: 'Lisää pyörän tiedot, tapahtuma-aika ja sijainti mahdollisimman tarkasti.',
+      subtitle:
+        'Lisää pyörän tiedot, tapahtuma-aika ja sijainti mahdollisimman tarkasti.',
+      requiredLegend: '* Pakollinen tieto',
       description: 'Kuvaus',
-      descriptionPlaceholder: 'Pyörä varastettiin kaupan edestä lukittuna noin klo 14.00-14.30.',
+      descriptionPlaceholder:
+        'Esim. Pyörä varastettiin kaupan edestä lukittuna noin klo 14.00-14.30.',
       theftTime: 'Tapahtuma-aika',
       theftTimePlaceholder: 'Valitse päivä',
       theftAddress: 'Osoite',
-      theftAddressPlaceholder: 'Kauppakatu 29',
+      theftAddressPlaceholder: 'Esim. Kauppakatu 29',
       location: 'Sijainti',
       bikeSection: 'Pyörän tiedot',
-      bikeDescription: 'Lisäkuvaus pyörästä',
-      bikeDescriptionPlaceholder: 'Ruosteinen mutta hyvässä kunnossa. Etukori, tarakka ja harmaat renkaat.',
+      bikeDescription: 'Lisää kuvaus pyörästä',
+      bikeDescriptionPlaceholder:
+        'Esim. Ruosteinen mutta hyvässä kunnossa. Etukori, tarakka ja harmaat renkaat.',
       images: 'Kuvat',
       addImages: 'Lisää kuvia pyörästä',
-      imagesHint: 'PNG, JPG tai JPEG. Voit lisätä enintään 5 kuvaa.',
+      imagesHint:
+        'Voit lisätä enintään 5 kuvaa. PNG, JPG tai JPEG. Max 5 MB/kuva.',
       submit: 'Lähetä ilmoitus',
       submitting: 'Lähetetään...',
       useMyLocation: 'Käytä omaa sijaintia',
@@ -90,39 +97,52 @@ export const translations = {
       clearLocation: 'Tyhjennä sijainti',
       myLocation: 'Oma sijainti',
       selectedOnMap: 'Valittu kartalta',
-      selectLocationHint: 'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
+      selectLocationHint:
+        'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
       tooltips: {
-        description: 'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.',
+        description:
+          'Kuvaile mahdollisimman tarkasti, mitä tapahtui ja miten varkaus havaittiin.',
         theftTime: 'Valitse päivä ja aika, jolloin varkaus tapahtui.',
         theftAddress: 'Anna lähin osoite, jossa varkaus tapahtui.',
-        location: 'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.',
+        location:
+          'Valitse sijainti käyttämällä omaa sijaintiasi tai valitsemalla paikka kartalta.',
         bike: 'Täytä pyörän tiedot mahdollisimman tarkasti.',
-        bikeDescription: 'Kerro pyörän tuntomerkit, lisävarusteet, tarrat, korit, vauriot tai muut tunnistamista helpottavat tiedot.'
+        bikeDescription:
+          'Kerro pyörän tuntomerkit, lisävarusteet, tarrat, korit, vauriot tai muut tunnistamista helpottavat tiedot.'
       },
       bikeFields: {
-        brand: { label: 'Merkki', placeholder: 'Helkama' },
-        model: { label: 'Malli', placeholder: 'Trail 7' },
-        type: { label: 'Tyyppi', placeholder: 'Maastopyörä' },
-        color: { label: 'Väri', placeholder: 'Sininen' },
-        serialNumber: { label: 'Sarjanumero', placeholder: '123456789' }
+        brand: { label: 'Merkki', placeholder: 'Esim. Helkama' },
+        model: { label: 'Malli', placeholder: 'Esim. Trail 7' },
+        type: { label: 'Tyyppi', placeholder: 'Esim. Maastopyörä' },
+        color: { label: 'Väri', placeholder: 'Esim. Sininen' },
+        serialNumber: { label: 'Sarjanumero', placeholder: 'Esim. 123456789' }
       },
       errors: {
         descriptionRequired: 'Kuvaus on pakollinen.',
+        brandRequired: 'Pyörän merkki on pakollinen.',
+        modelRequired: 'Pyörän malli on pakollinen.',
+        typeRequired: 'Pyörän tyyppi on pakollinen.',
+        colorRequired: 'Pyörän väri on pakollinen.',
+        bikeDescriptionRequired: 'Pyörän kuvaus on pakollinen.',
         theftTimeRequired: 'Varkauden aika on pakollinen.',
         locationMissing: 'Sijainti puuttuu. Valitse oma sijainti tai kartalta.',
-        invalidLocation: 'Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).',
+        invalidLocation:
+          'Sijainti ei ole kelvollinen (latitude/longitude rajojen ulkopuolella).',
         tooManyImages: 'Voit lisätä enintään 5 kuvaa.',
         saveFailed: 'Tallennus epäonnistui.',
-        geolocationUnsupported: 'Selaimesi ei tue sijainnin hakua (geolocation).',
-        geolocationFailed: 'Sijainnin haku epäonnistui. Tarkista selaimen luvat.'
+        geolocationUnsupported: 'Selaimesi ei tue sijainnin hakua.',
+        geolocationFailed:
+          'Sijainnin haku epäonnistui. Tarkista selaimen luvat.'
       }
     },
     sighting: {
       eyebrow: 'Uusi havainto',
       title: 'Havaintoilmoitus',
-      subtitle: 'Kirjaa missä pyörä havaittiin ja lisää kuva, jos sellainen on.',
+      subtitle:
+        'Kirjaa missä pyörä havaittiin ja lisää kuva, jos sellainen on.',
       whatDidYouSee: 'Mitä havaitsit?',
-      descriptionPlaceholder: 'Kuvaile mahdollisimman tarkasti mitä näit, milloin ja missä tilanteessa.',
+      descriptionPlaceholder:
+        'Kuvaile mahdollisimman tarkasti mitä näit, milloin ja missä tilanteessa.',
       image: 'Kuva',
       chooseImage: 'Valitse kuva',
       imageHint: 'Enintään 1 kuva. PNG, JPG tai JPEG. Maksimikoko 5 MB.',
@@ -132,11 +152,13 @@ export const translations = {
       clearLocation: 'Tyhjennä sijainti',
       myLocation: 'Oma sijainti',
       selectedOnMap: 'Valittu kartalta',
-      selectLocationHint: 'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
+      selectLocationHint:
+        'Valitse sijainti käyttämällä omaa sijaintia tai karttaa.',
       submit: 'Lähetä havaintoilmoitus',
       submitting: 'Tallennetaan...',
       errors: {
-        missingReportId: 'Valitun ilmoituksen tunniste puuttuu. Avaa havainto ilmoituksen kautta.',
+        missingReportId:
+          'Valitun ilmoituksen tunniste puuttuu. Avaa havainto ilmoituksen kautta.',
         descriptionRequired: 'Kuvaus on pakollinen.',
         locationMissing: 'Sijainti puuttuu. Valitse oma sijainti tai kartalta.',
         invalidLocation: 'Sijainti ei ole kelvollinen.',
@@ -177,7 +199,8 @@ export const translations = {
       sighting: {
         label: 'Havainto',
         button: 'Tee havaintoilmoitus',
-        tooltip: 'Jos olet nähnyt pyörän tai tiedät siitä jotain, voit tehdä havaintoilmoituksen tämän painikkeen kautta.',
+        tooltip:
+          'Jos olet nähnyt pyörän tai tiedät siitä jotain, voit tehdä havaintoilmoituksen tämän painikkeen kautta.',
         tooltipAria: 'Lisätietoa havaintoilmoituksesta'
       }
     },
@@ -237,7 +260,8 @@ export const translations = {
       back: 'Back',
       eyebrow: 'Map and reports',
       title: 'Bike thefts in one view',
-      subtitle: 'Open a report from the map or add a new sighting quickly for the current area.',
+      subtitle:
+        'Open a report from the map or add a new sighting quickly for the current area.',
       newTheftReport: 'New theft report',
       loginRequired: 'Submitting a report requires signing in.',
       login: 'Sign in'
@@ -280,20 +304,24 @@ export const translations = {
     theftForm: {
       eyebrow: 'New report',
       title: 'Theft report',
-      subtitle: 'Add the bike details, time of the incident and location as accurately as possible.',
+      subtitle:
+        'Add the bike details, time of the incident and location as accurately as possible.',
+      requiredLegend: '* Required field',
       description: 'Description',
-      descriptionPlaceholder: 'The bike was stolen from in front of a store while locked between 14:00 and 14:30.',
+      descriptionPlaceholder:
+        'E.g. The bike was stolen from in front of a store while locked between 14:00 and 14:30.',
       theftTime: 'Time of incident',
       theftTimePlaceholder: 'Select date',
       theftAddress: 'Address',
-      theftAddressPlaceholder: 'Main Street 29',
+      theftAddressPlaceholder: 'E.g. Main Street 29',
       location: 'Location',
       bikeSection: 'Bike details',
       bikeDescription: 'Additional bike details',
-      bikeDescriptionPlaceholder: 'Rusty but in good condition. Front basket, rack and grey tires.',
+      bikeDescriptionPlaceholder:
+        'E.g. Rusty but in good condition. Front basket, rack and grey tires.',
       images: 'Images',
       addImages: 'Add bike images',
-      imagesHint: 'PNG, JPG or JPEG. You can add up to 5 images.',
+      imagesHint: 'You can add up to 5 images. PNG, JPG or JPEG. Max 5 MB/image',
       submit: 'Submit report',
       submitting: 'Submitting...',
       useMyLocation: 'Use my location',
@@ -301,27 +329,38 @@ export const translations = {
       clearLocation: 'Clear location',
       myLocation: 'My location',
       selectedOnMap: 'Selected on map',
-      selectLocationHint: 'Choose a location using your own location or the map.',
+      selectLocationHint:
+        'Choose a location using your own location or the map.',
       tooltips: {
-        description: 'Describe as accurately as possible what happened and how the theft was noticed.',
+        description:
+          'Describe as accurately as possible what happened and how the theft was noticed.',
         theftTime: 'Choose the date and time when the theft happened.',
         theftAddress: 'Enter the nearest address where the theft happened.',
-        location: 'Choose a location using your own position or by selecting a place on the map.',
+        location:
+          'Choose a location using your own position or by selecting a place on the map.',
         bike: 'Fill in the bike details as accurately as possible.',
-        bikeDescription: 'Describe distinctive marks, accessories, stickers, baskets, damage or other details that help identify the bike.'
+        bikeDescription:
+          'Describe distinctive marks, accessories, stickers, baskets, damage or other details that help identify the bike.'
       },
       bikeFields: {
-        brand: { label: 'Brand', placeholder: 'Trek' },
-        model: { label: 'Model', placeholder: 'Trail 7' },
-        type: { label: 'Type', placeholder: 'Mountain bike' },
-        color: { label: 'Color', placeholder: 'Blue' },
-        serialNumber: { label: 'Serial number', placeholder: '123456789' }
+        brand: { label: 'Brand', placeholder: 'E.g. Trek' },
+        model: { label: 'Model', placeholder: 'E.g. Trail 7' },
+        type: { label: 'Type', placeholder: 'E.g. Mountain bike' },
+        color: { label: 'Color', placeholder: 'E.g. Blue' },
+        serialNumber: { label: 'Serial number', placeholder: 'E.g. 123456789' }
       },
       errors: {
         descriptionRequired: 'Description is required.',
+        brandRequired: 'Bike brand is required.',
+        modelRequired: 'Bike model is required.',
+        typeRequired: 'Bike type is required.',
+        colorRequired: 'Bike color is required.',
+        bikeDescriptionRequired: 'Additional bike details are required.',
         theftTimeRequired: 'The time of theft is required.',
-        locationMissing: 'Location is missing. Choose your location or pick from the map.',
-        invalidLocation: 'The location is not valid (latitude/longitude out of range).',
+        locationMissing:
+          'Location is missing. Choose your location or pick from the map.',
+        invalidLocation:
+          'The location is not valid (latitude/longitude out of range).',
         tooManyImages: 'You can add up to 5 images.',
         saveFailed: 'Saving failed.',
         geolocationUnsupported: 'Your browser does not support geolocation.',
@@ -333,7 +372,8 @@ export const translations = {
       title: 'Sighting report',
       subtitle: 'Record where the bike was seen and add an image if available.',
       whatDidYouSee: 'What did you observe?',
-      descriptionPlaceholder: 'Describe as accurately as possible what you saw, when, and in what situation.',
+      descriptionPlaceholder:
+        'Describe as accurately as possible what you saw, when, and in what situation.',
       image: 'Image',
       chooseImage: 'Choose image',
       imageHint: 'At most 1 image. PNG, JPG or JPEG. Max size 5 MB.',
@@ -343,13 +383,16 @@ export const translations = {
       clearLocation: 'Clear location',
       myLocation: 'My location',
       selectedOnMap: 'Selected on map',
-      selectLocationHint: 'Choose a location using your own location or the map.',
+      selectLocationHint:
+        'Choose a location using your own location or the map.',
       submit: 'Submit sighting report',
       submitting: 'Saving...',
       errors: {
-        missingReportId: 'The selected report id is missing. Open the sighting form from a report.',
+        missingReportId:
+          'The selected report id is missing. Open the sighting form from a report.',
         descriptionRequired: 'Description is required.',
-        locationMissing: 'Location is missing. Choose your location or pick from the map.',
+        locationMissing:
+          'Location is missing. Choose your location or pick from the map.',
         invalidLocation: 'The location is not valid.',
         imageTooLarge: 'The maximum image size is 5 MB.',
         saveFailed: 'Saving the sighting report failed.',
@@ -388,7 +431,8 @@ export const translations = {
       sighting: {
         label: 'Sighting',
         button: 'Create sighting report',
-        tooltip: 'If you have seen the bike or know something about it, you can create a sighting report with this button.',
+        tooltip:
+          'If you have seen the bike or know something about it, you can create a sighting report with this button.',
         tooltipAria: 'More information about sighting reports'
       }
     },

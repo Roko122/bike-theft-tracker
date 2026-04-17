@@ -20,7 +20,15 @@ export default function BikeDetailsSection({ values, onChange }) {
       <div className="report-grid">
         {bikeFields.map((field) => (
           <label key={field.name} className="report-field">
-            <span className="report-field__label">{field.label}</span>
+            <span className="report-field__label">
+              {field.label}
+              {field.required && (
+                <span className="required-indicator" aria-hidden="true">
+                  {' '}
+                  *
+                </span>
+              )}
+            </span>
             <input
               className="report-input"
               placeholder={field.placeholder}
@@ -37,6 +45,7 @@ export default function BikeDetailsSection({ values, onChange }) {
             label={t('theftForm.bikeDescription')}
             tooltipId="tooltip-bike-description"
             tooltipText={formTooltips.bikeDescription}
+            required
           />
         </span>
         <textarea

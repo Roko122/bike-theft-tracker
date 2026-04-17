@@ -22,6 +22,7 @@ export default function LocationSection({
           label={t('theftForm.location')}
           tooltipId="tooltip-location"
           tooltipText={formTooltips.location}
+          required
         />
       </div>
 

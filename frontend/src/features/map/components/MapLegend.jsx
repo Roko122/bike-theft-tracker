@@ -28,7 +28,11 @@ export default function MapLegend() {
               className="map-legend__swatch"
               style={{ '--legend-color': item.color }}
               aria-hidden="true"
-            />
+            >
+              <span className="report-marker__pin" style={{ '--marker-color': item.color }}>
+                <span className="report-marker__dot"></span>
+              </span>
+            </span>
             <span className="map-legend__label">
               {t(`details.status.${item.status}`) || item.label}
             </span>

@@ -17,6 +17,7 @@ function BackButton({ onClick }) {
 
 function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
   const { t } = useI18n();
+  const canCreateReport = Boolean(currentUser);
 
   return (
     <div className="sidebar-home">
@@ -35,6 +36,7 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
         <button
           type="button"
           className="app-btn app-btn--primary app-btn--wide"
+          disabled={!canCreateReport}
           onClick={onOpenForm}
         >
           <FilePlus2 size={18} />
