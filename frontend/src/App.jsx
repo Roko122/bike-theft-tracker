@@ -1,13 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Bike,
-  BookText,
-  Github,
-  LogIn,
-  LogOut,
-  Menu,
-  X
-} from 'lucide-react';
+import { Bike, BookText, Github, LogIn, LogOut, Menu, X } from 'lucide-react';
 import MapPage from './features/map/MapPage.jsx';
 import AppSidebar from './features/app/ui/AppSidebar.jsx';
 import AuthDialog from './features/app/ui/AuthDialog.jsx';
@@ -202,6 +194,10 @@ function AppContent() {
             selectedLocation={viewState.selectedLocation}
             showForm={viewState.showForm}
             showSighting={viewState.showSighting}
+            showMyReports={viewState.showMyReports}
+            onOpenMyReports={viewState.openMyReports}
+            onCloseMyReports={viewState.openBaseMenu}
+            onSelectMyReport={viewState.showReportDetails}
             onCloseMenu={viewState.openBaseMenu}
             onOpenForm={viewState.openForm}
             onCloseForm={viewState.closeForm}

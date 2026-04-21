@@ -6,7 +6,8 @@ const PANEL = {
   LOGIN: 'login',
   REGISTER: 'register',
   DETAILS: 'details',
-  SIGHTING: 'sighting'
+  SIGHTING: 'sighting',
+  MY_REPORTS: 'my_reports'
 };
 
 const ACTION = {
@@ -27,7 +28,8 @@ const ACTION = {
   STOP_MAP_PICKING: 'stop_map_picking',
   SELECT_LOCATION: 'select_location',
   RESET_AFTER_SUBMIT: 'reset_after_submit',
-  SESSION_EXPIRED: 'session_expired'
+  SESSION_EXPIRED: 'session_expired',
+  OPEN_MY_REPORTS: 'open_my_reports'
 };
 
 const initialState = {
@@ -134,6 +136,16 @@ function appViewReducer(state, action) {
         activePanel: PANEL.SIGHTING,
         selectedReportId: action.payload.reportId,
         isPickingLocation: false
+      };
+
+    case ACTION.OPEN_MY_REPORTS:
+      return {
+        ...state,
+        isMenuOpen: true,
+        activePanel: PANEL.MY_REPORTS,
+        selectedReportId: null,
+        isPickingLocation: false,
+        selectedLocation: null
       };
 
     case ACTION.CLOSE_SIGHTING:
@@ -247,6 +259,10 @@ export function useAppViewState() {
     });
   }, []);
 
+  const openMyReports = useCallback(() => {
+    dispatch({ type: ACTION.OPEN_MY_REPORTS });
+  }, []);
+
   const closeSighting = useCallback(() => {
     dispatch({ type: ACTION.CLOSE_SIGHTING });
   }, []);
@@ -281,7 +297,8 @@ export function useAppViewState() {
       showLogin: state.activePanel === PANEL.LOGIN,
       showRegister: state.activePanel === PANEL.REGISTER,
       showDetails: state.activePanel === PANEL.DETAILS,
-      showSighting: state.activePanel === PANEL.SIGHTING
+      showSighting: state.activePanel === PANEL.SIGHTING,
+      showMyReports: state.activePanel === PANEL.MY_REPORTS
     }),
     [state]
   );
@@ -306,6 +323,7 @@ export function useAppViewState() {
     stopMapPicking,
     selectLocation,
     resetAfterSubmit,
-    handleSessionExpired
+    handleSessionExpired,
+    openMyReports
   };
 }
