@@ -1,8 +1,9 @@
-import { ArrowLeft, FilePlus2, MapPinned } from 'lucide-react';
+import { ArrowLeft, FilePlus2, MapPinned, FolderOpen } from 'lucide-react';
 import TheftReportForm from '../../map/ui/TheftReportForm.jsx';
 import SightingReportPage from '../../map/ui/SightingReportPage.jsx';
 import TheftReportDetailsSidebar from '../../map/ui/TheftReportDetailsSidebar.jsx';
 import { useI18n } from '../i18n/LanguageContext.jsx';
+import MyTheftReportsSidebar from '../../map/ui/MyTheftReportsSidebar.jsx';
 
 function BackButton({ onClick }) {
   const { t } = useI18n();
@@ -15,7 +16,7 @@ function BackButton({ onClick }) {
   );
 }
 
-function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
+function BaseMenu({ currentUser, onOpenForm, onOpenLogin, onOpenMyReports }) {
   const { t } = useI18n();
   const canCreateReport = Boolean(currentUser);
 
@@ -35,12 +36,12 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin }) {
       <div className="sidebar-panel">
         <button
           type="button"
-          className="app-btn app-btn--primary app-btn--wide"
-          disabled={!canCreateReport}
-          onClick={onOpenForm}
+          className="app-btn app-btn--secondary app-btn--wide"
+          onClick={onOpenMyReports}
+          style={{ marginTop: '10px' }}
         >
-          <FilePlus2 size={18} />
-          <span>{t('sidebar.newTheftReport')}</span>
+          <FolderOpen size={18} />
+          <span>Omat ilmoitukset</span>
         </button>
 
         {!currentUser && (
@@ -78,7 +79,11 @@ export default function AppSidebar({
   onLocationSelected,
   onReportCreated,
   onSightingCreated,
-  onReportDetailsClose
+  onReportDetailsClose,
+  showMyReports,
+  onOpenMyReports,
+  onCloseMyReports,
+  onSelectMyReport
 }) {
   return (
     <div className="map-menu" onClick={onCloseMenu}>
@@ -124,11 +129,19 @@ export default function AppSidebar({
           </>
         )}
 
-        {!showForm && !selectedReportId && !showSighting && (
+        {showMyReports && !showForm && !selectedReportId && !showSighting && (
+          <>
+            <BackButton onClick={onCloseMyReports} />
+            <MyTheftReportsSidebar onSelectReport={onSelectMyReport} />
+          </>
+        )}
+
+        {!showForm && !selectedReportId && !showSighting && !showMyReports && (
           <BaseMenu
             currentUser={currentUser}
             onOpenForm={onOpenForm}
             onOpenLogin={onOpenLogin}
+            onOpenMyReports={onOpenMyReports}
           />
         )}
       </div>
