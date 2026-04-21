@@ -283,22 +283,20 @@ function buildHtml(contentHtml, sections, pageTitle) {
 
       .docs-layout {
         display: grid;
-        grid-template-columns: 260px minmax(0, 1fr) 220px;
+        grid-template-columns: 260px minmax(0, 1fr);
         gap: 24px;
         max-width: 1440px;
         margin: 0 auto;
         padding: 24px 16px 64px;
       }
 
-      .sidebar,
-      .toc {
+      .sidebar {
         position: sticky;
         top: 72px;
         align-self: start;
       }
 
-      .sidebar__title,
-      .toc__title {
+      .sidebar__title {
         margin: 0 0 10px;
         font-size: 12px;
         font-weight: 600;
@@ -307,20 +305,17 @@ function buildHtml(contentHtml, sections, pageTitle) {
         color: var(--muted);
       }
 
-      .sidebar ul,
-      .toc ul {
+      .sidebar ul {
         margin: 0;
         padding: 0;
         list-style: none;
       }
 
-      .sidebar li,
-      .toc li {
+      .sidebar li {
         margin: 0;
       }
 
-      .sidebar a,
-      .toc a {
+      .sidebar a {
         display: block;
         padding: 6px 0;
         color: var(--muted);
@@ -328,8 +323,7 @@ function buildHtml(contentHtml, sections, pageTitle) {
         text-decoration: none;
       }
 
-      .sidebar a:hover,
-      .toc a:hover {
+      .sidebar a:hover {
         color: var(--foreground);
       }
 
@@ -414,16 +408,6 @@ function buildHtml(contentHtml, sections, pageTitle) {
         font-size: 12px;
       }
 
-      @media (max-width: 1100px) {
-        .docs-layout {
-          grid-template-columns: 240px minmax(0, 1fr);
-        }
-
-        .toc {
-          display: none;
-        }
-      }
-
       @media (max-width: 820px) {
         .docs-layout {
           display: block;
@@ -454,12 +438,6 @@ ${sectionLinks}
       <main class="content">
 ${contentHtml}
       </main>
-      <aside class="toc">
-        <p class="toc__title">On this page</p>
-        <ul>
-${sectionLinks}
-        </ul>
-      </aside>
     </div>
   </body>
 </html>
