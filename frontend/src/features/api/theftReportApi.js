@@ -167,3 +167,19 @@ export async function createSightingForReport(reportId, payload, image = null) {
   return parseJsonOrThrow(res);
 }
 //Käytetty tekoäly ongrlmirn takia...
+
+/**
+ * Hakee kirjautuneen käyttäjän omat varkausilmoitukset.
+ * GET /api/v1/theft-reports/me
+ */
+export async function getMyTheftReports({ signal } = {}) {
+  const res = await authorizedFetch(buildUrl('/me'), {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json'
+    },
+    signal
+  });
+
+  return parseJsonOrThrow(res);
+}
