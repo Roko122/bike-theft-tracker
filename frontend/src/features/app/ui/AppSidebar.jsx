@@ -34,16 +34,31 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin, onOpenMyReports }) {
       </div>
 
       <div className="sidebar-panel">
+        {/* 🔹 VANHA nappi palautettu */}
         <button
           type="button"
-          className="app-btn app-btn--secondary app-btn--wide"
-          onClick={onOpenMyReports}
-          style={{ marginTop: '10px' }}
+          className="app-btn app-btn--primary app-btn--wide"
+          disabled={!canCreateReport}
+          onClick={onOpenForm}
         >
-          <FolderOpen size={18} />
-          <span>Omat ilmoitukset</span>
+          <FilePlus2 size={18} />
+          <span>{t('sidebar.newTheftReport')}</span>
         </button>
 
+        {/* 🔹 UUSI nappi */}
+        {currentUser && (
+          <button
+            type="button"
+            className="app-btn app-btn--secondary app-btn--wide"
+            onClick={onOpenMyReports}
+            style={{ marginTop: '10px' }}
+          >
+            <FolderOpen size={18} />
+            <span>Omat ilmoitukset</span>
+          </button>
+        )}
+
+        {/* 🔹 Login huomautus */}
         {!currentUser && (
           <p className="sidebar-note">
             {t('sidebar.loginRequired')}
@@ -60,7 +75,6 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin, onOpenMyReports }) {
     </div>
   );
 }
-
 export default function AppSidebar({
   currentUser,
   selectedReportId,
