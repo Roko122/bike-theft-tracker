@@ -421,6 +421,15 @@ function buildHtml(contentHtml, sections, pageTitle) {
           border-bottom: 1px solid var(--border);
         }
       }
+
+      .docs-footer {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 0 16px 18px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: color-mix(in srgb, var(--muted) 72%, white);
+      }
     </style>
   </head>
   <body>
@@ -439,6 +448,7 @@ ${sectionLinks}
 ${contentHtml}
       </main>
     </div>
+    <footer class="docs-footer">Tekoälyä hyödynnetty dokumentoinnissa</footer>
   </body>
 </html>
 `;
