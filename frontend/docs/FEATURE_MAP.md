@@ -1,9 +1,5 @@
 # Bike Theft Tracker - Feature to File Map (Frontend + Backend)
 
-Tämän dokumentin tarkoitus:
-- Näyttää nopeasti, missä tiedostossa kukin ominaisuus on.
-- Kuvata rakenne tiedosto- ja moduulitasolla (ei metodi/funktio -tasolla).
-
 ## 1) Käynnistys ja sovelluksen runko
 
 | Ominaisuus | Tiedostot |
@@ -160,14 +156,7 @@ Tämän dokumentin tarkoitus:
 | Repository-testit | `../backend/src/test/java/com/rkrs/bikethefttracker/repository/*` |
 | Mapper- ja entity-testit | `../backend/src/test/java/com/rkrs/bikethefttracker/mapper/*`, `../backend/src/test/java/com/rkrs/bikethefttracker/entity/*` |
 
-## 17) Muut kansiot juuritasolla (ei osa tätä appia)
-
-| Kansio | Huomio |
-| --- | --- |
-| `../hjs_week2` | Erillinen Maven-projekti (oma `.git`) |
-| `../week1_tjs` | Erillinen Maven-projekti (oma `.git`) |
-
-## 18) Projektin docs-kuvat juuritasolla
+## 17) Projektin docs-kuvat juuritasolla
 
 | Ominaisuus | Tiedostot |
 | --- | --- |
