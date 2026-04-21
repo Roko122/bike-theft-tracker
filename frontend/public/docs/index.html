@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bike Theft Tracker - Feature to File Map (Frontend + Backend) - Bike Theft Tracker</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #ffffff;
+        --foreground: #09090b;
+        --muted: #71717a;
+        --border: #e4e4e7;
+        --muted-bg: #fafafa;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: var(--background);
+        color: var(--foreground);
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        height: 56px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--background) 90%, white);
+        backdrop-filter: blur(8px);
+      }
+
+      .site-header__brand {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .docs-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr) 220px;
+        gap: 24px;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+      }
+
+      .sidebar,
+      .toc {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+      }
+
+      .sidebar__title,
+      .toc__title {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .sidebar ul,
+      .toc ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .sidebar li,
+      .toc li {
+        margin: 0;
+      }
+
+      .sidebar a,
+      .toc a {
+        display: block;
+        padding: 6px 0;
+        color: var(--muted);
+        font-size: 14px;
+        text-decoration: none;
+      }
+
+      .sidebar a:hover,
+      .toc a:hover {
+        color: var(--foreground);
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: 34px;
+        line-height: 1.2;
+      }
+
+      .content {
+        min-width: 0;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 22px;
+        line-height: 1.3;
+      }
+
+      h2 a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .doc-section {
+        padding: 20px 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .doc-section:first-of-type {
+        margin-top: 8px;
+      }
+
+      p,
+      ul {
+        margin: 0 0 16px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .table-wrap {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 10px 12px;
+        border-top: 1px solid var(--border);
+      }
+
+      th {
+        border-top: 0;
+        color: var(--foreground);
+        background: var(--muted-bg);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        background: var(--muted-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1px 6px;
+        color: var(--foreground);
+        font-size: 12px;
+      }
+
+      @media (max-width: 1100px) {
+        .docs-layout {
+          grid-template-columns: 240px minmax(0, 1fr);
+        }
+
+        .toc {
+          display: none;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .docs-layout {
+          display: block;
+          padding-top: 16px;
+        }
+
+        .sidebar {
+          position: static;
+          margin-bottom: 20px;
+          padding-bottom: 14px;
+          border-bottom: 1px solid var(--border);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__brand">Bike Theft Tracker Docs</div>
+    </header>
+    <div class="docs-layout">
+      <aside class="sidebar">
+        <p class="sidebar__title">Sections</p>
+        <ul>
+          <li><a href="#top">Overview</a></li>
+            <li><a href="#1-kaynnistys-ja-sovelluksen-runko">1) Käynnistys ja sovelluksen runko</a></li>
+            <li><a href="#2-navigointi-ja-nakyman-tila">2) Navigointi ja näkymän tila</a></li>
+            <li><a href="#3-auth-ja-sessio">3) Auth ja sessio</a></li>
+            <li><a href="#4-kieli-ja-kaannokset-fien">4) Kieli ja käännökset (FI/EN)</a></li>
+            <li><a href="#5-kartta-markerit-ja-map-kayttoliittyma">5) Kartta, markerit ja map-käyttöliittymä</a></li>
+            <li><a href="#6-varkausilmoitus-create">6) Varkausilmoitus (create)</a></li>
+            <li><a href="#7-ilmoituksen-tiedot-ja-havainnot">7) Ilmoituksen tiedot ja havainnot</a></li>
+            <li><a href="#8-api-kerros">8) API-kerros</a></li>
+            <li><a href="#9-testit">9) Testit</a></li>
+            <li><a href="#10-dokumentaatio-uissa">10) Dokumentaatio UI:ssa</a></li>
+            <li><a href="#11-backend-kaynnistys-ja-ymparisto">11) Backend - käynnistys ja ympäristö</a></li>
+            <li><a href="#12-backend-api-controllerit-ja-dtot">12) Backend - API, controllerit ja DTO:t</a></li>
+            <li><a href="#13-backend-domain-data-ja-mappaus">13) Backend - domain, data ja mappaus</a></li>
+            <li><a href="#14-backend-security-auth-ja-infra">14) Backend - security, auth ja infra</a></li>
+            <li><a href="#15-backend-kuvat-ja-tiedostot">15) Backend - kuvat ja tiedostot</a></li>
+            <li><a href="#16-backend-testit">16) Backend-testit</a></li>
+            <li><a href="#17-muut-kansiot-juuritasolla-ei-osa-tata-appia">17) Muut kansiot juuritasolla (ei osa tätä appia)</a></li>
+            <li><a href="#18-projektin-docs-kuvat-juuritasolla">18) Projektin docs-kuvat juuritasolla</a></li>
+        </ul>
+      </aside>
+      <main class="content">
+      <h1 id="top">Bike Theft Tracker - Feature to File Map (Frontend + Backend)</h1>
+      <p>Tämän dokumentin tarkoitus:</p>
+      <ul>
+        <li>Näyttää nopeasti, missä tiedostossa kukin ominaisuus on.</li>
+        <li>Kuvata rakenne tiedosto- ja moduulitasolla (ei metodi/funktio -tasolla).</li>
+      </ul>
+      <section id="1-kaynnistys-ja-sovelluksen-runko" class="doc-section">
+        <h2><a href="#1-kaynnistys-ja-sovelluksen-runko">1) Käynnistys ja sovelluksen runko</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>React-käynnistys, globaalit CSS-importit</td>
+              <td><code>src/main.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Sovelluksen päänäkymä, header, footer, flash-viestit</td>
+              <td><code>src/App.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Sovelluksen yleiset tyylit</td>
+              <td><code>src/styles.css</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="2-navigointi-ja-nakyman-tila" class="doc-section">
+        <h2><a href="#2-navigointi-ja-nakyman-tila">2) Navigointi ja näkymän tila</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sidebarin, lomakkeiden, kirjautumismodaalin ja yksityiskohtanäkymän tilakone</td>
+              <td><code>src/features/app/hooks/useAppViewState.js</code></td>
+            </tr>
+            <tr>
+              <td>Sidebarin eri panelit (base/form/details/sighting)</td>
+              <td><code>src/features/app/ui/AppSidebar.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Login/Register-dialogi</td>
+              <td><code>src/features/app/ui/AuthDialog.jsx</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="3-auth-ja-sessio" class="doc-section">
+        <h2><a href="#3-auth-ja-sessio">3) Auth ja sessio</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Auth context, currentUser, logout, sessionExpiredVersion</td>
+              <td><code>src/features/app/auth/AuthContext.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Session-expired bridge API-kerroksesta UI:hin</td>
+              <td><code>src/features/app/auth/sessionExpiryBridge.js</code></td>
+            </tr>
+            <tr>
+              <td>Auth-hook alias (useAuthSession)</td>
+              <td><code>src/features/app/hooks/useAuthSession.js</code></td>
+            </tr>
+            <tr>
+              <td>Login UI</td>
+              <td><code>src/features/map/ui/loginPage.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Register UI + salasanan validointi</td>
+              <td><code>src/features/map/ui/RegisterPage.jsx</code>, <code>src/features/map/ui/passwordValidation.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="4-kieli-ja-kaannokset-fien" class="doc-section">
+        <h2><a href="#4-kieli-ja-kaannokset-fien">4) Kieli ja käännökset (FI/EN)</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Kielen vaihto, localStorage, <code>t()</code></td>
+              <td><code>src/features/app/i18n/LanguageContext.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kaikki tekstisisällöt (FI/EN)</td>
+              <td><code>src/features/app/i18n/translations.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="5-kartta-markerit-ja-map-kayttoliittyma" class="doc-section">
+        <h2><a href="#5-kartta-markerit-ja-map-kayttoliittyma">5) Kartta, markerit ja map-käyttöliittymä</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Leaflet-kartan pääkomponentti</td>
+              <td><code>src/features/map/MapPage.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan event-efektit (map ref, click-pick, lock, auto-center, visible theft load)</td>
+              <td><code>src/features/map/components/MapEffects.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan marker-layer + popup</td>
+              <td><code>src/features/map/components/TheftMarkersLayer.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan kontrollit (zoom, center)</td>
+              <td><code>src/features/map/ui/MapControls.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan status-overlayt (save-success, pick-hint)</td>
+              <td><code>src/features/map/components/MapStatusOverlay.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan selite (status-värit)</td>
+              <td><code>src/features/map/components/MapLegend.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kartan vakiot (center, zoom, status-värit)</td>
+              <td><code>src/features/map/constants.js</code></td>
+            </tr>
+            <tr>
+              <td>Näkyvien ilmoitusten haku kartan rajoilla</td>
+              <td><code>src/features/map/hooks/useVisibleThefts.js</code></td>
+            </tr>
+            <tr>
+              <td>Käyttäjän sijaintimarkkeri + center/zoom helperit</td>
+              <td><code>src/features/map/hooks/useUserLocationMarker.js</code></td>
+            </tr>
+            <tr>
+              <td>Map-success sessionStorage-logiikka</td>
+              <td><code>src/features/map/hooks/useMapSuccessMessage.js</code></td>
+            </tr>
+            <tr>
+              <td>Bounds-&gt;API parametrit</td>
+              <td><code>src/features/map/utils/mapBounds.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="6-varkausilmoitus-create" class="doc-section">
+        <h2><a href="#6-varkausilmoitus-create">6) Varkausilmoitus (create)</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Varkausilmoituksen pää-UI</td>
+              <td><code>src/features/map/ui/TheftReportForm.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Varkausilmoituksen state, validoinnit, submit</td>
+              <td><code>src/features/map/ui/theftReportForm/useTheftReportForm.js</code></td>
+            </tr>
+            <tr>
+              <td>Sijaintiosio (GPS/map-pick/clear)</td>
+              <td><code>src/features/map/ui/theftReportForm/LocationSection.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Aika + päivämäärä</td>
+              <td><code>src/features/map/ui/theftReportForm/DateTimeField.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Pyörän tiedot -osio</td>
+              <td><code>src/features/map/ui/theftReportForm/BikeDetailsSection.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Label + tooltip komponentti</td>
+              <td><code>src/features/map/ui/theftReportForm/InfoLabel.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Lomakekenttien asetukset ja tooltip-tekstit</td>
+              <td><code>src/features/map/ui/theftReportForm/formOptions.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="7-ilmoituksen-tiedot-ja-havainnot" class="doc-section">
+        <h2><a href="#7-ilmoituksen-tiedot-ja-havainnot">7) Ilmoituksen tiedot ja havainnot</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ilmoituksen details-sivupaneeli</td>
+              <td><code>src/features/map/ui/TheftReportDetailsSidebar.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Havaintoilmoituksen UI + submit</td>
+              <td><code>src/features/map/ui/SightingReportPage.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Kuvakaruselli + lightbox</td>
+              <td><code>src/features/map/ui/ImageCarousel.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Pieni valitun sijainnin vihje-elementti</td>
+              <td><code>src/features/map/ui/LocationMarkerHint.jsx</code></td>
+            </tr>
+            <tr>
+              <td>Ilmoitusten päivämäärä/field-formatointi</td>
+              <td><code>src/features/map/utils/reportFormatters.js</code></td>
+            </tr>
+            <tr>
+              <td>Ilmoituksen kuvien URL-resolvoinnit</td>
+              <td><code>src/features/map/utils/reportImages.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="8-api-kerros" class="doc-section">
+        <h2><a href="#8-api-kerros">8) API-kerros</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>API base URL + prefix</td>
+              <td><code>src/features/api/apiConfig.js</code></td>
+            </tr>
+            <tr>
+              <td>Credentialed fetch, refresh-token retry, session-expired signalointi</td>
+              <td><code>src/features/api/authorizedFetch.js</code></td>
+            </tr>
+            <tr>
+              <td>Auth endpointit (<code>register</code>, <code>login</code>, <code>me</code>, <code>logout</code>)</td>
+              <td><code>src/features/api/authApi.js</code></td>
+            </tr>
+            <tr>
+              <td>Theft report endpointit (<code>list</code>, <code>byId</code>, <code>bounds</code>, <code>create</code>, <code>sighting</code>)</td>
+              <td><code>src/features/api/theftReportApi.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="9-testit" class="doc-section">
+        <h2><a href="#9-testit">9) Testit</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>App-tason testit</td>
+              <td><code>src/test/app/*</code></td>
+            </tr>
+            <tr>
+              <td>Karttanäkymä-, lomake- ja details-testit</td>
+              <td><code>src/test/map/*</code></td>
+            </tr>
+            <tr>
+              <td>API-tason testit</td>
+              <td><code>src/test/api/*</code></td>
+            </tr>
+            <tr>
+              <td>Vitest setup</td>
+              <td><code>src/test/setup.js</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="10-dokumentaatio-uissa" class="doc-section">
+        <h2><a href="#10-dokumentaatio-uissa">10) Dokumentaatio UI:ssa</a></h2>
+      <ul>
+        <li>Footerin dokumentaatiolinkki: <code>src/App.jsx</code></li>
+        <li>Selainversion dokumentaatio (suora linkki appista): <code>public/docs/index.html</code></li>
+        <li>Markdown-lahde GitHubiin: <code>docs/FEATURE_MAP.md</code></li>
+      </ul>
+      </section>
+      <section id="11-backend-kaynnistys-ja-ymparisto" class="doc-section">
+        <h2><a href="#11-backend-kaynnistys-ja-ymparisto">11) Backend - käynnistys ja ympäristö</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Spring Boot -projektin build ja riippuvuudet</td>
+              <td><code>../backend/pom.xml</code></td>
+            </tr>
+            <tr>
+              <td>Maven wrapper</td>
+              <td><code>../backend/mvnw</code>, <code>../backend/mvnw.cmd</code>, <code>../backend/.mvn/wrapper/*</code></td>
+            </tr>
+            <tr>
+              <td>Backendin ympäristömuuttujat (esimerkki + paikallinen)</td>
+              <td><code>../backend/example.env</code>, <code>../backend/.env</code></td>
+            </tr>
+            <tr>
+              <td>Docker Compose (esim. tietokanta)</td>
+              <td><code>../backend/docker-compose.yaml</code></td>
+            </tr>
+            <tr>
+              <td>Springin pääkäynnistys</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/BikeTheftTrackerApplication.java</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="12-backend-api-controllerit-ja-dtot" class="doc-section">
+        <h2><a href="#12-backend-api-controllerit-ja-dtot">12) Backend - API, controllerit ja DTO:t</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Auth-endpointit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/controller/AuthController.java</code></td>
+            </tr>
+            <tr>
+              <td>Theft report -endpointit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/controller/TheftReportController.java</code></td>
+            </tr>
+            <tr>
+              <td>Sighting-endpointit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/controller/SightingController.java</code></td>
+            </tr>
+            <tr>
+              <td>Notification-endpointit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/controller/NotificationController.java</code></td>
+            </tr>
+            <tr>
+              <td>API request/response -mallit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/dto/*</code></td>
+            </tr>
+            <tr>
+              <td>OpenAPI-kuvaus</td>
+              <td><code>../backend/src/main/resources/static/openapi.yaml</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="13-backend-domain-data-ja-mappaus" class="doc-section">
+        <h2><a href="#13-backend-domain-data-ja-mappaus">13) Backend - domain, data ja mappaus</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>JPA-entiteetit (Bike, TheftReport, Sighting, User, Notification, Role, RefreshToken...)</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/entity/*</code></td>
+            </tr>
+            <tr>
+              <td>Repositoryt (JPA-kyselyt ja data access)</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/repository/*</code></td>
+            </tr>
+            <tr>
+              <td>Service-kerros (liiketoimintalogiikka)</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/service/*</code></td>
+            </tr>
+            <tr>
+              <td>Mapperit entity &lt;-&gt; DTO</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/mapper/*</code></td>
+            </tr>
+            <tr>
+              <td>Backendin app-asetukset</td>
+              <td><code>../backend/src/main/resources/application.properties</code></td>
+            </tr>
+            <tr>
+              <td>Testien app-asetukset + skeema</td>
+              <td><code>../backend/src/test/resources/application.properties</code>, <code>../backend/src/test/resources/schema.sql</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="14-backend-security-auth-ja-infra" class="doc-section">
+        <h2><a href="#14-backend-security-auth-ja-infra">14) Backend - security, auth ja infra</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Security-konfiguraatio</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/config/SecurityConfig.java</code></td>
+            </tr>
+            <tr>
+              <td>Web/CORS-konfiguraatio</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/config/WebConfig.java</code>, <code>../backend/src/main/java/com/rkrs/bikethefttracker/properties/CorsProperties.java</code></td>
+            </tr>
+            <tr>
+              <td>JWT + refresh token -logiikka</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/security/JwtService.java</code>, <code>../backend/src/main/java/com/rkrs/bikethefttracker/security/RefreshTokenService.java</code>, <code>../backend/src/main/java/com/rkrs/bikethefttracker/security/AuthenticationService.java</code></td>
+            </tr>
+            <tr>
+              <td>Security-filterit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/filter/JwtFilter.java</code>, <code>../backend/src/main/java/com/rkrs/bikethefttracker/filter/RequestLoggingFilter.java</code></td>
+            </tr>
+            <tr>
+              <td>Cookie-apurit</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/util/CookiesUtil.java</code></td>
+            </tr>
+            <tr>
+              <td>Poikkeuskäsittely (global + custom exceptionit)</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/exception/*</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="15-backend-kuvat-ja-tiedostot" class="doc-section">
+        <h2><a href="#15-backend-kuvat-ja-tiedostot">15) Backend - kuvat ja tiedostot</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Bike-kuvien tallennushakemisto (runtime-data)</td>
+              <td><code>../backend/images/bikes/*</code></td>
+            </tr>
+            <tr>
+              <td>Kuvien tallennuspalvelu backendissä</td>
+              <td><code>../backend/src/main/java/com/rkrs/bikethefttracker/service/ImageStorageService.java</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="16-backend-testit" class="doc-section">
+        <h2><a href="#16-backend-testit">16) Backend-testit</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Spring context smoke test</td>
+              <td><code>../backend/src/test/java/com/rkrs/bikethefttracker/BikeTheftTrackerApplicationTests.java</code></td>
+            </tr>
+            <tr>
+              <td>Controller-testit (theft reports)</td>
+              <td><code>../backend/src/test/java/com/rkrs/bikethefttracker/controller/*</code></td>
+            </tr>
+            <tr>
+              <td>Service-testit</td>
+              <td><code>../backend/src/test/java/com/rkrs/bikethefttracker/service/*</code></td>
+            </tr>
+            <tr>
+              <td>Repository-testit</td>
+              <td><code>../backend/src/test/java/com/rkrs/bikethefttracker/repository/*</code></td>
+            </tr>
+            <tr>
+              <td>Mapper- ja entity-testit</td>
+              <td><code>../backend/src/test/java/com/rkrs/bikethefttracker/mapper/*</code>, <code>../backend/src/test/java/com/rkrs/bikethefttracker/entity/*</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="17-muut-kansiot-juuritasolla-ei-osa-tata-appia" class="doc-section">
+        <h2><a href="#17-muut-kansiot-juuritasolla-ei-osa-tata-appia">17) Muut kansiot juuritasolla (ei osa tätä appia)</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Kansio</th>
+              <th>Huomio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>../hjs_week2</code></td>
+              <td>Erillinen Maven-projekti (oma <code>.git</code>)</td>
+            </tr>
+            <tr>
+              <td><code>../week1_tjs</code></td>
+              <td>Erillinen Maven-projekti (oma <code>.git</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      <section id="18-projektin-docs-kuvat-juuritasolla" class="doc-section">
+        <h2><a href="#18-projektin-docs-kuvat-juuritasolla">18) Projektin docs-kuvat juuritasolla</a></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ominaisuus</th>
+              <th>Tiedostot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frontend-kuvat / screenshotit</td>
+              <td><code>../docs/frontend/*</code></td>
+            </tr>
+            <tr>
+              <td>Suunnittelu- ja backend-kaaviot</td>
+              <td><code>../docs/planning/*</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </section>
+      </main>
+      <aside class="toc">
+        <p class="toc__title">On this page</p>
+        <ul>
+            <li><a href="#1-kaynnistys-ja-sovelluksen-runko">1) Käynnistys ja sovelluksen runko</a></li>
+            <li><a href="#2-navigointi-ja-nakyman-tila">2) Navigointi ja näkymän tila</a></li>
+            <li><a href="#3-auth-ja-sessio">3) Auth ja sessio</a></li>
+            <li><a href="#4-kieli-ja-kaannokset-fien">4) Kieli ja käännökset (FI/EN)</a></li>
+            <li><a href="#5-kartta-markerit-ja-map-kayttoliittyma">5) Kartta, markerit ja map-käyttöliittymä</a></li>
+            <li><a href="#6-varkausilmoitus-create">6) Varkausilmoitus (create)</a></li>
+            <li><a href="#7-ilmoituksen-tiedot-ja-havainnot">7) Ilmoituksen tiedot ja havainnot</a></li>
+            <li><a href="#8-api-kerros">8) API-kerros</a></li>
+            <li><a href="#9-testit">9) Testit</a></li>
+            <li><a href="#10-dokumentaatio-uissa">10) Dokumentaatio UI:ssa</a></li>
+            <li><a href="#11-backend-kaynnistys-ja-ymparisto">11) Backend - käynnistys ja ympäristö</a></li>
+            <li><a href="#12-backend-api-controllerit-ja-dtot">12) Backend - API, controllerit ja DTO:t</a></li>
+            <li><a href="#13-backend-domain-data-ja-mappaus">13) Backend - domain, data ja mappaus</a></li>
+            <li><a href="#14-backend-security-auth-ja-infra">14) Backend - security, auth ja infra</a></li>
+            <li><a href="#15-backend-kuvat-ja-tiedostot">15) Backend - kuvat ja tiedostot</a></li>
+            <li><a href="#16-backend-testit">16) Backend-testit</a></li>
+            <li><a href="#17-muut-kansiot-juuritasolla-ei-osa-tata-appia">17) Muut kansiot juuritasolla (ei osa tätä appia)</a></li>
+            <li><a href="#18-projektin-docs-kuvat-juuritasolla">18) Projektin docs-kuvat juuritasolla</a></li>
+        </ul>
+      </aside>
+    </div>
+  </body>
+</html>

@@ -257,7 +257,7 @@ function AppContent() {
             </a>
             <a
               className="app-footer__link"
-              href="http://localhost:5173/docs"
+              href="/docs/index.html"
               target="_blank"
               rel="noreferrer"
             >
