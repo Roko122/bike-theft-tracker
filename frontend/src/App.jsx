@@ -3,6 +3,7 @@ import { Bike, BookText, Github, LogIn, LogOut, Menu, X } from 'lucide-react';
 import MapPage from './features/map/MapPage.jsx';
 import AppSidebar from './features/app/ui/AppSidebar.jsx';
 import AuthDialog from './features/app/ui/AuthDialog.jsx';
+import DocumentationPage from './features/app/docs/DocumentationPage.jsx';
 import { useAuthSession } from './features/app/hooks/useAuthSession.js';
 import { AuthProvider } from './features/app/auth/AuthContext.jsx';
 import { useAppViewState } from './features/app/hooks/useAppViewState.js';
@@ -44,6 +45,7 @@ function AppContent() {
   const viewState = useAppViewState();
   const [refreshKey, setRefreshKey] = useState(0);
   const [flashMessage, setFlashMessage] = useState('');
+  const [showDocs, setShowDocs] = useState(false);
   const { currentUser, sessionExpiredVersion, setCurrentUser, logout } =
     useAuthSession();
 
@@ -115,158 +117,168 @@ function AppContent() {
     <div className="app-shell">
       <AppFlashMessage message={flashMessage} />
 
-      <header className="header">
-        <button
-          className="menu-btn"
-          onClick={
-            viewState.isMenuOpen ? viewState.openBaseMenu : viewState.toggleMenu
-          }
-        >
-          <span className="visually-hidden">
-            {viewState.isMenuOpen ? t('app.closeMenu') : t('app.openMenu')}
-          </span>
-          {viewState.isMenuOpen ? <X /> : <Menu />}
-        </button>
-
-        <div className="title">
-          <Bike size={20} />
-          <strong>{t('common.appName')}</strong>
+      {showDocs ? (
+        <div className="docs-full-screen">
+          <DocumentationPage onClose={() => setShowDocs(false)} />
         </div>
-
-        <div className="header-actions">
-          <div
-            className="language-switch"
-            role="group"
-            aria-label={t('common.language')}
-          >
+      ) : (
+        <>
+          <header className="header">
             <button
-              type="button"
-              className={
-                language === 'fi'
-                  ? 'language-switch__button language-switch__button--active'
-                  : 'language-switch__button'
+              className="menu-btn"
+              onClick={
+                viewState.isMenuOpen
+                  ? viewState.openBaseMenu
+                  : viewState.toggleMenu
               }
-              onClick={() => setLanguage('fi')}
             >
-              FI
+              <span className="visually-hidden">
+                {viewState.isMenuOpen ? t('app.closeMenu') : t('app.openMenu')}
+              </span>
+              {viewState.isMenuOpen ? <X /> : <Menu />}
             </button>
-            <button
-              type="button"
-              className={
-                language === 'en'
-                  ? 'language-switch__button language-switch__button--active'
-                  : 'language-switch__button'
-              }
-              onClick={() => setLanguage('en')}
-            >
-              EN
-            </button>
-          </div>
 
-          {currentUser ? (
-            <>
-              <UserBadge user={currentUser} />
-              <button
-                type="button"
-                className="app-btn app-btn--secondary"
-                onClick={handleLogout}
+            <div className="title">
+              <Bike size={20} />
+              <strong>{t('common.appName')}</strong>
+            </div>
+
+            <div className="header-actions">
+              <div
+                className="language-switch"
+                role="group"
+                aria-label={t('common.language')}
               >
-                <LogOut size={18} />
-                <span>{t('app.logout')}</span>
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="app-btn app-btn--secondary"
-              onClick={viewState.openLogin}
-            >
-              <LogIn size={18} />
-              <span>{t('app.loginOrRegister')}</span>
-            </button>
+                <button
+                  type="button"
+                  className={
+                    language === 'fi'
+                      ? 'language-switch__button language-switch__button--active'
+                      : 'language-switch__button'
+                  }
+                  onClick={() => setLanguage('fi')}
+                >
+                  FI
+                </button>
+                <button
+                  type="button"
+                  className={
+                    language === 'en'
+                      ? 'language-switch__button language-switch__button--active'
+                      : 'language-switch__button'
+                  }
+                  onClick={() => setLanguage('en')}
+                >
+                  EN
+                </button>
+              </div>
+
+              {currentUser ? (
+                <>
+                  <UserBadge user={currentUser} />
+                  <button
+                    type="button"
+                    className="app-btn app-btn--secondary"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={18} />
+                    <span>{t('app.logout')}</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="app-btn app-btn--secondary"
+                  onClick={viewState.openLogin}
+                >
+                  <LogIn size={18} />
+                  <span>{t('app.loginOrRegister')}</span>
+                </button>
+              )}
+            </div>
+
+            {viewState.isMenuOpen && (
+              <AppSidebar
+                currentUser={currentUser}
+                selectedReportId={viewState.selectedReportId}
+                selectedLocation={viewState.selectedLocation}
+                showForm={viewState.showForm}
+                showSighting={viewState.showSighting}
+                showMyReports={viewState.showMyReports}
+                onOpenMyReports={viewState.openMyReports}
+                onCloseMyReports={viewState.openBaseMenu}
+                onSelectMyReport={viewState.showReportDetails}
+                onCloseMenu={viewState.openBaseMenu}
+                onOpenForm={viewState.openForm}
+                onCloseForm={viewState.closeForm}
+                onCloseSighting={viewState.closeSighting}
+                onOpenLogin={viewState.openLogin}
+                onOpenSighting={viewState.openSighting}
+                onStartPickFromMap={viewState.startMapPicking}
+                onStopPickFromMap={viewState.stopMapPicking}
+                onClearPickedLocation={viewState.clearSelectedLocation}
+                onLocationSelected={viewState.selectLocation}
+                onReportCreated={handleReportCreated}
+                onSightingCreated={handleSightingCreated}
+                onReportDetailsClose={viewState.clearSelectedReport}
+              />
+            )}
+          </header>
+
+          <main className={isMapDimmed ? 'main main--dimmed' : 'main'}>
+            <MapPage
+              refreshKey={refreshKey}
+              isMenuOpen={viewState.isMenuOpen}
+              isInteractionLocked={isMapLocked}
+              selectedLocation={viewState.selectedLocation}
+              isPickingLocation={viewState.isPickingLocation}
+              onLocationSelected={viewState.selectLocation}
+              onReportSelected={viewState.showReportDetails}
+            />
+          </main>
+
+          {(viewState.showLogin || viewState.showRegister) && (
+            <AuthDialog
+              mode={viewState.showRegister ? 'register' : 'login'}
+              onClose={
+                viewState.showRegister
+                  ? viewState.closeRegister
+                  : viewState.closeLogin
+              }
+              onLoginSuccess={handleLoginSuccess}
+              onOpenRegister={viewState.openRegister}
+              onBackToLogin={viewState.backToLogin}
+              onRegisterSuccess={handleRegisterSuccess}
+            />
           )}
-        </div>
 
-        {viewState.isMenuOpen && (
-          <AppSidebar
-            currentUser={currentUser}
-            selectedReportId={viewState.selectedReportId}
-            selectedLocation={viewState.selectedLocation}
-            showForm={viewState.showForm}
-            showSighting={viewState.showSighting}
-            showMyReports={viewState.showMyReports}
-            onOpenMyReports={viewState.openMyReports}
-            onCloseMyReports={viewState.openBaseMenu}
-            onSelectMyReport={viewState.showReportDetails}
-            onCloseMenu={viewState.openBaseMenu}
-            onOpenForm={viewState.openForm}
-            onCloseForm={viewState.closeForm}
-            onCloseSighting={viewState.closeSighting}
-            onOpenLogin={viewState.openLogin}
-            onOpenSighting={viewState.openSighting}
-            onStartPickFromMap={viewState.startMapPicking}
-            onStopPickFromMap={viewState.stopMapPicking}
-            onClearPickedLocation={viewState.clearSelectedLocation}
-            onLocationSelected={viewState.selectLocation}
-            onReportCreated={handleReportCreated}
-            onSightingCreated={handleSightingCreated}
-            onReportDetailsClose={viewState.clearSelectedReport}
-          />
-        )}
-      </header>
-
-      <main className={isMapDimmed ? 'main main--dimmed' : 'main'}>
-        <MapPage
-          refreshKey={refreshKey}
-          isMenuOpen={viewState.isMenuOpen}
-          isInteractionLocked={isMapLocked}
-          selectedLocation={viewState.selectedLocation}
-          isPickingLocation={viewState.isPickingLocation}
-          onLocationSelected={viewState.selectLocation}
-          onReportSelected={viewState.showReportDetails}
-        />
-      </main>
-
-      {(viewState.showLogin || viewState.showRegister) && (
-        <AuthDialog
-          mode={viewState.showRegister ? 'register' : 'login'}
-          onClose={
-            viewState.showRegister
-              ? viewState.closeRegister
-              : viewState.closeLogin
-          }
-          onLoginSuccess={handleLoginSuccess}
-          onOpenRegister={viewState.openRegister}
-          onBackToLogin={viewState.backToLogin}
-          onRegisterSuccess={handleRegisterSuccess}
-        />
+          <footer className="app-footer">
+            <div className="app-footer__content">
+              <span className="app-footer__brand">&copy; RKRS</span>
+              <div className="app-footer__links">
+                <a
+                  className="app-footer__link"
+                  href="https://github.com/Roko122/bike-theft-tracker"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Github size={16} />
+                  {t('app.github')}
+                </a>
+                <button
+                  className="app-footer__link"
+                  onClick={() => setShowDocs(true)}
+                  type="button"
+                  aria-label="Open documentation"
+                >
+                  <BookText size={16} />
+                  {t('app.docs')}
+                </button>
+              </div>
+            </div>
+          </footer>
+        </>
       )}
-
-      <footer className="app-footer">
-        <div className="app-footer__content">
-          <span className="app-footer__brand">&copy; RKRS</span>
-          <div className="app-footer__links">
-            <a
-              className="app-footer__link"
-              href="https://github.com/Roko122/bike-theft-tracker"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Github size={16} />
-              {t('app.github')}
-            </a>
-            <a
-              className="app-footer__link"
-              href="http://localhost:5173/docs"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <BookText size={16} />
-              {t('app.docs')}
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

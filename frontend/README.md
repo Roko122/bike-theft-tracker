@@ -12,6 +12,15 @@
 4) Avaa Viten URL
 
 ---
+## Dokumentaatio (Markdown -> HTML)
+
+- Markdown-lahde: `docs/FEATURE_MAP.md`
+- Generoitu HTML: `public/docs/index.html`
+- Generointi: `npm run docs:build`
+
+`npm run build` ajaa generoinnin automaattisesti (`prebuild`).
+
+---
 ## eslint käyttöohjeet
 
 1) Tarkista virheet: 
