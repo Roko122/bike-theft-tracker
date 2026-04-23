@@ -91,6 +91,26 @@ export function AutoCenterToUser({
   return null;
 }
 
+export function CenterToSelectedLocation({ location, zoom = 15 }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map || !location) {
+      return;
+    }
+
+    const latitude = Number(location.latitude);
+    const longitude = Number(location.longitude);
+    if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+      return;
+    }
+
+    map.setView([latitude, longitude], Math.max(map.getZoom(), zoom));
+  }, [location, map, zoom]);
+
+  return null;
+}
+
 export function MapInteractionLock({ locked }) {
   const map = useMap();
 

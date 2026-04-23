@@ -83,6 +83,27 @@ function AppContent() {
     showSuccessMessage(t('flash.sightingSaved'));
   }, [showSuccessMessage, t, viewState.resetAfterSubmit]);
 
+  const handleReportUpdated = useCallback(() => {
+    setRefreshKey((previous) => previous + 1);
+    showSuccessMessage(t('flash.theftUpdated'));
+  }, [showSuccessMessage, t]);
+
+  const handleReportDeleted = useCallback(() => {
+    setRefreshKey((previous) => previous + 1);
+    viewState.clearSelectedReport();
+    showSuccessMessage(t('flash.theftDeleted'));
+  }, [showSuccessMessage, t, viewState.clearSelectedReport]);
+
+  const handleShowReportOnMap = useCallback(
+    (location) => {
+      if (!location) {
+        return;
+      }
+      viewState.selectLocation(location);
+    },
+    [viewState.selectLocation]
+  );
+
   const handleLoginSuccess = useCallback(
     (user) => {
       setCurrentUser(user);
@@ -221,6 +242,9 @@ function AppContent() {
                 onReportCreated={handleReportCreated}
                 onSightingCreated={handleSightingCreated}
                 onReportDetailsClose={viewState.clearSelectedReport}
+                onShowReportOnMap={handleShowReportOnMap}
+                onReportDeleted={handleReportDeleted}
+                onReportUpdated={handleReportUpdated}
               />
             )}
           </header>

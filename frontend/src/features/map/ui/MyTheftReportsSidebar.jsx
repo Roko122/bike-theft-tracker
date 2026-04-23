@@ -12,7 +12,7 @@ import { formatReportDate } from '../utils/reportFormatters.js';
  * Näyttää kirjautuneen käyttäjän omat varkausilmoitukset listana.
  * Kun käyttäjä klikkaa ilmoitusta, avataan ilmoituksen tarkempi näkymä.
  */
-export default function MyTheftReportsSidebar({ onSelectReport }) {
+export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
   const { language, t } = useI18n();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function MyTheftReportsSidebar({ onSelectReport }) {
     );
   }
 
-  function extractSightingCoordinates(sighting) {
+  function extractSightingLocation(sighting) {
     const lat =
       sighting?.location?.latitude ??
       sighting?.location?.lat ??
@@ -48,10 +48,20 @@ export default function MyTheftReportsSidebar({ onSelectReport }) {
       null;
 
     if (lat == null || lon == null || Number.isNaN(Number(lat)) || Number.isNaN(Number(lon))) {
-      return '-';
+      return null;
     }
 
-    return `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
+    return {
+      latitude: Number(lat),
+      longitude: Number(lon)
+    };
+  }
+
+  function formatSightingCoordinates(location) {
+    if (!location) {
+      return '-';
+    }
+    return `${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)}`;
   }
 
   function extractSightingImageUrl(sighting) {
@@ -286,6 +296,7 @@ export default function MyTheftReportsSidebar({ onSelectReport }) {
                           <div className="my-reports-sightings__list">
                             {sightingsState.items.map((sighting, index) => {
                               const sightingImageUrl = extractSightingImageUrl(sighting);
+                              const sightingLocation = extractSightingLocation(sighting);
                               return (
                                 <article
                                   key={sighting.id ?? `${report.id}-sighting-${index}`}
@@ -305,7 +316,18 @@ export default function MyTheftReportsSidebar({ onSelectReport }) {
 
                                   <div className="my-reports-sighting__row">
                                     <strong>{t('sidebar.myReports.sightingLocation')}:</strong>{' '}
-                                    {extractSightingCoordinates(sighting)}
+                                    {sightingLocation ? (
+                                      <button
+                                        type="button"
+                                        className="my-reports-sighting__location-btn"
+                                        onClick={() => onShowOnMap?.(sightingLocation)}
+                                      >
+                                        <MapPin size={14} />
+                                        <span>{formatSightingCoordinates(sightingLocation)}</span>
+                                      </button>
+                                    ) : (
+                                      '-'
+                                    )}
                                   </div>
 
                                   <p className="my-reports-sighting__description">

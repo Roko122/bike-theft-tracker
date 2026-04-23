@@ -10,6 +10,8 @@ export const translations = {
     flash: {
       theftSaved: 'Varkausilmoitus tallennettu.',
       sightingSaved: 'Havaintoilmoitus tallennettu.',
+      theftUpdated: 'Varkausilmoitus päivitetty.',
+      theftDeleted: 'Varkausilmoitus poistettu.',
       loginSuccess: 'Kirjautuminen onnistui.',
       logoutSuccess: 'Uloskirjautuminen onnistui.'
     },
@@ -218,7 +220,10 @@ export const translations = {
         color: 'Väri',
         username: 'Ilmoittaja',
         serialNumber: 'Sarjanumero',
-        bikeDescription: 'Lisäkuvaus'
+        bikeDescription: 'Lisäkuvaus',
+        latitude: 'Leveysaste',
+        longitude: 'Pituusaste',
+        locationCoordinates: 'Koordinaatit'
       },
       sighting: {
         label: 'Havainto',
@@ -235,6 +240,25 @@ export const translations = {
         saved: 'Tila päivitetty.',
         saveFailed: 'Tilan päivitys epäonnistui.',
         ownerOnly: 'Vain ilmoituksen omistaja voi päivittää tilan.'
+      },
+      management: {
+        title: 'Hallinnointi',
+        showOnMap: 'Näytä kartalla',
+        delete: 'Poista ilmoitus',
+        deleting: 'Poistetaan...',
+        deleteConfirm: 'Haluatko varmasti poistaa tämän ilmoituksen?',
+        deleteFailed: 'Ilmoituksen poisto epäonnistui.'
+      },
+      editor: {
+        open: 'Muokkaa tietoja',
+        cancel: 'Peruuta',
+        save: 'Tallenna muutokset',
+        saving: 'Tallennetaan...',
+        saved: 'Ilmoituksen tiedot päivitetty.',
+        saveFailed: 'Ilmoituksen tietojen päivitys epäonnistui.',
+        formTitle: 'Muokkaa ilmoituksen tietoja',
+        requiredFields: 'Täytä pakolliset kentät ennen tallennusta.',
+        invalidLocation: 'Sijainti ei ole kelvollinen.'
       }
     },
     popup: {
@@ -277,6 +301,8 @@ export const translations = {
     flash: {
       theftSaved: 'The theft report was saved.',
       sightingSaved: 'The sighting report was saved.',
+      theftUpdated: 'The theft report was updated.',
+      theftDeleted: 'The theft report was deleted.',
       loginSuccess: 'Signed in successfully.',
       logoutSuccess: 'Signed out successfully.'
     },
@@ -483,7 +509,10 @@ export const translations = {
         color: 'Color',
         username: 'Reporter',
         serialNumber: 'Serial number',
-        bikeDescription: 'Additional details'
+        bikeDescription: 'Additional details',
+        latitude: 'Latitude',
+        longitude: 'Longitude',
+        locationCoordinates: 'Coordinates'
       },
       sighting: {
         label: 'Sighting',
@@ -500,6 +529,25 @@ export const translations = {
         saved: 'Status updated.',
         saveFailed: 'Updating status failed.',
         ownerOnly: 'Only the report owner can update the status.'
+      },
+      management: {
+        title: 'Management',
+        showOnMap: 'Show on map',
+        delete: 'Delete report',
+        deleting: 'Deleting...',
+        deleteConfirm: 'Are you sure you want to delete this report?',
+        deleteFailed: 'Deleting the report failed.'
+      },
+      editor: {
+        open: 'Edit details',
+        cancel: 'Cancel',
+        save: 'Save changes',
+        saving: 'Saving...',
+        saved: 'Report details updated.',
+        saveFailed: 'Updating report details failed.',
+        formTitle: 'Edit report details',
+        requiredFields: 'Fill required fields before saving.',
+        invalidLocation: 'The location is not valid.'
       }
     },
     popup: {
