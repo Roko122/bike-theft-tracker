@@ -1,10 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Binoculars, CircleHelp, UserRound } from 'lucide-react';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
-import { getTheftReportById } from '../../api/theftReportApi.js';
+import {
+  getTheftReportById,
+  updateTheftReportStatus
+} from '../../api/theftReportApi.js';
 import ImageCarousel from './ImageCarousel.jsx';
 import { getReportImageUrls } from '../utils/reportImages.js';
 import { formatReportDate } from '../utils/reportFormatters.js';
+
+const STATUS_OPTIONS = ['ACTIVE', 'SIGHTED', 'RECOVERED', 'CLOSED'];
+
+function statusTone(status) {
+  const normalized = String(status ?? '').toUpperCase();
+  if (normalized === 'SIGHTED') return 'warning';
+  if (normalized === 'RECOVERED') return 'success';
+  if (normalized === 'CLOSED') return 'neutral';
+  return 'danger';
+}
 
 function Row({ label, value }) {
   return (
@@ -20,12 +33,17 @@ function Row({ label, value }) {
 export default function TheftReportDetailsSidebar({
   reportId,
   onCreateSighting,
-  canCreateSighting = false
+  canCreateSighting = false,
+  currentUsername = ''
 }) {
   const { language, t } = useI18n();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [statusDraft, setStatusDraft] = useState('ACTIVE');
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [statusError, setStatusError] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     if (!reportId) {
@@ -43,6 +61,9 @@ export default function TheftReportDetailsSidebar({
         const data = await getTheftReportById(reportId);
         if (!cancelled) {
           setReport(data);
+          setStatusDraft(data?.status ?? 'ACTIVE');
+          setStatusError('');
+          setStatusMessage('');
         }
       } catch (loadError) {
         if (!cancelled) {
@@ -68,6 +89,30 @@ export default function TheftReportDetailsSidebar({
   );
   const reporterName = report?.bike?.user?.username?.trim?.() ?? '';
   const reporterInitial = reporterName ? reporterName.charAt(0).toUpperCase() : '?';
+  const isOwner =
+    Boolean(currentUsername) &&
+    Boolean(reporterName) &&
+    currentUsername.trim().toLowerCase() === reporterName.trim().toLowerCase();
+
+  async function handleSaveStatus() {
+    if (!report?.id || !statusDraft) {
+      return;
+    }
+
+    try {
+      setStatusSaving(true);
+      setStatusError('');
+      setStatusMessage('');
+      const updatedReport = await updateTheftReportStatus(report.id, statusDraft);
+      setReport(updatedReport);
+      setStatusDraft(updatedReport?.status ?? statusDraft);
+      setStatusMessage(t('details.statusEditor.saved'));
+    } catch (saveError) {
+      setStatusError(saveError?.message ?? t('details.statusEditor.saveFailed'));
+    } finally {
+      setStatusSaving(false);
+    }
+  }
 
   return (
     <div className="details">
@@ -88,7 +133,7 @@ export default function TheftReportDetailsSidebar({
             <div className="details-header__content">
               <div className="details-header__topline">
                 <div className="details-header__eyebrow">{t('details.title')}</div>
-                <div className={`details-status details-status--${report.status?.toLowerCase?.() === 'sighted' ? 'warning' : report.status?.toLowerCase?.() === 'recovered' ? 'success' : report.status?.toLowerCase?.() === 'closed' ? 'neutral' : 'danger'}`}>
+                <div className={`details-status details-status--${statusTone(report.status)}`}>
                   {t(`details.status.${report.status}`)}
                 </div>
               </div>
@@ -174,6 +219,66 @@ export default function TheftReportDetailsSidebar({
                   {reporterName || '-'}
                 </div>
               </div>
+            </div>
+
+            <h4 className="details-section__title details-section__title--spaced">
+              {t('details.statusEditor.title')}
+            </h4>
+            <div className="details-status-editor">
+              <div className="details-status-editor__row">
+                <label className="details-status-editor__label" htmlFor="report-status-select">
+                  {t('details.statusEditor.label')}
+                </label>
+                <select
+                  id="report-status-select"
+                  className="details-status-editor__select"
+                  value={statusDraft}
+                  onChange={(event) => {
+                    setStatusDraft(event.target.value);
+                    setStatusError('');
+                    setStatusMessage('');
+                  }}
+                  disabled={!isOwner || statusSaving}
+                >
+                  {STATUS_OPTIONS.map((statusValue) => (
+                    <option key={statusValue} value={statusValue}>
+                      {t(`details.status.${statusValue}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={`details-status details-status--${statusTone(statusDraft)}`}>
+                {t(`details.status.${statusDraft}`)}
+              </div>
+
+              {!isOwner && (
+                <p className="details-status-editor__note">
+                  {t('details.statusEditor.ownerOnly')}
+                </p>
+              )}
+
+              {statusError && (
+                <p className="details-status-editor__error">{statusError}</p>
+              )}
+
+              {!statusError && statusMessage && (
+                <p className="details-status-editor__success">{statusMessage}</p>
+              )}
+
+              <button
+                type="button"
+                className="app-btn app-btn--secondary details-status-editor__save"
+                onClick={handleSaveStatus}
+                disabled={
+                  !isOwner ||
+                  statusSaving ||
+                  !statusDraft ||
+                  statusDraft === report.status
+                }
+              >
+                {statusSaving ? t('details.statusEditor.saving') : t('details.statusEditor.save')}
+              </button>
             </div>
           </div>
         </div>

@@ -54,7 +54,7 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin, onOpenMyReports }) {
             style={{ marginTop: '10px' }}
           >
             <FolderOpen size={18} />
-            <span>Omat ilmoitukset</span>
+            <span>{t('sidebar.myReports.button')}</span>
           </button>
         )}
 
@@ -121,12 +121,16 @@ export default function AppSidebar({
         )}
 
         {selectedReportId && !showForm && !showSighting && (
-          <TheftReportDetailsSidebar
-            reportId={selectedReportId}
-            onClose={onReportDetailsClose}
-            canCreateSighting={Boolean(currentUser)}
-            onCreateSighting={() => onOpenSighting?.(selectedReportId)}
-          />
+          <>
+            <BackButton onClick={onReportDetailsClose} />
+            <TheftReportDetailsSidebar
+              reportId={selectedReportId}
+              onClose={onReportDetailsClose}
+              canCreateSighting={Boolean(currentUser)}
+              onCreateSighting={() => onOpenSighting?.(selectedReportId)}
+              currentUsername={currentUser?.username ?? ''}
+            />
+          </>
         )}
 
         {showForm && !selectedReportId && !showSighting && (

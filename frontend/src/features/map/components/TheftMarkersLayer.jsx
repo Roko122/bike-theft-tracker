@@ -9,7 +9,11 @@ import {
 import { REPORT_STATUS_COLORS } from '../constants.js';
 
 function getMarkerColor(status) {
-  return REPORT_STATUS_COLORS[status] ?? REPORT_STATUS_COLORS.ACTIVE;
+  const normalizedStatus = String(status ?? '').toUpperCase();
+  const mappedStatus =
+    normalizedStatus === 'SIGHTING' ? 'SIGHTED' : normalizedStatus;
+
+  return REPORT_STATUS_COLORS[mappedStatus] ?? REPORT_STATUS_COLORS.ACTIVE;
 }
 
 function createReportMarkerIcon(status) {

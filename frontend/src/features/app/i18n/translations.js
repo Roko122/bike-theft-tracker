@@ -29,6 +29,23 @@ export const translations = {
       subtitle:
         'Avaa ilmoitus kartalta tai lisää uusi havainto nopeasti nykyiseen sijaintiin.',
       newTheftReport: 'Uusi varkausilmoitus',
+      myReports: {
+        button: 'Omat varkausilmoitukset',
+        eyebrow: 'Omat ilmoitukset',
+        title: 'Tarkastele omia varkausilmoituksiasi',
+        total: 'Ilmoituksia yhteensä',
+        empty: 'Et ole vielä tehnyt yhtään varkausilmoitusta.',
+        openReport: 'Avaa ilmoitus',
+        showSightings: 'Näytä havainnot',
+        hideSightings: 'Piilota havainnot',
+        sightingsTitle: 'Havaintoilmoitukset',
+        sightingsFetchFailed: 'Havaintojen haku epäonnistui',
+        sightingsEmpty: 'Ei havaintoilmoituksia vielä.',
+        sightingLabel: 'Havainto',
+        sightingReportedAt: 'Ilmoitettu',
+        sightingLocation: 'Sijainti',
+        sightingImageAlt: 'Havaintoilmoituksen kuva'
+      },
       loginRequired: 'Ilmoituksen lähettäminen vaatii kirjautumisen.',
       login: 'Kirjaudu sisään'
     },
@@ -209,6 +226,15 @@ export const translations = {
         tooltip:
           'Jos olet nähnyt pyörän tai tiedät siitä jotain, voit tehdä havaintoilmoituksen tämän painikkeen kautta.',
         tooltipAria: 'Lisätietoa havaintoilmoituksesta'
+      },
+      statusEditor: {
+        title: 'Ilmoituksen tila',
+        label: 'Valitse tila',
+        save: 'Tallenna tila',
+        saving: 'Tallennetaan...',
+        saved: 'Tila päivitetty.',
+        saveFailed: 'Tilan päivitys epäonnistui.',
+        ownerOnly: 'Vain ilmoituksen omistaja voi päivittää tilan.'
       }
     },
     popup: {
@@ -270,6 +296,23 @@ export const translations = {
       subtitle:
         'Open a report from the map or add a new sighting quickly for the current area.',
       newTheftReport: 'New theft report',
+      myReports: {
+        button: 'My theft reports',
+        eyebrow: 'My reports',
+        title: 'Browse your theft reports',
+        total: 'Total reports',
+        empty: 'You have not created any theft reports yet.',
+        openReport: 'Open report',
+        showSightings: 'Show sightings',
+        hideSightings: 'Hide sightings',
+        sightingsTitle: 'Sighting reports',
+        sightingsFetchFailed: 'Fetching sightings failed',
+        sightingsEmpty: 'No sightings yet.',
+        sightingLabel: 'Sighting',
+        sightingReportedAt: 'Reported at',
+        sightingLocation: 'Location',
+        sightingImageAlt: 'Sighting report image'
+      },
       loginRequired: 'Submitting a report requires signing in.',
       login: 'Sign in'
     },
@@ -448,6 +491,15 @@ export const translations = {
         tooltip:
           'If you have seen the bike or know something about it, you can create a sighting report with this button.',
         tooltipAria: 'More information about sighting reports'
+      },
+      statusEditor: {
+        title: 'Report status',
+        label: 'Select status',
+        save: 'Save status',
+        saving: 'Saving...',
+        saved: 'Status updated.',
+        saveFailed: 'Updating status failed.',
+        ownerOnly: 'Only the report owner can update the status.'
       }
     },
     popup: {
