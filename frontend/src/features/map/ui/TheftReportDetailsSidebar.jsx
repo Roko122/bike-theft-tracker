@@ -221,65 +221,58 @@ export default function TheftReportDetailsSidebar({
               </div>
             </div>
 
-            <h4 className="details-section__title details-section__title--spaced">
-              {t('details.statusEditor.title')}
-            </h4>
-            <div className="details-status-editor">
-              <div className="details-status-editor__row">
-                <label className="details-status-editor__label" htmlFor="report-status-select">
-                  {t('details.statusEditor.label')}
-                </label>
-                <select
-                  id="report-status-select"
-                  className="details-status-editor__select"
-                  value={statusDraft}
-                  onChange={(event) => {
-                    setStatusDraft(event.target.value);
-                    setStatusError('');
-                    setStatusMessage('');
-                  }}
-                  disabled={!isOwner || statusSaving}
-                >
-                  {STATUS_OPTIONS.map((statusValue) => (
-                    <option key={statusValue} value={statusValue}>
-                      {t(`details.status.${statusValue}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {isOwner && (
+              <>
+                <h4 className="details-section__title details-section__title--spaced">
+                  {t('details.statusEditor.title')}
+                </h4>
+                <div className="details-status-editor">
+                  <div className="details-status-editor__row">
+                    <label className="details-status-editor__label" htmlFor="report-status-select">
+                      {t('details.statusEditor.label')}
+                    </label>
+                    <select
+                      id="report-status-select"
+                      className="details-status-editor__select"
+                      value={statusDraft}
+                      onChange={(event) => {
+                        setStatusDraft(event.target.value);
+                        setStatusError('');
+                        setStatusMessage('');
+                      }}
+                      disabled={statusSaving}
+                    >
+                      {STATUS_OPTIONS.map((statusValue) => (
+                        <option key={statusValue} value={statusValue}>
+                          {t(`details.status.${statusValue}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className={`details-status details-status--${statusTone(statusDraft)}`}>
-                {t(`details.status.${statusDraft}`)}
-              </div>
+                  <div className={`details-status details-status--${statusTone(statusDraft)}`}>
+                    {t(`details.status.${statusDraft}`)}
+                  </div>
 
-              {!isOwner && (
-                <p className="details-status-editor__note">
-                  {t('details.statusEditor.ownerOnly')}
-                </p>
-              )}
+                  {statusError && (
+                    <p className="details-status-editor__error">{statusError}</p>
+                  )}
 
-              {statusError && (
-                <p className="details-status-editor__error">{statusError}</p>
-              )}
+                  {!statusError && statusMessage && (
+                    <p className="details-status-editor__success">{statusMessage}</p>
+                  )}
 
-              {!statusError && statusMessage && (
-                <p className="details-status-editor__success">{statusMessage}</p>
-              )}
-
-              <button
-                type="button"
-                className="app-btn app-btn--secondary details-status-editor__save"
-                onClick={handleSaveStatus}
-                disabled={
-                  !isOwner ||
-                  statusSaving ||
-                  !statusDraft ||
-                  statusDraft === report.status
-                }
-              >
-                {statusSaving ? t('details.statusEditor.saving') : t('details.statusEditor.save')}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    className="app-btn app-btn--secondary details-status-editor__save"
+                    onClick={handleSaveStatus}
+                    disabled={statusSaving || !statusDraft || statusDraft === report.status}
+                  >
+                    {statusSaving ? t('details.statusEditor.saving') : t('details.statusEditor.save')}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
