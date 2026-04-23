@@ -89,11 +89,7 @@ export function useTheftReportForm({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setLocation(
-          position.coords.latitude,
-          position.coords.longitude,
-          'gps'
-        );
+        setLocation(position.coords.latitude, position.coords.longitude, 'gps');
       },
       (geoError) => {
         setLocationError(
@@ -163,7 +159,12 @@ export function useTheftReportForm({
       return;
     }
 
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
       setError(getErrorText(language, 'invalidLocation'));
       return;
     }
@@ -178,7 +179,9 @@ export function useTheftReportForm({
         model: formValues.model.trim(),
         type: formValues.type.trim(),
         color: formValues.color.trim(),
-        serialNumber: formValues.serialNumber.trim(),
+        serialNumber: formValues.serialNumber
+          ? formValues.serialNumber.trim()
+          : null,
         description: formValues.bikeDescription.trim()
       }
     };
