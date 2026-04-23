@@ -4,6 +4,7 @@ import L from 'leaflet';
 import MapControls from './ui/MapControls.jsx';
 import {
   AutoCenterToUser,
+  CenterToSelectedLocation,
   MapClickPicker,
   MapInteractionLock,
   MapRefBinder,
@@ -93,6 +94,7 @@ export default function MapPage({
           fallbackCenter={FALLBACK_CENTER}
           onResolvedLocation={setResolvedUserLocation}
         />
+        <CenterToSelectedLocation location={selectedLocation} />
         <VisibleTheftsLoader onLoad={loadVisibleThefts} />
         <MapClickPicker enabled={isPickingLocation} onPick={onLocationSelected} />
 

@@ -228,3 +228,50 @@ export async function updateTheftReportStatus(reportId, status, { signal } = {})
 
   return parseJsonOrThrow(res);
 }
+
+/**
+ * Päivittää koko varkausilmoituksen.
+ * PUT /api/v1/theft-reports/{id}
+ */
+export async function updateTheftReport(reportId, payload, { signal } = {}) {
+  if (!reportId) throw new Error('reportId is required');
+  if (!payload) throw new Error('payload is required');
+
+  const res = await authorizedFetch(
+    buildUrl(`/${encodeURIComponent(reportId)}`),
+    {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      signal
+    }
+  );
+
+  return parseJsonOrThrow(res);
+}
+
+/**
+ * Poistaa varkausilmoituksen.
+ * DELETE /api/v1/theft-reports/{id}
+ */
+export async function deleteTheftReport(reportId, { signal } = {}) {
+  if (!reportId) throw new Error('reportId is required');
+
+  const res = await authorizedFetch(
+    buildUrl(`/${encodeURIComponent(reportId)}`),
+    {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json'
+      },
+      signal
+    }
+  );
+
+  if (!res.ok) {
+    await parseJsonOrThrow(res);
+  }
+}

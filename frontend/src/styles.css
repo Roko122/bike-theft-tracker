@@ -1044,6 +1044,19 @@ body {
   line-height: 1.4;
 }
 
+.my-reports-sighting__location-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0;
+  text-decoration: underline;
+}
+
 .my-reports-sighting__description {
   margin: 0;
   font-size: 14px;
@@ -1164,6 +1177,12 @@ body {
   gap: 6px;
 }
 
+.details-status-editor__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .details-status-editor__label {
   font-size: 13px;
   font-weight: 700;
@@ -1204,6 +1223,73 @@ body {
   min-height: 36px;
   padding: 0 12px;
   box-shadow: none;
+}
+
+.details-management-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.details-management-actions__danger {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.26);
+}
+
+.details-edit-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.details-edit-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.details-edit-form__field {
+  display: grid;
+  gap: 6px;
+}
+
+.details-edit-form__field span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.details-edit-form__field input,
+.details-edit-form__field textarea {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--color-ink);
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.details-edit-form__field input {
+  min-height: 40px;
+  padding: 0 10px;
+}
+
+.details-edit-form__field textarea {
+  min-height: 94px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.details-edit-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .details-status--danger {
@@ -2294,6 +2380,15 @@ body {
 
   .app-footer__links {
     gap: 12px;
+  }
+
+  .details-status-editor__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .details-edit-form__grid {
+    grid-template-columns: 1fr;
   }
 }
 

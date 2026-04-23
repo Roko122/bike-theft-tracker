@@ -94,6 +94,9 @@ export default function AppSidebar({
   onReportCreated,
   onSightingCreated,
   onReportDetailsClose,
+  onShowReportOnMap,
+  onReportDeleted,
+  onReportUpdated,
   showMyReports,
   onOpenMyReports,
   onCloseMyReports,
@@ -129,6 +132,9 @@ export default function AppSidebar({
               canCreateSighting={Boolean(currentUser)}
               onCreateSighting={() => onOpenSighting?.(selectedReportId)}
               currentUsername={currentUser?.username ?? ''}
+              onShowOnMap={onShowReportOnMap}
+              onDeleted={onReportDeleted}
+              onUpdated={onReportUpdated}
             />
           </>
         )}
@@ -150,7 +156,10 @@ export default function AppSidebar({
         {showMyReports && !showForm && !selectedReportId && !showSighting && (
           <>
             <BackButton onClick={onCloseMyReports} />
-            <MyTheftReportsSidebar onSelectReport={onSelectMyReport} />
+            <MyTheftReportsSidebar
+              onSelectReport={onSelectMyReport}
+              onShowOnMap={onShowReportOnMap}
+            />
           </>
         )}
 
