@@ -132,6 +132,10 @@ export default function AppSidebar({
               canCreateSighting={Boolean(currentUser)}
               onCreateSighting={() => onOpenSighting?.(selectedReportId)}
               currentUsername={currentUser?.username ?? ''}
+              selectedLocation={selectedLocation}
+              onStartPickFromMap={onStartPickFromMap}
+              onStopPickFromMap={onStopPickFromMap}
+              onClearPickedLocation={onClearPickedLocation}
               onShowOnMap={onShowReportOnMap}
               onDeleted={onReportDeleted}
               onUpdated={onReportUpdated}

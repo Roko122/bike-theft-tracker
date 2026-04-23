@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Binoculars, CircleHelp, UserRound } from 'lucide-react';
+import {
+  Binoculars,
+  CircleHelp,
+  Crosshair,
+  MapPin,
+  Trash2,
+  UserRound
+} from 'lucide-react';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import {
   deleteTheftReport,
@@ -10,6 +17,7 @@ import {
 import ImageCarousel from './ImageCarousel.jsx';
 import { getReportImageUrls } from '../utils/reportImages.js';
 import { formatReportDate } from '../utils/reportFormatters.js';
+import LocationMarkerHint from './LocationMarkerHint.jsx';
 
 const STATUS_OPTIONS = ['ACTIVE', 'SIGHTED', 'RECOVERED', 'CLOSED'];
 
@@ -87,6 +95,10 @@ export default function TheftReportDetailsSidebar({
   onCreateSighting,
   canCreateSighting = false,
   currentUsername = '',
+  selectedLocation,
+  onStartPickFromMap,
+  onStopPickFromMap,
+  onClearPickedLocation,
   onShowOnMap,
   onDeleted,
   onUpdated
@@ -106,6 +118,8 @@ export default function TheftReportDetailsSidebar({
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editMessage, setEditMessage] = useState('');
+  const [editLocationError, setEditLocationError] = useState('');
+  const [awaitingMapPick, setAwaitingMapPick] = useState(false);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState('');
@@ -133,7 +147,9 @@ export default function TheftReportDetailsSidebar({
           setStatusMessage('');
           setEditError('');
           setEditMessage('');
+          setEditLocationError('');
           setDeleteError('');
+          setAwaitingMapPick(false);
         }
       } catch (loadError) {
         if (!cancelled) {
@@ -152,6 +168,22 @@ export default function TheftReportDetailsSidebar({
       cancelled = true;
     };
   }, [reportId, t]);
+
+  useEffect(() => {
+    if (
+      !awaitingMapPick ||
+      !selectedLocation ||
+      selectedLocation.latitude == null ||
+      selectedLocation.longitude == null
+    ) {
+      return;
+    }
+
+    patchEditDraft('latitude', String(selectedLocation.latitude));
+    patchEditDraft('longitude', String(selectedLocation.longitude));
+    setEditLocationError('');
+    setAwaitingMapPick(false);
+  }, [awaitingMapPick, selectedLocation]);
 
   const imageUrls = useMemo(
     () => getReportImageUrls(report?.images),
@@ -181,6 +213,54 @@ export default function TheftReportDetailsSidebar({
       ...previous,
       [field]: value
     }));
+  }
+
+  function setEditLocation(latitude, longitude) {
+    patchEditDraft('latitude', String(latitude));
+    patchEditDraft('longitude', String(longitude));
+  }
+
+  function useMyLocationForEdit() {
+    setEditLocationError('');
+
+    if (!navigator.geolocation) {
+      setEditLocationError(t('theftForm.errors.geolocationUnsupported'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setEditLocation(position.coords.latitude, position.coords.longitude);
+        setAwaitingMapPick(false);
+        onStopPickFromMap?.();
+      },
+      (positionError) => {
+        setEditLocationError(
+          positionError.message || t('theftForm.errors.geolocationFailed')
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 30000
+      }
+    );
+  }
+
+  function startMapPickForEdit() {
+    setEditLocationError('');
+    setAwaitingMapPick(true);
+    onClearPickedLocation?.();
+    onStartPickFromMap?.();
+  }
+
+  function clearEditLocation() {
+    patchEditDraft('latitude', '');
+    patchEditDraft('longitude', '');
+    setEditLocationError('');
+    setAwaitingMapPick(false);
+    onStopPickFromMap?.();
+    onClearPickedLocation?.();
   }
 
   async function handleSaveStatus() {
@@ -223,6 +303,12 @@ export default function TheftReportDetailsSidebar({
       !editDraft.bikeDescription.trim()
     ) {
       setEditError(t('details.editor.requiredFields'));
+      setEditMessage('');
+      return;
+    }
+
+    if (!editDraft.latitude || !editDraft.longitude) {
+      setEditError(t('theftForm.errors.locationMissing'));
       setEditMessage('');
       return;
     }
@@ -270,6 +356,9 @@ export default function TheftReportDetailsSidebar({
       setStatusDraft(updatedReport?.status ?? statusDraft);
       setEditDraft(buildEditDraftFromReport(updatedReport));
       setEditMode(false);
+      setEditLocationError('');
+      setAwaitingMapPick(false);
+      onStopPickFromMap?.();
       setEditMessage(t('details.editor.saved'));
       onUpdated?.();
     } catch (saveError) {
@@ -440,6 +529,9 @@ export default function TheftReportDetailsSidebar({
                       setEditError('');
                       setEditMessage('');
                       setEditDraft(buildEditDraftFromReport(report));
+                      setEditLocationError('');
+                      setAwaitingMapPick(false);
+                      onStopPickFromMap?.();
                     }}
                   >
                     {editMode ? t('details.editor.cancel') : t('details.editor.open')}
@@ -536,25 +628,64 @@ export default function TheftReportDetailsSidebar({
                       </label>
                     </div>
 
-                    <div className="details-edit-form__grid">
-                      <label className="details-edit-form__field">
-                        <span>{t('details.fields.latitude')}</span>
-                        <input
-                          type="number"
-                          step="any"
-                          value={editDraft.latitude}
-                          onChange={(event) => patchEditDraft('latitude', event.target.value)}
-                        />
-                      </label>
-                      <label className="details-edit-form__field">
-                        <span>{t('details.fields.longitude')}</span>
-                        <input
-                          type="number"
-                          step="any"
-                          value={editDraft.longitude}
-                          onChange={(event) => patchEditDraft('longitude', event.target.value)}
-                        />
-                      </label>
+                    <div className="details-edit-form__location">
+                      <div className="report-section__title">
+                        <span className="info-label">
+                          <span>
+                            {t('theftForm.location')}
+                            <span className="required-indicator" aria-hidden="true">
+                              {' '}
+                              *
+                            </span>
+                          </span>
+                        </span>
+                      </div>
+
+                      {editLocationError && (
+                        <div className="report-alert report-alert--warning">
+                          {editLocationError}
+                        </div>
+                      )}
+
+                      <div className="report-location-actions">
+                        <button
+                          type="button"
+                          className="app-btn app-btn--secondary"
+                          onClick={useMyLocationForEdit}
+                        >
+                          <Crosshair size={16} />
+                          <span>{t('theftForm.useMyLocation')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="app-btn app-btn--secondary"
+                          onClick={startMapPickForEdit}
+                        >
+                          <MapPin size={16} />
+                          <span>{t('theftForm.pickFromMap')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="app-btn app-btn--ghost"
+                          onClick={clearEditLocation}
+                        >
+                          <Trash2 size={16} />
+                          <span>{t('theftForm.clearLocation')}</span>
+                        </button>
+                      </div>
+
+                      <div className="report-location-meta">
+                        {editDraft.latitude && editDraft.longitude ? (
+                          <LocationMarkerHint
+                            text={t('theftForm.selectedLocationMapHint')}
+                            markerAriaLabel={t('theftForm.selectedLocationMarkerAria')}
+                          />
+                        ) : (
+                          <span>{t('theftForm.selectLocationHint')}</span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="details-edit-form__grid">
@@ -635,6 +766,9 @@ export default function TheftReportDetailsSidebar({
                           setEditError('');
                           setEditMessage('');
                           setEditDraft(buildEditDraftFromReport(report));
+                          setEditLocationError('');
+                          setAwaitingMapPick(false);
+                          onStopPickFromMap?.();
                         }}
                       >
                         {t('details.editor.cancel')}
