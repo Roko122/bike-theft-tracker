@@ -1,7 +1,6 @@
 package com.rkrs.bikethefttracker.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record CreateBikeRequest(
@@ -22,7 +21,6 @@ public record CreateBikeRequest(
         @Size(max = 30, message = "Color must not exceed {max} characters.")
         String color,
 
-        @NotEmpty(message = "Serial number must not be empty (null is allowed).")
         @Size(max = 30, message = "Serial number must not exceed {max} characters.")
         String serialNumber,
 
