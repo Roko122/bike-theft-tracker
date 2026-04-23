@@ -183,3 +183,48 @@ export async function getMyTheftReports({ signal } = {}) {
 
   return parseJsonOrThrow(res);
 }
+
+/**
+ * Hakee yhden varkausilmoituksen havaintoilmoitukset.
+ * GET /api/v1/theft-reports/{id}/sightings
+ */
+export async function getSightingsForReport(reportId, { signal } = {}) {
+  if (!reportId) throw new Error('reportId is required');
+
+  const res = await authorizedFetch(
+    buildUrl(`/${encodeURIComponent(reportId)}/sightings`),
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json'
+      },
+      signal
+    }
+  );
+
+  return parseJsonOrThrow(res);
+}
+
+/**
+ * Päivittää varkausilmoituksen tilan.
+ * PATCH /api/v1/theft-reports/{id}/status
+ */
+export async function updateTheftReportStatus(reportId, status, { signal } = {}) {
+  if (!reportId) throw new Error('reportId is required');
+  if (!status) throw new Error('status is required');
+
+  const res = await authorizedFetch(
+    buildUrl(`/${encodeURIComponent(reportId)}/status`),
+    {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status }),
+      signal
+    }
+  );
+
+  return parseJsonOrThrow(res);
+}
