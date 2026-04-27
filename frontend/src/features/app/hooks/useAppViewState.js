@@ -37,7 +37,8 @@ const initialState = {
   activePanel: PANEL.BASE,
   selectedLocation: null,
   isPickingLocation: false,
-  selectedReportId: null
+  selectedReportId: null,
+  focusedMyReportId: null
 };
 
 function appViewReducer(state, action) {
@@ -55,7 +56,8 @@ function appViewReducer(state, action) {
         activePanel: PANEL.BASE,
         isPickingLocation: false,
         selectedReportId: null,
-        selectedLocation: null
+        selectedLocation: null,
+        focusedMyReportId: null
       };
 
     case ACTION.OPEN_FORM:
@@ -63,7 +65,8 @@ function appViewReducer(state, action) {
         ...state,
         isMenuOpen: true,
         activePanel: PANEL.FORM,
-        selectedReportId: null
+        selectedReportId: null,
+        focusedMyReportId: null
       };
 
     case ACTION.CLOSE_FORM:
@@ -80,7 +83,8 @@ function appViewReducer(state, action) {
         isMenuOpen: false,
         activePanel: PANEL.LOGIN,
         selectedReportId: null,
-        isPickingLocation: false
+        isPickingLocation: false,
+        focusedMyReportId: null
       };
 
     case ACTION.CLOSE_LOGIN:
@@ -96,7 +100,8 @@ function appViewReducer(state, action) {
         isMenuOpen: false,
         activePanel: PANEL.REGISTER,
         selectedReportId: null,
-        isPickingLocation: false
+        isPickingLocation: false,
+        focusedMyReportId: null
       };
 
     case ACTION.CLOSE_REGISTER:
@@ -112,14 +117,16 @@ function appViewReducer(state, action) {
         isMenuOpen: true,
         activePanel: PANEL.DETAILS,
         selectedReportId: action.payload.reportId,
-        isPickingLocation: false
+        isPickingLocation: false,
+        focusedMyReportId: null
       };
 
     case ACTION.CLEAR_DETAILS:
       return {
         ...state,
         activePanel: PANEL.BASE,
-        selectedReportId: null
+        selectedReportId: null,
+        focusedMyReportId: null
       };
 
     case ACTION.CLEAR_LOCATION:
@@ -135,7 +142,8 @@ function appViewReducer(state, action) {
         isMenuOpen: true,
         activePanel: PANEL.SIGHTING,
         selectedReportId: action.payload.reportId,
-        isPickingLocation: false
+        isPickingLocation: false,
+        focusedMyReportId: null
       };
 
     case ACTION.OPEN_MY_REPORTS:
@@ -145,7 +153,8 @@ function appViewReducer(state, action) {
         activePanel: PANEL.MY_REPORTS,
         selectedReportId: null,
         isPickingLocation: false,
-        selectedLocation: null
+        selectedLocation: null,
+        focusedMyReportId: action.payload?.reportId ?? null
       };
 
     case ACTION.CLOSE_SIGHTING:
@@ -181,7 +190,8 @@ function appViewReducer(state, action) {
         isMenuOpen: false,
         activePanel: PANEL.BASE,
         isPickingLocation: false,
-        selectedLocation: null
+        selectedLocation: null,
+        focusedMyReportId: null
       };
 
     case ACTION.SESSION_EXPIRED:
@@ -190,7 +200,8 @@ function appViewReducer(state, action) {
         isMenuOpen: false,
         activePanel: PANEL.LOGIN,
         isPickingLocation: false,
-        selectedReportId: null
+        selectedReportId: null,
+        focusedMyReportId: null
       };
 
     default:
@@ -259,8 +270,11 @@ export function useAppViewState() {
     });
   }, []);
 
-  const openMyReports = useCallback(() => {
-    dispatch({ type: ACTION.OPEN_MY_REPORTS });
+  const openMyReports = useCallback((reportId = null) => {
+    dispatch({
+      type: ACTION.OPEN_MY_REPORTS,
+      payload: { reportId }
+    });
   }, []);
 
   const closeSighting = useCallback(() => {
