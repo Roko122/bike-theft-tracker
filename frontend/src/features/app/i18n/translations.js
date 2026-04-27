@@ -22,7 +22,16 @@ export const translations = {
       loginOrRegister: 'Kirjaudu tai rekisteröidy',
       logout: 'Kirjaudu ulos',
       github: 'GitHub',
-      docs: 'Dokumentaatio'
+      docs: 'Dokumentaatio',
+      notifications: {
+        open: 'Avaa ilmoitukset',
+        title: 'Ilmoitukset',
+        empty: 'Ei uusia ilmoituksia.',
+        loadFailed: 'Ilmoitusten haku epäonnistui.',
+        types: {
+          NEW_SIGHTING: 'Uusi havainto ilmoitukseesi'
+        }
+      }
     },
     sidebar: {
       back: 'Takaisin',
@@ -313,7 +322,16 @@ export const translations = {
       loginOrRegister: 'Sign in or register',
       logout: 'Sign out',
       github: 'GitHub',
-      docs: 'Documentation'
+      docs: 'Documentation',
+      notifications: {
+        open: 'Open notifications',
+        title: 'Notifications',
+        empty: 'No new notifications.',
+        loadFailed: 'Loading notifications failed.',
+        types: {
+          NEW_SIGHTING: 'New sighting on your report'
+        }
+      }
     },
     sidebar: {
       back: 'Back',

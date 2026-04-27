@@ -78,6 +78,7 @@ function BaseMenu({ currentUser, onOpenForm, onOpenLogin, onOpenMyReports }) {
 export default function AppSidebar({
   currentUser,
   selectedReportId,
+  focusedMyReportId,
   selectedLocation,
   showForm,
   showSighting,
@@ -161,6 +162,7 @@ export default function AppSidebar({
           <>
             <BackButton onClick={onCloseMyReports} />
             <MyTheftReportsSidebar
+              focusedReportId={focusedMyReportId}
               onSelectReport={onSelectMyReport}
               onShowOnMap={onShowReportOnMap}
             />

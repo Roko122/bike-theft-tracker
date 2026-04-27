@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Bike, MapPin, CalendarDays, FileText } from 'lucide-react';
 import { useI18n } from '../../app/i18n/LanguageContext.jsx';
 import {
@@ -12,7 +12,11 @@ import { formatReportDate } from '../utils/reportFormatters.js';
  * Näyttää kirjautuneen käyttäjän omat varkausilmoitukset listana.
  * Kun käyttäjä klikkaa ilmoitusta, avataan ilmoituksen tarkempi näkymä.
  */
-export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
+export default function MyTheftReportsSidebar({
+  focusedReportId,
+  onSelectReport,
+  onShowOnMap
+}) {
   const { language, t } = useI18n();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,17 +94,10 @@ export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
     return '';
   }
 
-  async function handleToggleSightings(reportId) {
+  const loadSightingsForReport = useCallback(async (reportId) => {
     if (!reportId) {
       return;
     }
-
-    if (expandedReportId === reportId) {
-      setExpandedReportId(null);
-      return;
-    }
-
-    setExpandedReportId(reportId);
 
     const currentState = sightingsByReportId[reportId];
     if (currentState?.loading || currentState?.loaded) {
@@ -139,6 +136,20 @@ export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
         }
       }));
     }
+  }, [sightingsByReportId, t]);
+
+  async function handleToggleSightings(reportId) {
+    if (!reportId) {
+      return;
+    }
+
+    if (expandedReportId === reportId) {
+      setExpandedReportId(null);
+      return;
+    }
+
+    setExpandedReportId(reportId);
+    await loadSightingsForReport(reportId);
   }
 
   useEffect(() => {
@@ -171,6 +182,19 @@ export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
       cancelled = true;
     };
   }, [t]);
+
+  useEffect(() => {
+    if (!focusedReportId) {
+      return;
+    }
+
+    if (!reports.some((report) => report.id === focusedReportId)) {
+      return;
+    }
+
+    setExpandedReportId(focusedReportId);
+    void loadSightingsForReport(focusedReportId);
+  }, [focusedReportId, loadSightingsForReport, reports]);
 
   if (loading) {
     return <p style={{ marginTop: 12 }}>{t('common.loading')}</p>;
@@ -216,7 +240,14 @@ export default function MyTheftReportsSidebar({ onSelectReport, onShowOnMap }) {
               };
 
               return (
-                <div key={report.id} className="my-reports-item">
+                <div
+                  key={report.id}
+                  className={
+                    report.id === focusedReportId
+                      ? 'my-reports-item my-reports-item--focused'
+                      : 'my-reports-item'
+                  }
+                >
                   <div style={{ fontWeight: 700, marginBottom: 8 }}>
                     <Bike
                       size={16}

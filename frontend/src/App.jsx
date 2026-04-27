@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Bike, BookText, Github, LogIn, LogOut, Menu, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Bell,
+  Bike,
+  BookText,
+  Github,
+  LogIn,
+  LogOut,
+  Menu,
+  X
+} from 'lucide-react';
 import MapPage from './features/map/MapPage.jsx';
 import AppSidebar from './features/app/ui/AppSidebar.jsx';
 import AuthDialog from './features/app/ui/AuthDialog.jsx';
@@ -7,6 +16,11 @@ import DocumentationPage from './features/app/docs/DocumentationPage.jsx';
 import { useAuthSession } from './features/app/hooks/useAuthSession.js';
 import { AuthProvider } from './features/app/auth/AuthContext.jsx';
 import { useAppViewState } from './features/app/hooks/useAppViewState.js';
+import {
+  getUnreadNotificationCount,
+  getUnreadNotifications,
+  markNotificationAsRead
+} from './features/api/notificationApi.js';
 import {
   LanguageProvider,
   useI18n
@@ -40,12 +54,34 @@ function AppFlashMessage({ message }) {
   );
 }
 
+function formatNotificationTime(time, language) {
+  if (!time) {
+    return '';
+  }
+
+  const date = new Date(time);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toLocaleString(language === 'fi' ? 'fi-FI' : 'en-US', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  });
+}
+
 function AppContent() {
   const { language, setLanguage, t } = useI18n();
   const viewState = useAppViewState();
   const [refreshKey, setRefreshKey] = useState(0);
   const [flashMessage, setFlashMessage] = useState('');
   const [showDocs, setShowDocs] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notificationItems, setNotificationItems] = useState([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [notificationsError, setNotificationsError] = useState('');
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const notificationMenuRef = useRef(null);
   const { currentUser, sessionExpiredVersion, setCurrentUser, logout } =
     useAuthSession();
 
@@ -124,9 +160,116 @@ function AppContent() {
 
   const handleLogout = useCallback(async () => {
     await logout();
+    setIsNotificationsOpen(false);
+    setNotificationItems([]);
+    setUnreadNotificationCount(0);
     viewState.openBaseMenu();
     showSuccessMessage(t('flash.logoutSuccess'));
   }, [logout, showSuccessMessage, t, viewState.openBaseMenu]);
+
+  const loadNotificationCount = useCallback(async () => {
+    if (!currentUser) {
+      setUnreadNotificationCount(0);
+      return;
+    }
+
+    try {
+      const data = await getUnreadNotificationCount();
+      const unreadCount = Number(data?.unreadCount);
+      setUnreadNotificationCount(Number.isFinite(unreadCount) ? unreadCount : 0);
+    } catch {
+      setUnreadNotificationCount(0);
+    }
+  }, [currentUser]);
+
+  const loadNotifications = useCallback(async () => {
+    if (!currentUser) {
+      setNotificationItems([]);
+      setUnreadNotificationCount(0);
+      return;
+    }
+
+    try {
+      setNotificationsLoading(true);
+      setNotificationsError('');
+      const data = await getUnreadNotifications();
+      const unreadItems = Array.isArray(data) ? data : [];
+      setNotificationItems(unreadItems);
+      setUnreadNotificationCount(unreadItems.length);
+    } catch (error) {
+      setNotificationsError(error?.message || t('app.notifications.loadFailed'));
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, [currentUser, t]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setIsNotificationsOpen(false);
+      setNotificationItems([]);
+      setNotificationsError('');
+      setUnreadNotificationCount(0);
+      return undefined;
+    }
+
+    void loadNotificationCount();
+
+    const interval = setInterval(() => {
+      void loadNotificationCount();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [currentUser, loadNotificationCount]);
+
+  useEffect(() => {
+    if (!isNotificationsOpen) {
+      return undefined;
+    }
+
+    function handleDocumentPointerDown(event) {
+      if (!notificationMenuRef.current?.contains(event.target)) {
+        setIsNotificationsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleDocumentPointerDown);
+    document.addEventListener('touchstart', handleDocumentPointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentPointerDown);
+      document.removeEventListener('touchstart', handleDocumentPointerDown);
+    };
+  }, [isNotificationsOpen]);
+
+  const toggleNotifications = useCallback(() => {
+    setIsNotificationsOpen((isOpen) => {
+      const shouldOpen = !isOpen;
+      if (shouldOpen) {
+        void loadNotifications();
+      }
+      return shouldOpen;
+    });
+  }, [loadNotifications]);
+
+  const handleNotificationClick = useCallback(
+    (notification) => {
+      if (!notification?.theftReport) {
+        return;
+      }
+
+      if (notification.id) {
+        void markNotificationAsRead(notification.id).catch(() => {});
+      }
+
+      setNotificationItems((previous) =>
+        previous.filter((item) => item.id !== notification.id)
+      );
+      setUnreadNotificationCount((current) => Math.max(0, current - 1));
+      setIsNotificationsOpen(false);
+      viewState.openMyReports(notification.theftReport);
+    },
+    [viewState.openMyReports]
+  );
 
   const isMapLocked =
     viewState.showLogin ||
@@ -196,6 +339,71 @@ function AppContent() {
 
               {currentUser ? (
                 <>
+                  <div className="notification-menu" ref={notificationMenuRef}>
+                    <button
+                      type="button"
+                      className="notification-bell"
+                      aria-label={t('app.notifications.open')}
+                      aria-expanded={isNotificationsOpen}
+                      aria-haspopup="menu"
+                      onClick={toggleNotifications}
+                    >
+                      <Bell size={18} />
+                      {unreadNotificationCount > 0 && (
+                        <span className="notification-bell__badge">
+                          {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {isNotificationsOpen && (
+                      <div className="notification-dropdown" role="menu">
+                        <div className="notification-dropdown__header">
+                          {t('app.notifications.title')}
+                        </div>
+
+                        {notificationsLoading && (
+                          <div className="notification-dropdown__state">
+                            {t('common.loading')}
+                          </div>
+                        )}
+
+                        {!notificationsLoading && notificationsError && (
+                          <div className="notification-dropdown__state notification-dropdown__state--error">
+                            {notificationsError}
+                          </div>
+                        )}
+
+                        {!notificationsLoading &&
+                          !notificationsError &&
+                          notificationItems.length === 0 && (
+                            <div className="notification-dropdown__state">
+                              {t('app.notifications.empty')}
+                            </div>
+                          )}
+
+                        {!notificationsLoading &&
+                          !notificationsError &&
+                          notificationItems.length > 0 &&
+                          notificationItems.map((notification) => (
+                            <button
+                              key={notification.id}
+                              type="button"
+                              className="notification-item"
+                              onClick={() => handleNotificationClick(notification)}
+                            >
+                              <span className="notification-item__title">
+                                {t(`app.notifications.types.${notification.type}`)}
+                              </span>
+                              <span className="notification-item__time">
+                                {formatNotificationTime(notification.time, language)}
+                              </span>
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+
                   <UserBadge user={currentUser} />
                   <button
                     type="button"
@@ -222,6 +430,7 @@ function AppContent() {
               <AppSidebar
                 currentUser={currentUser}
                 selectedReportId={viewState.selectedReportId}
+                focusedMyReportId={viewState.focusedMyReportId}
                 selectedLocation={viewState.selectedLocation}
                 showForm={viewState.showForm}
                 showSighting={viewState.showSighting}
