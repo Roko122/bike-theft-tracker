@@ -1,5 +1,5 @@
 import { ArrowLeft, X } from 'lucide-react';
-import LoginPage from '../../map/ui/LoginPage.jsx';
+import LoginPage from '../../map/ui/loginPage.jsx';
 import RegisterPage from '../../map/ui/RegisterPage.jsx';
 import { useI18n } from '../i18n/LanguageContext.jsx';
 
