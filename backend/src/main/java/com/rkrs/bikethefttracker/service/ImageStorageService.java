@@ -42,6 +42,12 @@ public class ImageStorageService {
 
     public boolean deleteImages(UUID id) {
         File file = new File(PROJECT_ROOT + "/images/theft-reports/" + id);
+
+        //no files to delete
+        if (!file.exists()) {
+            return true;
+        }
+
         return FileSystemUtils.deleteRecursively(file);
     }
 
