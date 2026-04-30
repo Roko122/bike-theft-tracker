@@ -5,7 +5,6 @@ import com.rkrs.bikethefttracker.entity.BikeImage;
 import com.rkrs.bikethefttracker.entity.TheftReport;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -75,9 +74,6 @@ public class TheftReportMapper {
     }
 
     private String buildImageUrl(BikeImage bikeImage, UUID id) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/images/theft-reports/" + id + "/bike/")
-                .path(bikeImage.getImageName())
-                .toUriString();
+        return "/images/theft-reports/" + id + "/bike/" + bikeImage.getImageName();
     }
 }
