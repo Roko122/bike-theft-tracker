@@ -1,32 +1,5 @@
 import { resolveApiAssetUrl } from '../../api/theftReportApi.js';
-
-const IMAGE_URL_KEYS = [
-  'url',
-  'imageUrl',
-  'downloadUrl',
-  'href',
-  'path',
-  'src'
-];
-
-function readImageUrl(item) {
-  if (typeof item === 'string') {
-    return item;
-  }
-
-  if (!item || typeof item !== 'object') {
-    return '';
-  }
-
-  for (const key of IMAGE_URL_KEYS) {
-    const value = item[key];
-    if (typeof value === 'string' && value.trim() !== '') {
-      return value;
-    }
-  }
-
-  return '';
-}
+import { getApiBaseUrl } from '../../api/apiConfig.js';
 
 export function getReportImageUrls(images) {
   if (!Array.isArray(images)) {
@@ -34,7 +7,7 @@ export function getReportImageUrls(images) {
   }
 
   return images
-    .map(readImageUrl)
+    .map(url => getApiBaseUrl() + url)
     .filter(Boolean)
     .map(resolveApiAssetUrl);
 }
