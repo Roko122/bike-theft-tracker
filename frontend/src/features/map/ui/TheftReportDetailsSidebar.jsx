@@ -18,16 +18,9 @@ import ImageCarousel from './ImageCarousel.jsx';
 import { getReportImageUrls } from '../utils/reportImages.js';
 import { formatReportDate } from '../utils/reportFormatters.js';
 import LocationMarkerHint from './LocationMarkerHint.jsx';
+import ReportStatusBadge from './ReportStatusBadge.jsx';
 
 const STATUS_OPTIONS = ['ACTIVE', 'SIGHTED', 'RECOVERED', 'CLOSED'];
-
-function statusTone(status) {
-  const normalized = String(status ?? '').toUpperCase();
-  if (normalized === 'SIGHTED') return 'warning';
-  if (normalized === 'RECOVERED') return 'success';
-  if (normalized === 'CLOSED') return 'neutral';
-  return 'danger';
-}
 
 function toDateTimeLocal(value) {
   if (!value) {
@@ -409,9 +402,7 @@ export default function TheftReportDetailsSidebar({
             <div className="details-header__content">
               <div className="details-header__topline">
                 <div className="details-header__eyebrow">{t('details.title')}</div>
-                <div className={`details-status details-status--${statusTone(report.status)}`}>
-                  {t(`details.status.${report.status}`)}
-                </div>
+                <ReportStatusBadge status={report.status} />
               </div>
               <h3 className="details-header__title">
                 {report?.brand ?? ''} {report?.model ?? ''}

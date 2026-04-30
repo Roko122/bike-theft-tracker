@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { create } from 'zustand';
 import { translations } from './translations.js';
 
 const STORAGE_KEY = 'app-language';
@@ -6,24 +7,6 @@ const STORAGE_KEY = 'app-language';
 function getNestedValue(object, path) {
   return path.split('.').reduce((current, part) => current?.[part], object);
 }
-
-function createValue(language = 'fi', setLanguage = () => {}) {
-  const activeTranslations = translations[language] ?? translations.fi;
-
-  return {
-    language,
-    setLanguage,
-    t(key) {
-      return (
-        getNestedValue(activeTranslations, key) ??
-        getNestedValue(translations.fi, key) ??
-        key
-      );
-    }
-  };
-}
-
-const LanguageContext = createContext(createValue());
 
 function getStoredLanguage() {
   if (typeof window === 'undefined') {
@@ -38,8 +21,15 @@ function getStoredLanguage() {
   return storage.getItem(STORAGE_KEY) || 'fi';
 }
 
-export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(() => getStoredLanguage());
+const useLanguageStore = create((set) => ({
+  language: getStoredLanguage(),
+  setLanguage: (language) => {
+    set({ language });
+  }
+}));
+
+export function useInitializeLanguage() {
+  const language = useLanguageStore((state) => state.language);
 
   useEffect(() => {
     const storage = window.localStorage;
@@ -50,17 +40,25 @@ export function LanguageProvider({ children }) {
 
     document.documentElement.lang = language;
   }, [language]);
-
-  const value = useMemo(
-    () => createValue(language, setLanguage),
-    [language]
-  );
-
-  return (
-    <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
-  );
 }
 
 export function useI18n() {
-  return useContext(LanguageContext);
+  const language = useLanguageStore((state) => state.language);
+  const setLanguage = useLanguageStore((state) => state.setLanguage);
+
+  return useMemo(() => {
+    const activeTranslations = translations[language] ?? translations.fi;
+
+    return {
+      language,
+      setLanguage,
+      t(key) {
+        return (
+          getNestedValue(activeTranslations, key) ??
+          getNestedValue(translations.fi, key) ??
+          key
+        );
+      }
+    };
+  }, [language, setLanguage]);
 }

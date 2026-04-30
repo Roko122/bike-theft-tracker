@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vitest';
 import App from '../../App.jsx';
 
 vi.mock('../../features/map/MapPage.jsx', () => ({
@@ -13,10 +14,10 @@ vi.mock('../../features/map/ui/TheftReportDetailsSidebar.jsx', () => ({
   default: () => <div data-testid="theft-report-details-sidebar" />
 }));
 
-describe('App - sovellus renderöityy', () => {
-  test('renderöi Bike Tracker tekstin', () => {
+describe('App - sovellus renderoityy', () => {
+  test('renderoi Bike Theft Tracker tekstin', () => {
     render(<App />);
 
-    expect(screen.getByText('Bike Tracker')).toBeInTheDocument();
+    expect(screen.getByText('Bike Theft Tracker')).toBeInTheDocument();
   });
 });

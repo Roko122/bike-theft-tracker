@@ -49,7 +49,7 @@ describe('MapPage - user location marker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    Object.defineProperty(global.navigator, 'geolocation', {
+    Object.defineProperty(globalThis.navigator, 'geolocation', {
       configurable: true,
       value: {
         getCurrentPosition: vi.fn((success) =>

@@ -7,6 +7,7 @@ import {
   resolveApiAssetUrl
 } from '../../api/theftReportApi.js';
 import { formatReportDate } from '../utils/reportFormatters.js';
+import ReportStatusBadge from './ReportStatusBadge.jsx';
 
 /**
  * Näyttää kirjautuneen käyttäjän omat varkausilmoitukset listana.
@@ -275,8 +276,8 @@ export default function MyTheftReportsSidebar({
                     <span>{formatReportDate(report.theftTime, language)}</span>
                   </div>
 
-                  <div>
-                    <strong>{t('reportFields.status')}:</strong> {report.status ?? '-'}
+                  <div className="my-reports-item__status">
+                    <ReportStatusBadge status={report.status} />
                   </div>
 
                   <div className="my-reports-item__actions">

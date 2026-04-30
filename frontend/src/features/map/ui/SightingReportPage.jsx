@@ -30,17 +30,13 @@ export default function SightingReportPage({
   const [image, setImage] = useState(null);
   const [latitude, setLatitude] = useState(defaultLocation?.latitude ?? '');
   const [longitude, setLongitude] = useState(defaultLocation?.longitude ?? '');
-  const [locationSource, setLocationSource] = useState(
-    defaultLocation ? 'map' : ''
-  );
   const [locationError, setLocationError] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function setLocation(lat, lon, source) {
+  function setLocation(lat, lon) {
     setLatitude(String(lat));
     setLongitude(String(lon));
-    setLocationSource(source);
   }
 
   function useMyLocation() {
@@ -53,11 +49,7 @@ export default function SightingReportPage({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setLocation(
-          position.coords.latitude,
-          position.coords.longitude,
-          'gps'
-        );
+        setLocation(position.coords.latitude, position.coords.longitude);
       },
       (positionError) => {
         setLocationError(
@@ -75,13 +67,12 @@ export default function SightingReportPage({
   function clearLocation() {
     setLatitude('');
     setLongitude('');
-    setLocationSource('');
     setLocationError('');
   }
 
   useEffect(() => {
     if (defaultLocation?.latitude && defaultLocation?.longitude) {
-      setLocation(defaultLocation.latitude, defaultLocation.longitude, 'map');
+      setLocation(defaultLocation.latitude, defaultLocation.longitude);
       setLocationError('');
     }
   }, [defaultLocation]);
@@ -208,7 +199,6 @@ export default function SightingReportPage({
                 className="app-btn app-btn--secondary"
                 onClick={() => {
                   setLocationError('');
-                  setLocationSource('map');
                   onStartPickFromMap?.();
                 }}
               >

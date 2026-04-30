@@ -1,76 +1,64 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { create } from 'zustand';
 import { getCurrentUser, logoutUser } from '../../api/authApi.js';
-import {
-  clearSessionExpiredHandler,
-  setSessionExpiredHandler
-} from './sessionExpiryBridge.js';
+import { setSessionExpiredHandler } from './sessionExpiryBridge.js';
 
-const AuthContext = createContext(null);
-
-export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [sessionExpiredVersion, setSessionExpiredVersion] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-
-    getCurrentUser()
-      .then((user) => {
-        if (active) {
-          setCurrentUser(user);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setCurrentUser(null);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    function handleSessionExpired() {
-      setCurrentUser(null);
-      setSessionExpiredVersion((current) => current + 1);
+const useAuthStore = create((set) => ({
+  currentUser: null,
+  sessionExpiredVersion: 0,
+  setCurrentUser: (user) => {
+    set({ currentUser: user });
+  },
+  markSessionExpired: () => {
+    set((state) => ({
+      currentUser: null,
+      sessionExpiredVersion: state.sessionExpiredVersion + 1
+    }));
+  },
+  hydrateCurrentUser: async () => {
+    try {
+      const user = await getCurrentUser();
+      set({ currentUser: user });
+    } catch {
+      set({ currentUser: null });
     }
+  },
+  logout: async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error('Uloskirjautuminen epÃ¤onnistui:', error);
+    } finally {
+      set({ currentUser: null });
+    }
+  }
+}));
 
-    setSessionExpiredHandler(handleSessionExpired);
+export function useInitializeAuthSession() {
+  useEffect(() => {
+    useAuthStore.getState().hydrateCurrentUser();
 
-    return () => {
-      clearSessionExpiredHandler(handleSessionExpired);
-    };
+    setSessionExpiredHandler(() => {
+      useAuthStore.getState().markSessionExpired();
+    });
   }, []);
+}
 
-  const value = useMemo(
+export function useAuth() {
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const sessionExpiredVersion = useAuthStore(
+    (state) => state.sessionExpiredVersion
+  );
+  const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
+  const logout = useAuthStore((state) => state.logout);
+
+  return useMemo(
     () => ({
       currentUser,
       sessionExpiredVersion,
       setCurrentUser,
-      async logout() {
-        try {
-          await logoutUser();
-        } catch (error) {
-          console.error('Uloskirjautuminen epäonnistui:', error);
-        } finally {
-          setCurrentUser(null);
-        }
-      }
+      logout
     }),
-    [currentUser, sessionExpiredVersion]
+    [currentUser, sessionExpiredVersion, setCurrentUser, logout]
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-
-  return context;
 }
