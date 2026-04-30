@@ -55,6 +55,11 @@ describe('App - ilmoituskello', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
   test('avaa ilmoituslistan kellosta', async () => {
     render(<App />);
 
@@ -85,5 +90,18 @@ describe('App - ilmoituskello', () => {
       expect(markNotificationAsRead).toHaveBeenCalledWith('notification-1');
       expect(screen.getByTestId('my-reports-sidebar')).toHaveTextContent('focused:report-42');
     });
+  });
+
+  test('ei hae ilmoitusmaaraa taustalla ajastetusti', async () => {
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /avaa ilmoitukset/i })).toBeInTheDocument();
+      expect(getUnreadNotificationCount).toHaveBeenCalledTimes(1);
+    });
+
+    expect(setIntervalSpy.mock.calls.some(([, delay]) => delay === 30000)).toBe(false);
   });
 });
