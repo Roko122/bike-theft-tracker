@@ -10,8 +10,7 @@ export function formatReportDate(isoValue, language = 'fi') {
     return String(isoValue);
   }
 
-  const adjustedDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
-  return adjustedDate.toLocaleString(language === 'en' ? 'en-GB' : 'fi-FI');
+  return date.toLocaleString(language === 'en' ? 'en-GB' : 'fi-FI');
 }
 
 export function getReportFieldLabel(key, language = 'fi') {

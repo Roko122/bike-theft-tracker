@@ -2,8 +2,23 @@ import { useEffect, useState } from 'react';
 import { createTheftReport } from '../../../api/theftReportApi.js';
 import { translations } from '../../../app/i18n/translations.js';
 
-function toIso(value) {
-  return value instanceof Date ? value.toISOString() : null;
+function padDateTimePart(value) {
+  return String(value).padStart(2, '0');
+}
+
+function toLocalDateTime(value) {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    return null;
+  }
+
+  const year = value.getFullYear();
+  const month = padDateTimePart(value.getMonth() + 1);
+  const day = padDateTimePart(value.getDate());
+  const hours = padDateTimePart(value.getHours());
+  const minutes = padDateTimePart(value.getMinutes());
+  const seconds = padDateTimePart(value.getSeconds());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
 function getErrorText(language, key) {
@@ -171,7 +186,7 @@ export function useTheftReportForm({
 
     const payload = {
       description: formValues.description.trim(),
-      theftTime: toIso(formValues.theftTime),
+      theftTime: toLocalDateTime(formValues.theftTime),
       theftAddress: formValues.theftAddress.trim() || null,
       location: { latitude, longitude },
       bike: {
