@@ -8,7 +8,6 @@ import com.rkrs.bikethefttracker.entity.TheftReport;
 import com.rkrs.bikethefttracker.entity.User;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
 
@@ -53,9 +52,6 @@ public class SightingMapper {
 
         UUID theftReportId = sighting.getTheftReport().getId();
 
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/images/theft-reports/" + theftReportId + "/sightings/")
-                .path(sighting.getImageName())
-                .toUriString();
+        return "/images/theft-reports/" + theftReportId + "/sightings/" + sighting.getImageName();
     }
 }
