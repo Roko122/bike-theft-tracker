@@ -1,139 +1,35 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Bike, BookText, Github, LogIn, LogOut, Menu, X } from 'lucide-react';
 import MapPage from './features/map/MapPage.jsx';
 import AppSidebar from './features/app/ui/AppSidebar.jsx';
 import AuthDialog from './features/app/ui/AuthDialog.jsx';
-import NotificationMenu from './features/app/ui/NotificationMenu.jsx';
 import DocumentationPage from './features/app/docs/DocumentationPage.jsx';
-import { useAuthSession } from './features/app/hooks/useAuthSession.js';
-import { AuthProvider } from './features/app/auth/AuthContext.jsx';
-import { useAppViewState } from './features/app/hooks/useAppViewState.js';
-import {
-  LanguageProvider,
-  useI18n
-} from './features/app/i18n/LanguageContext.jsx';
-
-function UserBadge({ user }) {
-  const { t } = useI18n();
-  const label = user?.username ?? 'User';
-  const initials = label.slice(0, 2).toUpperCase();
-
-  return (
-    <div className="header-user-badge" title={label}>
-      <div className="header-user-badge__avatar">{initials}</div>
-      <div className="header-user-badge__content">
-        <span className="header-user-badge__label">{t('app.loggedIn')}</span>
-        <strong>{label}</strong>
-      </div>
-    </div>
-  );
-}
-
-function AppFlashMessage({ message }) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <div className="app-flash" role="status" aria-live="polite">
-      {message}
-    </div>
-  );
-}
+import AppFlashMessage from './features/app/ui/AppFlashMessage.jsx';
+import AppFooter from './features/app/ui/AppFooter.jsx';
+import AppHeader from './features/app/ui/AppHeader.jsx';
+import { useAppShellController } from './features/app/hooks/useAppShellController.js';
 
 function AppContent() {
-  const { language, setLanguage, t } = useI18n();
-  const viewState = useAppViewState();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [flashMessage, setFlashMessage] = useState('');
-  const [showDocs, setShowDocs] = useState(false);
-  const { currentUser, sessionExpiredVersion, setCurrentUser, logout } =
-    useAuthSession();
-
-  useEffect(() => {
-    if (sessionExpiredVersion > 0) {
-      viewState.handleSessionExpired();
-    }
-  }, [sessionExpiredVersion, viewState.handleSessionExpired]);
-
-  useEffect(() => {
-    if (!flashMessage) {
-      return undefined;
-    }
-
-    const timer = setTimeout(() => {
-      setFlashMessage('');
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [flashMessage]);
-
-  const showSuccessMessage = useCallback((message) => {
-    setFlashMessage(message);
-  }, []);
-
-  const handleReportCreated = useCallback(() => {
-    setRefreshKey((previous) => previous + 1);
-    viewState.resetAfterSubmit();
-    showSuccessMessage(t('flash.theftSaved'));
-  }, [showSuccessMessage, t, viewState.resetAfterSubmit]);
-
-  const handleSightingCreated = useCallback(() => {
-    setRefreshKey((previous) => previous + 1);
-    viewState.resetAfterSubmit();
-    showSuccessMessage(t('flash.sightingSaved'));
-  }, [showSuccessMessage, t, viewState.resetAfterSubmit]);
-
-  const handleReportUpdated = useCallback(() => {
-    setRefreshKey((previous) => previous + 1);
-    showSuccessMessage(t('flash.theftUpdated'));
-  }, [showSuccessMessage, t]);
-
-  const handleReportDeleted = useCallback(() => {
-    setRefreshKey((previous) => previous + 1);
-    viewState.clearSelectedReport();
-    showSuccessMessage(t('flash.theftDeleted'));
-  }, [showSuccessMessage, t, viewState.clearSelectedReport]);
-
-  const handleShowReportOnMap = useCallback(
-    (location) => {
-      if (!location) {
-        return;
-      }
-      viewState.selectLocation(location);
-    },
-    [viewState.selectLocation]
-  );
-
-  const handleLoginSuccess = useCallback(
-    (user) => {
-      setCurrentUser(user);
-      viewState.closeLogin();
-      showSuccessMessage(t('flash.loginSuccess'));
-    },
-    [setCurrentUser, showSuccessMessage, t, viewState.closeLogin]
-  );
-
-  const handleRegisterSuccess = useCallback(
-    (user) => {
-      setCurrentUser(user);
-      viewState.closeRegister();
-      showSuccessMessage(t('flash.loginSuccess'));
-    },
-    [setCurrentUser, showSuccessMessage, t, viewState.closeRegister]
-  );
-
-  const handleLogout = useCallback(async () => {
-    await logout();
-    viewState.openBaseMenu();
-    showSuccessMessage(t('flash.logoutSuccess'));
-  }, [logout, showSuccessMessage, t, viewState.openBaseMenu]);
-
-  const isMapLocked =
-    viewState.showLogin ||
-    viewState.showRegister ||
-    (viewState.isMenuOpen && !viewState.isPickingLocation);
-  const isMapDimmed = viewState.isMenuOpen && !viewState.isPickingLocation;
+  const {
+    authDialogMode,
+    currentUser,
+    flashMessage,
+    handleLoginSuccess,
+    handleLogout,
+    handleRegisterSuccess,
+    handleReportCreated,
+    handleReportDeleted,
+    handleReportUpdated,
+    handleShowReportOnMap,
+    handleSightingCreated,
+    isMapDimmed,
+    isMapLocked,
+    language,
+    refreshKey,
+    setLanguage,
+    setShowDocs,
+    showDocs,
+    t,
+    viewState
+  } = useAppShellController();
 
   return (
     <div className="app-shell">
@@ -145,85 +41,21 @@ function AppContent() {
         </div>
       ) : (
         <>
-          <header className="header">
-            <button
-              className="menu-btn"
-              onClick={
-                viewState.isMenuOpen
-                  ? viewState.openBaseMenu
-                  : viewState.toggleMenu
-              }
-            >
-              <span className="visually-hidden">
-                {viewState.isMenuOpen ? t('app.closeMenu') : t('app.openMenu')}
-              </span>
-              {viewState.isMenuOpen ? <X /> : <Menu />}
-            </button>
-
-            <div className="title">
-              <Bike size={20} />
-              <strong>{t('common.appName')}</strong>
-            </div>
-
-            <div className="header-actions">
-              <div
-                className="language-switch"
-                role="group"
-                aria-label={t('common.language')}
-              >
-                <button
-                  type="button"
-                  className={
-                    language === 'fi'
-                      ? 'language-switch__button language-switch__button--active'
-                      : 'language-switch__button'
-                  }
-                  onClick={() => setLanguage('fi')}
-                >
-                  FI
-                </button>
-                <button
-                  type="button"
-                  className={
-                    language === 'en'
-                      ? 'language-switch__button language-switch__button--active'
-                      : 'language-switch__button'
-                  }
-                  onClick={() => setLanguage('en')}
-                >
-                  EN
-                </button>
-              </div>
-
-              {currentUser ? (
-                <>
-                  <NotificationMenu
-                    currentUser={currentUser}
-                    onOpenReport={viewState.openMyReports}
-                  />
-
-                  <UserBadge user={currentUser} />
-                  <button
-                    type="button"
-                    className="app-btn app-btn--secondary"
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={18} />
-                    <span>{t('app.logout')}</span>
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  className="app-btn app-btn--secondary"
-                  onClick={viewState.openLogin}
-                >
-                  <LogIn size={18} />
-                  <span>{t('app.loginOrRegister')}</span>
-                </button>
-              )}
-            </div>
-
+          <AppHeader
+            currentUser={currentUser}
+            isMenuOpen={viewState.isMenuOpen}
+            language={language}
+            onLanguageChange={setLanguage}
+            onLogout={handleLogout}
+            onOpenLogin={viewState.openLogin}
+            onOpenMyReports={viewState.openMyReports}
+            onToggleMenu={
+              viewState.isMenuOpen
+                ? viewState.openBaseMenu
+                : viewState.toggleMenu
+            }
+            t={t}
+          >
             {viewState.isMenuOpen && (
               <AppSidebar
                 currentUser={currentUser}
@@ -254,7 +86,7 @@ function AppContent() {
                 onReportUpdated={handleReportUpdated}
               />
             )}
-          </header>
+          </AppHeader>
 
           <main className={isMapDimmed ? 'main main--dimmed' : 'main'}>
             <MapPage
@@ -270,7 +102,7 @@ function AppContent() {
 
           {(viewState.showLogin || viewState.showRegister) && (
             <AuthDialog
-              mode={viewState.showRegister ? 'register' : 'login'}
+              mode={authDialogMode}
               onClose={
                 viewState.showRegister
                   ? viewState.closeRegister
@@ -283,31 +115,7 @@ function AppContent() {
             />
           )}
 
-          <footer className="app-footer">
-            <div className="app-footer__content">
-              <span className="app-footer__brand">&copy; RKRS</span>
-              <div className="app-footer__links">
-                <a
-                  className="app-footer__link"
-                  href="https://github.com/Roko122/bike-theft-tracker"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Github size={16} />
-                  {t('app.github')}
-                </a>
-                <button
-                  className="app-footer__link"
-                  onClick={() => setShowDocs(true)}
-                  type="button"
-                  aria-label="Open documentation"
-                >
-                  <BookText size={16} />
-                  {t('app.docs')}
-                </button>
-              </div>
-            </div>
-          </footer>
+          <AppFooter onOpenDocs={() => setShowDocs(true)} t={t} />
         </>
       )}
     </div>
@@ -315,11 +123,5 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <LanguageProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </LanguageProvider>
-  );
+  return <AppContent />;
 }

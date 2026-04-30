@@ -1,10 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-
 import RegisterPage from '../../../features/map/ui/RegisterPage.jsx';
 
 vi.mock('../../../features/api/authApi.js', () => ({
-  registerUser: vi.fn(() => Promise.resolve({ username: 'testikäyttäjä' }))
+  registerUser: vi.fn(() => Promise.resolve({ username: 'testikayttaja' }))
 }));
 
 vi.mock('../../../features/map/ui/passwordValidation.js', () => ({
@@ -12,19 +11,26 @@ vi.mock('../../../features/map/ui/passwordValidation.js', () => ({
   passwordsMatch: vi.fn(() => true)
 }));
 
-vi.mock('lucide-react', () => ({
-  Eye: () => null,
-  EyeOff: () => null,
-  X: () => null
-}));
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    Eye: () => null,
+    EyeOff: () => null,
+    Mail: () => null,
+    ShieldCheck: () => null,
+    UserRound: () => null,
+    X: () => null
+  };
+});
 
-describe('RegisterPage – kenttien näkyvyys', () => {
-  it('renderöi kaikki kentät', () => {
+describe('RegisterPage - kenttien nakyvyys', () => {
+  it('renderoi kaikki kentat', () => {
     render(<RegisterPage />);
 
-    expect(screen.getByText('Käyttäjätunnus')).toBeInTheDocument();
-    expect(screen.getByText('Sähköposti')).toBeInTheDocument();
-    expect(screen.getByText('Salasana')).toBeInTheDocument();
-    expect(screen.getByText('Luo tili')).toBeInTheDocument();
+    expect(screen.getByText(/käyttäjätunnus/i)).toBeInTheDocument();
+    expect(screen.getByText(/sähköposti/i)).toBeInTheDocument();
+    expect(screen.getByText(/^salasana$/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /luo tili/i })).toBeInTheDocument();
   });
 });

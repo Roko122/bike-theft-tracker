@@ -7,7 +7,6 @@ import LocationMarkerHint from '../LocationMarkerHint.jsx';
 export default function LocationSection({
   latitude,
   longitude,
-  locationSource,
   locationError,
   onUseMyLocation,
   onStartPickFromMap,
