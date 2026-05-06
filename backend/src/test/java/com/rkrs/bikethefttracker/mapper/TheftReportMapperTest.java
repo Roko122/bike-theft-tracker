@@ -119,7 +119,7 @@ class TheftReportMapperTest {
         assertEquals(theftReport.getStatus(), response.status());
         assertEquals(theftReport.getCreatedAt(), response.createdAt());
         assertEquals(mappedBikeResponse, response.bike());
-        assertEquals(List.of("http://localhost/images/theft-reports/" + theftReportId + "/bike/photo.jpeg"), response.images());
+        assertEquals(List.of("/images/theft-reports/" + theftReportId + "/bike/photo.jpeg"), response.images());
 
         verify(geoPointMapper).toGeoPoint(theftReport.getLocation());
         verify(bikeMapper).toBikeResponse(theftReport);
